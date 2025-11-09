@@ -381,6 +381,43 @@ const microActionsDatabase: Record<WellbeingCategory, MicroAction[]> = {
       priority: 'medium',
     },
   ],
+  [WellbeingCategory.ADDICTION]: [
+    {
+      id: 'addiction_1',
+      title: 'Monitoring spouštěčů',
+      description: 'Zaznamenej si situace, které vyvolávají touhu po závislosti.',
+      category: WellbeingCategory.ADDICTION,
+      priority: 'high',
+    },
+    {
+      id: 'addiction_2',
+      title: 'Náhradní aktivita',
+      description: 'Když cítíš touhu, udělej něco jiného - procházka, cvičení, volání příteli.',
+      category: WellbeingCategory.ADDICTION,
+      priority: 'high',
+    },
+    {
+      id: 'addiction_3',
+      title: 'Podpora skupiny',
+      description: 'Kontaktuj podporující osobu nebo skupinu, když se cítíš slabý/á.',
+      category: WellbeingCategory.ADDICTION,
+      priority: 'medium',
+    },
+    {
+      id: 'addiction_4',
+      title: 'Odstranění spouštěčů',
+      description: 'Identifikuj a odstraň věci/situace, které podporují závislost.',
+      category: WellbeingCategory.ADDICTION,
+      priority: 'high',
+    },
+    {
+      id: 'addiction_5',
+      title: 'Denní úspěch',
+      description: 'Oslavuj každý den bez závislosti - zapiš si to a pochval se.',
+      category: WellbeingCategory.ADDICTION,
+      priority: 'medium',
+    },
+  ],
 };
 
 /**

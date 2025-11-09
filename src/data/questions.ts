@@ -105,6 +105,12 @@ export const questions: Question[] = [
     text: 'Jak moc ses dnes postaral/a o úklid a pořádek ve svém prostředí?',
     model: 'maslow',
   },
+  {
+    id: 'maslow_addiction',
+    category: WellbeingCategory.ADDICTION,
+    text: 'Jak dobře se ti dnes dařilo zvládat/kontrolovat závislosti? (látková i nelátková)',
+    model: 'maslow',
+  },
 ];
 
 export const getCategoryLabel = (category: WellbeingCategory): string => {
@@ -125,6 +131,7 @@ export const getCategoryLabel = (category: WellbeingCategory): string => {
     [WellbeingCategory.CLEANING]: 'Úklid',
     [WellbeingCategory.HYGIENE]: 'Hygiena',
     [WellbeingCategory.EXERCISE]: 'Pohyb/Sport',
+    [WellbeingCategory.ADDICTION]: 'Závislosti',
   };
   return labels[category];
 };
