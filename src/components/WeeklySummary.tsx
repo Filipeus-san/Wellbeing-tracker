@@ -275,20 +275,23 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
             </button>
           </div>
         </div>
-        <div className="stats-overview">
-          <div className="stat-card">
-            <div className="stat-value">{dailyScores.length}</div>
-            <div className="stat-label">{t.weekly.filledDays}</div>
+        {/* Zobrazit statistiky pouze pokud jsou vyplněná data */}
+        {dailyScores.length > 0 && (
+          <div className="stats-overview">
+            <div className="stat-card">
+              <div className="stat-value">{dailyScores.length}</div>
+              <div className="stat-label">{t.weekly.filledDays}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{summary.criticalAreas.length}</div>
+              <div className="stat-label">{t.weekly.criticalAreas}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{summary.microActions.length}</div>
+              <div className="stat-label">{t.weekly.microActions}</div>
+            </div>
           </div>
-          <div className="stat-card">
-            <div className="stat-value">{summary.criticalAreas.length}</div>
-            <div className="stat-label">{t.weekly.criticalAreas}</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{summary.microActions.length}</div>
-            <div className="stat-label">{t.weekly.microActions}</div>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Mikro-akce - zobrazit pouze pokud existují data a mikro-akce */}
