@@ -281,25 +281,27 @@ export const WeeklySummary = ({ onRefresh }: WeeklySummaryProps) => {
         </div>
       )}
 
-      {/* Radar Graf - Celkový přehled */}
-      <div className="chart-section">
-        <h3>Celkový přehled kategorií</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <RadarChart data={radarData}>
-            <PolarGrid />
-            <PolarAngleAxis dataKey="category" />
-            <PolarRadiusAxis angle={90} domain={[0, 5]} />
-            <Radar
-              name="Průměrné skóre"
-              dataKey="score"
-              stroke="#8b5cf6"
-              fill="#8b5cf6"
-              fillOpacity={0.6}
-            />
-            <Tooltip />
-          </RadarChart>
-        </ResponsiveContainer>
-      </div>
+      {/* Radar Graf - Celkový přehled - zobrazit pouze pokud jsou data */}
+      {dailyScores.length > 0 && (
+        <div className="chart-section">
+          <h3>Celkový přehled kategorií</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <RadarChart data={radarData}>
+              <PolarGrid />
+              <PolarAngleAxis dataKey="category" />
+              <PolarRadiusAxis angle={90} domain={[0, 5]} />
+              <Radar
+                name="Průměrné skóre"
+                dataKey="score"
+                stroke="#8b5cf6"
+                fill="#8b5cf6"
+                fillOpacity={0.6}
+              />
+              <Tooltip />
+            </RadarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* Kritické oblasti */}
       {summary.criticalAreas.length > 0 && (
@@ -317,49 +319,71 @@ export const WeeklySummary = ({ onRefresh }: WeeklySummaryProps) => {
         </div>
       )}
 
-      {/* Mikro-akce */}
-      <div className="micro-actions-section">
-        <h3>💡 Doporučené mikro-akce</h3>
-        <div className="micro-actions-grid">
-          {summary.microActions.map((action) => (
-            <div key={action.id} className={`micro-action-card priority-${action.priority}`}>
-              <div className="action-priority">{action.priority}</div>
-              <h4>{action.title}</h4>
-              <p>{action.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Detailní skóre všech otázek */}
-      <div className="detailed-scores">
-        <h3>Detailní přehled všech otázek</h3>
-        <div className="scores-grid">
-          {questions.map((question) => {
-            const score = summary.averages[question.id];
-            if (score === undefined) return null;
-
-            return (
-              <div key={question.id} className="score-item">
-                <div className="score-question">{question.text}</div>
-                <div className="score-display">
-                  <div
-                    className="score-bar"
-                    style={{
-                      width: `${(score / 5) * 100}%`,
-                      backgroundColor: getScoreColor(score),
-                    }}
-                  />
-                  <span className="score-value">{score.toFixed(1)}</span>
-                  <span className="score-label-text" style={{ color: getScoreColor(score) }}>
-                    {getScoreLabel(score)}
-                  </span>
-                </div>
+      {/* Mikro-akce - zobrazit pouze pokud jsou nějaká data */}
+      {dailyScores.length > 0 && summary.microActions.length > 0 && (
+        <div className="micro-actions-section">
+          <h3>💡 Doporučené mikro-akce</h3>
+          <div className="micro-actions-grid">
+            {summary.microActions.map((action) => (
+              <div key={action.id} className={`micro-action-card priority-${action.priority}`}>
+                <div className="action-priority">{action.priority}</div>
+                <h4>{action.title}</h4>
+                <p>{action.description}</p>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Detailní skóre všech otázek - zobrazit pouze pokud jsou data */}
+      {dailyScores.length > 0 && (
+        <div className="detailed-scores">
+          <h3>Detailní přehled všech otázek</h3>
+          <div className="scores-grid">
+            {questions.map((question) => {
+              const score = summary.averages[question.id];
+              if (score === undefined) return null;
+
+              return (
+                <div key={question.id} className="score-item">
+                  <div className="score-question">{question.text}</div>
+                  <div className="score-display">
+                    <div
+                      className="score-bar"
+                      style={{
+                        width: `${(score / 5) * 100}%`,
+                        backgroundColor: getScoreColor(score),
+                      }}
+                    />
+                    <span className="score-value">{score.toFixed(1)}</span>
+                    <span className="score-label-text" style={{ color: getScoreColor(score) }}>
+                      {getScoreLabel(score)}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Zpráva když nejsou žádná data */}
+      {dailyScores.length === 0 && (
+        <div style={{
+          textAlign: 'center',
+          padding: '48px 24px',
+          color: '#6b7280',
+          fontSize: '16px'
+        }}>
+          <p style={{ fontSize: '48px', marginBottom: '16px' }}>📝</p>
+          <p style={{ marginBottom: '8px', fontSize: '18px', fontWeight: '500' }}>
+            Žádná data pro tento týden
+          </p>
+          <p>
+            Vyplňte denní dotazník pro alespoň jeden den tohoto týdne, abyste viděli týdenní statistiky.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
