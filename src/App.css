@@ -1,0 +1,179 @@
+/* App Layout */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.app-header {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px 0;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.app-title {
+  margin: 0 0 8px 0;
+  color: #1f2937;
+  font-size: 36px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.app-subtitle {
+  margin: 0;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* Navigation */
+.app-nav {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.nav-button {
+  background: transparent;
+  border: none;
+  padding: 16px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent;
+  position: relative;
+}
+
+.nav-button:hover {
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.nav-button.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+/* Main Content */
+.app-main {
+  flex: 1;
+  padding: 30px 20px;
+  background: #f3f4f6;
+}
+
+.view-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.date-selector {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.date-selector label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 16px;
+}
+
+.date-input {
+  padding: 10px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* Footer */
+.app-footer {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  text-align: center;
+  border-top: 1px solid #e5e7eb;
+}
+
+.app-footer p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-title {
+    font-size: 28px;
+  }
+
+  .app-subtitle {
+    font-size: 14px;
+  }
+
+  .app-nav {
+    flex-direction: column;
+  }
+
+  .nav-button {
+    width: 100%;
+    text-align: center;
+    border-bottom: none;
+    border-left: 3px solid transparent;
+  }
+
+  .nav-button.active {
+    border-left-color: #667eea;
+    border-bottom-color: transparent;
+  }
+
+  .date-selector {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .date-input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-main {
+    padding: 20px 10px;
+  }
+
+  .app-title {
+    font-size: 24px;
+  }
+}

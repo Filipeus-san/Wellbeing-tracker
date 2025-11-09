@@ -1,0 +1,280 @@
+.settings {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.settings h2 {
+  margin: 0 0 30px 0;
+  color: #1f2937;
+  font-size: 28px;
+}
+
+.settings-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.settings-section h3 {
+  margin: 0 0 12px 0;
+  color: #1f2937;
+  font-size: 20px;
+}
+
+.section-description {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.setting-item {
+  margin-bottom: 15px;
+}
+
+.setting-item label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #374151;
+}
+
+.setting-item input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.api-key-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.api-key-section label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.api-key-input-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.api-key-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  transition: border-color 0.2s ease;
+}
+
+.api-key-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.toggle-visibility-btn {
+  padding: 10px 16px;
+  background: #f3f4f6;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s ease;
+}
+
+.toggle-visibility-btn:hover {
+  background: #e5e7eb;
+}
+
+.api-key-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.test-key-btn {
+  padding: 8px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.test-key-btn:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.test-key-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.test-result {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.test-result.success {
+  color: #10b981;
+}
+
+.test-result.error {
+  color: #ef4444;
+}
+
+.help-text {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 8px 0 0 0;
+  line-height: 1.5;
+}
+
+.help-text a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.help-text a:hover {
+  text-decoration: underline;
+}
+
+.data-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.action-btn {
+  padding: 12px 20px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+  color: #374151;
+  text-align: left;
+}
+
+.action-btn:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.export-btn:hover {
+  border-color: #10b981;
+  background: #ecfdf5;
+}
+
+.import-btn {
+  display: block;
+}
+
+.import-btn:hover {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.danger-btn {
+  color: #ef4444;
+}
+
+.danger-btn:hover {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.settings-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin: 30px 0;
+}
+
+.save-settings-btn {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.save-settings-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.save-message {
+  background: #10b981;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  animation: slideIn 0.3s ease;
+}
+
+.info-section {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 30px;
+}
+
+.info-section h3 {
+  margin: 0 0 12px 0;
+  color: #1f2937;
+  font-size: 18px;
+}
+
+.info-section p {
+  margin: 8px 0;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .api-key-input-group {
+    flex-direction: column;
+  }
+
+  .toggle-visibility-btn {
+    width: 100%;
+  }
+}
