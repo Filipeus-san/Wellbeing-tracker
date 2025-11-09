@@ -51,7 +51,7 @@ export const WeeklySummary = ({ onRefresh }: WeeklySummaryProps) => {
       // Zkusit načíst existující, jinak vygenerovat nové
       let weeklySummary = await getWeeklySummary(weekStartStr);
       if (!weeklySummary) {
-        weeklySummary = generateWeeklySummary(today);
+        weeklySummary = await generateWeeklySummary(today);
         await saveWeeklySummary(weeklySummary);
       }
 

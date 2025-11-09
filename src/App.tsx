@@ -2,9 +2,6 @@ import { useState } from 'react';
 import { DailyQuestionnaire } from './components/DailyQuestionnaire';
 import { WeeklySummary } from './components/WeeklySummary';
 import { Settings } from './components/Settings';
-import { generateWeeklySummary } from './utils/analytics';
-import { getWeeklySummary, saveWeeklySummary } from './utils/storage';
-import { startOfWeek } from 'date-fns';
 import './App.css';
 
 type View = 'daily' | 'weekly' | 'settings';
@@ -89,7 +86,7 @@ function App() {
       {/* Footer */}
       <footer className="app-footer">
         <p>
-          Vytvořeno s ❤️ pro podporu duševní pohody | Data ukládána na serveru
+          Vytvořeno s ❤️ pro podporu duševní pohody | Data ukládána lokálně
         </p>
       </footer>
     </div>

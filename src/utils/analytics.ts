@@ -80,14 +80,14 @@ export const identifyCriticalAreas = (
 /**
  * Vygeneruje týdenní shrnutí pro daný týden
  */
-export const generateWeeklySummary = (date: Date): WeeklySummary => {
+export const generateWeeklySummary = async (date: Date): Promise<WeeklySummary> => {
   const weekStart = startOfWeek(date, { weekStartsOn: 1 }); // Pondělí
   const weekEnd = endOfWeek(date, { weekStartsOn: 1 }); // Neděle
 
   const weekStartStr = weekStart.toISOString().split('T')[0];
   const weekEndStr = weekEnd.toISOString().split('T')[0];
 
-  const scores = getDailyScoresInRange(weekStartStr, weekEndStr);
+  const scores = await getDailyScoresInRange(weekStartStr, weekEndStr);
   const averages = calculateWeeklyAverages(scores);
   const criticalAreas = identifyCriticalAreas(averages);
   const microActions = generateMicroActions(averages, criticalAreas);

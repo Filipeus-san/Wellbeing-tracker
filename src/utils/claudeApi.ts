@@ -2,11 +2,8 @@ import type { WeeklySummary, DailyScore } from '../types';
 import { questions } from '../data/questions';
 import { getSettings } from './storage';
 
-// URL lokálního proxy serveru pro Claude CLI
-const CLAUDE_PROXY_URL = 'http://localhost:3001/api/claude';
-
 /**
- * Volání Claude CLI přes lokální proxy server
+ * Volání Claude CLI přes Electron IPC
  */
 export const generateClaudeSummary = async (
   weeklySummary: WeeklySummary,
@@ -22,26 +19,19 @@ export const generateClaudeSummary = async (
   const prompt = buildWeeklySummaryPrompt(weeklySummary, dailyScores);
 
   try {
-    const response = await fetch(`${CLAUDE_PROXY_URL}/summary`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        prompt,
-      }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      console.error('Claude proxy error:', error);
-      throw new Error(error.error || 'Chyba při volání Claude CLI');
+    if (!window.electronAPI) {
+      throw new Error('Electron API is not available');
     }
 
-    const data = await response.json();
-    return data.content;
+    const result = await window.electronAPI.claudeSummary(prompt);
+
+    if (!result.success) {
+      throw new Error(result.error || 'Chyba při volání Claude CLI');
+    }
+
+    return result.content || '';
   } catch (error) {
-    console.error('Error calling Claude proxy:', error);
+    console.error('Error calling Claude CLI:', error);
     throw error;
   }
 };
@@ -59,25 +49,19 @@ export const generateDailySummary = async (dailyScore: DailyScore): Promise<stri
   const prompt = buildDailySummaryPrompt(dailyScore);
 
   try {
-    const response = await fetch(`${CLAUDE_PROXY_URL}/summary`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        prompt,
-      }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Chyba při volání Claude CLI');
+    if (!window.electronAPI) {
+      throw new Error('Electron API is not available');
     }
 
-    const data = await response.json();
-    return data.content;
+    const result = await window.electronAPI.claudeSummary(prompt);
+
+    if (!result.success) {
+      throw new Error(result.error || 'Chyba při volání Claude CLI');
+    }
+
+    return result.content || '';
   } catch (error) {
-    console.error('Error calling Claude proxy:', error);
+    console.error('Error calling Claude CLI:', error);
     throw error;
   }
 };
@@ -177,9 +161,12 @@ Vytvoř stručný komentář, který:
  */
 export const testClaudeCLI = async (): Promise<boolean> => {
   try {
-    const response = await fetch(`${CLAUDE_PROXY_URL}/test`);
-    const data = await response.json();
-    return data.success === true;
+    if (!window.electronAPI) {
+      return false;
+    }
+
+    const result = await window.electronAPI.claudeTest();
+    return result.success === true;
   } catch (error) {
     console.error('Error testing Claude CLI:', error);
     return false;

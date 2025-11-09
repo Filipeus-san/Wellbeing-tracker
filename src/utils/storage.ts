@@ -1,23 +1,36 @@
 import type { DailyScore, WeeklySummary, AppSettings } from '../types';
 
-const API_BASE_URL = 'http://localhost:3001/api';
+// Definice Electron API (pro TypeScript)
+interface ElectronAPI {
+  getDailyScores: () => Promise<{ success: boolean; data: DailyScore[]; error?: string }>;
+  getDailyScore: (date: string) => Promise<{ success: boolean; data: DailyScore | null; error?: string }>;
+  saveDailyScore: (score: DailyScore) => Promise<{ success: boolean; data: DailyScore; error?: string }>;
+  getWeeklySummaries: () => Promise<{ success: boolean; data: WeeklySummary[]; error?: string }>;
+  getWeeklySummary: (weekStart: string) => Promise<{ success: boolean; data: WeeklySummary | null; error?: string }>;
+  saveWeeklySummary: (summary: WeeklySummary) => Promise<{ success: boolean; data: WeeklySummary; error?: string }>;
+  getSettings: () => Promise<{ success: boolean; data: AppSettings; error?: string }>;
+  saveSettings: (settings: AppSettings) => Promise<{ success: boolean; data: AppSettings; error?: string }>;
+  exportData: () => Promise<{ success: boolean; data: any; error?: string }>;
+  importData: (data: any) => Promise<{ success: boolean; message?: string; error?: string }>;
+  clearData: () => Promise<{ success: boolean; message?: string; error?: string }>;
+  claudeSummary: (prompt: string) => Promise<{ success: boolean; content?: string; error?: string; details?: string }>;
+  claudeTest: () => Promise<{ success: boolean; version?: string; message?: string; error?: string; details?: string }>;
+}
 
-// Helper function for API calls
-async function apiCall<T>(endpoint: string, options?: RequestInit): Promise<T> {
+declare global {
+  interface Window {
+    electronAPI: ElectronAPI;
+  }
+}
+
+// Helper function for Electron IPC calls
+async function ipcCall<T>(method: keyof ElectronAPI, ...args: any[]): Promise<T> {
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`API call failed: ${response.statusText}`);
+    if (!window.electronAPI) {
+      throw new Error('Electron API is not available');
     }
 
-    const result = await response.json();
+    const result = await (window.electronAPI[method] as any)(...args);
 
     if (!result.success) {
       throw new Error(result.error || 'Unknown error');
@@ -25,22 +38,19 @@ async function apiCall<T>(endpoint: string, options?: RequestInit): Promise<T> {
 
     return result.data;
   } catch (error) {
-    console.error('API Error:', error);
+    console.error('IPC Error:', error);
     throw error;
   }
 }
 
 // Daily Scores
 export const saveDailyScore = async (score: DailyScore): Promise<void> => {
-  await apiCall<DailyScore>('/data/daily-scores', {
-    method: 'POST',
-    body: JSON.stringify(score),
-  });
+  await ipcCall<DailyScore>('saveDailyScore', score);
 };
 
 export const getDailyScores = async (): Promise<DailyScore[]> => {
   try {
-    return await apiCall<DailyScore[]>('/data/daily-scores');
+    return await ipcCall<DailyScore[]>('getDailyScores');
   } catch (error) {
     console.error('Error fetching daily scores:', error);
     return [];
@@ -49,9 +59,8 @@ export const getDailyScores = async (): Promise<DailyScore[]> => {
 
 export const getDailyScore = async (date: string): Promise<DailyScore | undefined> => {
   try {
-    return await apiCall<DailyScore | null>(`/data/daily-scores/${date}`).then((data) =>
-      data === null ? undefined : data
-    );
+    const data = await ipcCall<DailyScore | null>('getDailyScore', date);
+    return data === null ? undefined : data;
   } catch (error) {
     console.error('Error fetching daily score:', error);
     return undefined;
@@ -74,15 +83,12 @@ export const getDailyScoresInRange = async (
 
 // Weekly Summaries
 export const saveWeeklySummary = async (summary: WeeklySummary): Promise<void> => {
-  await apiCall<WeeklySummary>('/data/weekly-summaries', {
-    method: 'POST',
-    body: JSON.stringify(summary),
-  });
+  await ipcCall<WeeklySummary>('saveWeeklySummary', summary);
 };
 
 export const getWeeklySummaries = async (): Promise<WeeklySummary[]> => {
   try {
-    return await apiCall<WeeklySummary[]>('/data/weekly-summaries');
+    return await ipcCall<WeeklySummary[]>('getWeeklySummaries');
   } catch (error) {
     console.error('Error fetching weekly summaries:', error);
     return [];
@@ -91,9 +97,8 @@ export const getWeeklySummaries = async (): Promise<WeeklySummary[]> => {
 
 export const getWeeklySummary = async (weekStart: string): Promise<WeeklySummary | undefined> => {
   try {
-    return await apiCall<WeeklySummary | null>(`/data/weekly-summaries/${weekStart}`).then((data) =>
-      data === null ? undefined : data
-    );
+    const data = await ipcCall<WeeklySummary | null>('getWeeklySummary', weekStart);
+    return data === null ? undefined : data;
   } catch (error) {
     console.error('Error fetching weekly summary:', error);
     return undefined;
@@ -102,15 +107,12 @@ export const getWeeklySummary = async (weekStart: string): Promise<WeeklySummary
 
 // Settings
 export const saveSettings = async (settings: AppSettings): Promise<void> => {
-  await apiCall<AppSettings>('/data/settings', {
-    method: 'POST',
-    body: JSON.stringify(settings),
-  });
+  await ipcCall<AppSettings>('saveSettings', settings);
 };
 
 export const getSettings = async (): Promise<AppSettings> => {
   try {
-    return await apiCall<AppSettings>('/data/settings');
+    return await ipcCall<AppSettings>('getSettings');
   } catch (error) {
     console.error('Error fetching settings:', error);
     return {
@@ -121,22 +123,19 @@ export const getSettings = async (): Promise<AppSettings> => {
 
 // Export/Import
 export const exportData = async (): Promise<string> => {
-  const data = await apiCall<{
+  const data = await ipcCall<{
     dailyScores: DailyScore[];
     weeklySummaries: WeeklySummary[];
     settings: AppSettings;
     exportDate: string;
-  }>('/data/export');
+  }>('exportData');
   return JSON.stringify(data, null, 2);
 };
 
 export const importData = async (jsonData: string): Promise<boolean> => {
   try {
     const data = JSON.parse(jsonData);
-    await apiCall('/data/import', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+    await ipcCall('importData', data);
     return true;
   } catch (error) {
     console.error('Error importing data:', error);
@@ -146,9 +145,7 @@ export const importData = async (jsonData: string): Promise<boolean> => {
 
 export const clearAllData = async (): Promise<void> => {
   try {
-    await apiCall('/data/clear', {
-      method: 'DELETE',
-    });
+    await ipcCall('clearData');
   } catch (error) {
     console.error('Error clearing data:', error);
     throw error;

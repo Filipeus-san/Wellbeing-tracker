@@ -28,5 +28,10 @@ dist-ssr
 .env.local
 .env.*.local
 
-# Server
+# Server (deprecated)
 server/node_modules
+server/data/
+
+# Electron
+release/
+.cache/

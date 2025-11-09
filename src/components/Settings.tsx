@@ -13,15 +13,12 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
   const [isTestingCLI, setIsTestingCLI] = useState(false);
   const [cliTestResult, setCliTestResult] = useState<'success' | 'error' | null>(null);
   const [saveMessage, setSaveMessage] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   // Načíst nastavení při načtení komponenty
   useEffect(() => {
     const loadSettings = async () => {
-      setIsLoading(true);
       const loadedSettings = await getSettings();
       setSettings(loadedSettings);
-      setIsLoading(false);
     };
     loadSettings();
   }, []);
