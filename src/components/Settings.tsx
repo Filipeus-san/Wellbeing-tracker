@@ -10,16 +10,13 @@ interface SettingsProps {
 
 export const Settings = ({ onUpdate }: SettingsProps) => {
   const [settings, setSettings] = useState<AppSettings>(getSettings());
-  const [apiKey, setApiKey] = useState(settings.claudeApiKey || '');
-  const [isTestingKey, setIsTestingKey] = useState(false);
-  const [keyTestResult, setKeyTestResult] = useState<'success' | 'error' | null>(null);
-  const [showApiKey, setShowApiKey] = useState(false);
+  const [isTestingCLI, setIsTestingCLI] = useState(false);
+  const [cliTestResult, setCliTestResult] = useState<'success' | 'error' | null>(null);
   const [saveMessage, setSaveMessage] = useState(false);
 
   const handleSaveSettings = async () => {
     const newSettings: AppSettings = {
-      claudeApiKey: apiKey.trim() || undefined,
-      enableClaudeIntegration: settings.enableClaudeIntegration && !!apiKey.trim(),
+      enableClaudeIntegration: settings.enableClaudeIntegration,
     };
 
     saveSettings(newSettings);
@@ -30,22 +27,17 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
     if (onUpdate) onUpdate();
   };
 
-  const handleTestApiKey = async () => {
-    if (!apiKey.trim()) {
-      setKeyTestResult('error');
-      return;
-    }
-
-    setIsTestingKey(true);
-    setKeyTestResult(null);
+  const handleTestCLI = async () => {
+    setIsTestingCLI(true);
+    setCliTestResult(null);
 
     try {
-      const isValid = await testClaudeApiKey(apiKey.trim());
-      setKeyTestResult(isValid ? 'success' : 'error');
+      const isValid = await testClaudeApiKey();
+      setCliTestResult(isValid ? 'success' : 'error');
     } catch (error) {
-      setKeyTestResult('error');
+      setCliTestResult('error');
     } finally {
-      setIsTestingKey(false);
+      setIsTestingCLI(false);
     }
   };
 
@@ -96,12 +88,12 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
     <div className="settings">
       <h2>Nastavení</h2>
 
-      {/* Claude API Integration */}
+      {/* Claude CLI Integration */}
       <div className="settings-section">
         <h3>🤖 Claude AI Integrace</h3>
         <p className="section-description">
-          Zapněte integraci s Claude AI pro personalizovaná shrnutí a doporučení. Budete
-          potřebovat API klíč z Anthropic.
+          Zapněte integraci s lokálně nainstalovaným Claude CLI pro personalizovaná shrnutí a
+          doporučení. Vyžaduje běžící backend server.
         </p>
 
         <div className="setting-item">
@@ -119,50 +111,33 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
 
         {settings.enableClaudeIntegration && (
           <div className="api-key-section">
-            <label htmlFor="apiKey">Claude API Klíč</label>
-            <div className="api-key-input-group">
-              <input
-                id="apiKey"
-                type={showApiKey ? 'text' : 'password'}
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="sk-ant-api03-..."
-                className="api-key-input"
-              />
-              <button
-                className="toggle-visibility-btn"
-                onClick={() => setShowApiKey(!showApiKey)}
-              >
-                {showApiKey ? '🙈' : '👁️'}
-              </button>
-            </div>
+            <p className="help-text">
+              Aplikace používá lokálně nainstalovaný <strong>Claude CLI</strong> přes backend
+              proxy server (port 3001).
+            </p>
 
             <div className="api-key-actions">
               <button
                 className="test-key-btn"
-                onClick={handleTestApiKey}
-                disabled={isTestingKey || !apiKey.trim()}
+                onClick={handleTestCLI}
+                disabled={isTestingCLI}
               >
-                {isTestingKey ? 'Testuji...' : 'Test klíče'}
+                {isTestingCLI ? 'Testuji...' : 'Test Claude CLI'}
               </button>
 
-              {keyTestResult === 'success' && (
-                <span className="test-result success">✓ Klíč je platný</span>
+              {cliTestResult === 'success' && (
+                <span className="test-result success">✓ Claude CLI je dostupné</span>
               )}
-              {keyTestResult === 'error' && (
-                <span className="test-result error">✗ Klíč je neplatný</span>
+              {cliTestResult === 'error' && (
+                <span className="test-result error">
+                  ✗ Claude CLI není dostupné (zkontrolujte server)
+                </span>
               )}
             </div>
 
             <p className="help-text">
-              Získejte API klíč na{' '}
-              <a
-                href="https://console.anthropic.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                console.anthropic.com
-              </a>
+              Ujistěte se, že backend server běží:{' '}
+              <code>cd server && npm install && npm start</code>
             </p>
           </div>
         )}

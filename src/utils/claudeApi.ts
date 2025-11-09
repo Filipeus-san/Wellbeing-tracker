@@ -2,10 +2,11 @@ import type { WeeklySummary, DailyScore } from '../types';
 import { questions } from '../data/questions';
 import { getSettings } from './storage';
 
-const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
+// URL lokálního proxy serveru pro Claude CLI
+const CLAUDE_PROXY_URL = 'http://localhost:3001/api/claude';
 
 /**
- * Volání Claude API pro generování shrnutí
+ * Volání Claude CLI přes lokální proxy server
  */
 export const generateClaudeSummary = async (
   weeklySummary: WeeklySummary,
@@ -13,43 +14,34 @@ export const generateClaudeSummary = async (
 ): Promise<string> => {
   const settings = getSettings();
 
-  if (!settings.claudeApiKey || !settings.enableClaudeIntegration) {
-    throw new Error('Claude API není nakonfigurované nebo je vypnuté');
+  if (!settings.enableClaudeIntegration) {
+    throw new Error('Claude integrace není zapnutá');
   }
 
   // Připravit kontext pro Claude
   const prompt = buildWeeklySummaryPrompt(weeklySummary, dailyScores);
 
   try {
-    const response = await fetch(CLAUDE_API_URL, {
+    const response = await fetch(`${CLAUDE_PROXY_URL}/summary`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': settings.claudeApiKey,
-        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 1024,
-        messages: [
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
+        prompt,
       }),
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      console.error('Claude API error:', error);
-      throw new Error(`Claude API chyba: ${response.status}`);
+      const error = await response.json();
+      console.error('Claude proxy error:', error);
+      throw new Error(error.error || 'Chyba při volání Claude CLI');
     }
 
     const data = await response.json();
-    return data.content[0].text;
+    return data.content;
   } catch (error) {
-    console.error('Error calling Claude API:', error);
+    console.error('Error calling Claude proxy:', error);
     throw error;
   }
 };
@@ -60,40 +52,32 @@ export const generateClaudeSummary = async (
 export const generateDailySummary = async (dailyScore: DailyScore): Promise<string> => {
   const settings = getSettings();
 
-  if (!settings.claudeApiKey || !settings.enableClaudeIntegration) {
-    throw new Error('Claude API není nakonfigurované nebo je vypnuté');
+  if (!settings.enableClaudeIntegration) {
+    throw new Error('Claude integrace není zapnutá');
   }
 
   const prompt = buildDailySummaryPrompt(dailyScore);
 
   try {
-    const response = await fetch(CLAUDE_API_URL, {
+    const response = await fetch(`${CLAUDE_PROXY_URL}/summary`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': settings.claudeApiKey,
-        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 512,
-        messages: [
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
+        prompt,
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`Claude API chyba: ${response.status}`);
+      const error = await response.json();
+      throw new Error(error.error || 'Chyba při volání Claude CLI');
     }
 
     const data = await response.json();
-    return data.content[0].text;
+    return data.content;
   } catch (error) {
-    console.error('Error calling Claude API:', error);
+    console.error('Error calling Claude proxy:', error);
     throw error;
   }
 };
@@ -180,32 +164,20 @@ Vytvoř stručný komentář, který:
 };
 
 /**
- * Testuje, jestli API klíč funguje
+ * Testuje, jestli Claude CLI je dostupné
  */
-export const testClaudeApiKey = async (apiKey: string): Promise<boolean> => {
+export const testClaudeCLI = async (): Promise<boolean> => {
   try {
-    const response = await fetch(CLAUDE_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 10,
-        messages: [
-          {
-            role: 'user',
-            content: 'Test',
-          },
-        ],
-      }),
-    });
-
-    return response.ok;
+    const response = await fetch(`${CLAUDE_PROXY_URL}/test`);
+    const data = await response.json();
+    return data.success === true;
   } catch (error) {
-    console.error('Error testing API key:', error);
+    console.error('Error testing Claude CLI:', error);
     return false;
   }
+};
+
+// Zachovat kompatibilitu se starým názvem (pro Settings komponentu)
+export const testClaudeApiKey = async (): Promise<boolean> => {
+  return testClaudeCLI();
 };

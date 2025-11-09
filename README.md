@@ -81,22 +81,27 @@ Vybuildovaná aplikace bude v adresáři `dist/`.
 ## 📁 Struktura projektu
 
 ```
-src/
-├── components/          # React komponenty
-│   ├── DailyQuestionnaire.tsx   # Denní dotazník
-│   ├── WeeklySummary.tsx        # Týdenní shrnutí
-│   └── Settings.tsx             # Nastavení
-├── data/
-│   └── questions.ts     # Definice otázek
-├── types/
-│   └── index.ts         # TypeScript typy
-├── utils/
-│   ├── storage.ts       # LocalStorage operace
-│   ├── analytics.ts     # Výpočty a analýzy
-│   ├── microActions.ts  # Algoritmus mikro-akcí
-│   └── claudeApi.ts     # Claude AI integrace
-├── App.tsx              # Hlavní komponenta
-└── main.tsx             # Entry point
+.
+├── src/                 # Frontend aplikace
+│   ├── components/
+│   │   ├── DailyQuestionnaire.tsx   # Denní dotazník
+│   │   ├── WeeklySummary.tsx        # Týdenní shrnutí
+│   │   └── Settings.tsx             # Nastavení
+│   ├── data/
+│   │   └── questions.ts             # Definice otázek
+│   ├── types/
+│   │   └── index.ts                 # TypeScript typy
+│   ├── utils/
+│   │   ├── storage.ts               # LocalStorage operace
+│   │   ├── analytics.ts             # Výpočty a analýzy
+│   │   ├── microActions.ts          # Algoritmus mikro-akcí
+│   │   └── claudeApi.ts             # Claude CLI proxy integrace
+│   ├── App.tsx                      # Hlavní komponenta
+│   └── main.tsx                     # Entry point
+│
+└── server/              # Backend proxy server
+    ├── index.js         # Express server pro Claude CLI
+    └── package.json     # Server dependencies
 ```
 
 ## 🎨 Barevné označení skóre
@@ -126,29 +131,55 @@ Každá mikro-akce obsahuje:
 - ✅ Export/import pro zálohu dat
 - ✅ Možnost smazání všech dat
 
-## 🤖 Nastavení Claude AI
+## 🤖 Nastavení Claude AI (Claude CLI)
+
+Aplikace používá **lokálně nainstalovaný Claude CLI** místo přímého volání API (řeší CORS problémy).
+
+### Prerekvizity
+
+1. **Nainstalujte Claude CLI**:
+   ```bash
+   # Pokud ještě nemáte Claude CLI nainstalované
+   # Návod: https://github.com/anthropics/anthropic-cli
+   ```
+
+2. **Spusťte backend proxy server**:
+   ```bash
+   # V samostatném terminálu
+   cd server
+   npm install
+   npm start
+   ```
+
+   Server poběží na `http://localhost:3001`
+
+### Použití v aplikaci
 
 1. Přejděte do sekce **Nastavení**
 2. Zapněte **Claude AI integraci**
-3. Získejte API klíč na [console.anthropic.com](https://console.anthropic.com/)
-4. Vložte klíč do formuláře
-5. Klikněte na **Test klíče** pro ověření
-6. Uložte nastavení
+3. Klikněte na **Test Claude CLI** pro ověření
+4. Uložte nastavení
 
-Claude API se používá pouze pro:
+Claude CLI se používá pouze pro:
 - Generování týdenních shrnutí
 - Personalizovaná doporučení
 - Motivační komentáře
 
+**Poznámka**: Všechna volání Claude probíhají lokálně přes backend server, žádná data nejsou posílána přímo na Anthropic API z prohlížeče.
+
 ## 📦 Technologie
 
+### Frontend
 - **React 18** - UI framework
 - **TypeScript** - Type safety
 - **Vite** - Build tool
 - **Recharts** - Grafy a vizualizace
 - **date-fns** - Práce s datumy
 - **LocalStorage** - Perzistence dat
-- **Claude API** - AI asistent (volitelné)
+
+### Backend
+- **Express** - Backend server
+- **Claude CLI** - AI asistent (volitelné)
 
 ## 🎯 Doporučené používání
 
@@ -194,10 +225,11 @@ Otázky jsou definovány v `src/data/questions.ts`:
 - Zkontrolujte, zda má prohlížeč povolený LocalStorage
 - Zkuste vymazat cookies a cache
 
-### Claude API nefunguje
-- Ověřte, že API klíč je platný
-- Zkontrolujte připojení k internetu
-- Ujistěte se, že máte kredity na Anthropic účtu
+### Claude CLI nefunguje
+- Zkontrolujte, že backend server běží (`cd server && npm start`)
+- Ověřte, že Claude CLI je nainstalované (`claude --version`)
+- Zkuste test v aplikaci (Nastavení → Test Claude CLI)
+- Zkontrolujte konzoli serveru pro případné chyby
 
 ## 📄 Licence
 
