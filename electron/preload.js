@@ -1,4 +1,6 @@
-import { contextBridge, ipcRenderer } from 'electron';
+const { contextBridge, ipcRenderer } = require('electron');
+
+console.log('🔧 Preload script is loading...');
 
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object
@@ -26,3 +28,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   claudeSummary: (prompt) => ipcRenderer.invoke('claude-summary', prompt),
   claudeTest: () => ipcRenderer.invoke('claude-test'),
 });
+
+console.log('✅ Preload script loaded, electronAPI exposed');

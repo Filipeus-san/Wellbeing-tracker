@@ -55,11 +55,16 @@ async function saveData() {
 let mainWindow;
 
 function createWindow() {
+  const preloadPath = join(__dirname, 'preload.js');
+  console.log('📂 Preload path:', preloadPath);
+  console.log('📂 __dirname:', __dirname);
+  console.log('📂 NODE_ENV:', process.env.NODE_ENV);
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
-      preload: join(__dirname, 'preload.js'),
+      preload: preloadPath,
       contextIsolation: true,
       nodeIntegration: false,
     },
@@ -71,7 +76,10 @@ function createWindow() {
     mainWindow.webContents.openDevTools();
   } else {
     // V production načíst z buildu
-    mainWindow.loadFile(join(__dirname, '../dist/index.html'));
+    const indexPath = join(__dirname, '../dist/index.html');
+    console.log('📂 Loading index from:', indexPath);
+    mainWindow.loadFile(indexPath);
+    mainWindow.webContents.openDevTools(); // Otevřít DevTools i v production pro debugging
   }
 }
 
