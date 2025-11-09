@@ -38,7 +38,15 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
       const existingScore = await getDailyScore(date);
       setCurrentDailyScore(existingScore);
       if (existingScore) {
-        setScores(existingScore.scores);
+        // Vyfiltrovat pouze platné question IDs
+        const validQuestionIds = new Set(questions.map(q => q.id));
+        const cleanedScores: Record<string, ScoreValue> = {};
+        Object.entries(existingScore.scores).forEach(([id, score]) => {
+          if (validQuestionIds.has(id)) {
+            cleanedScores[id] = score;
+          }
+        });
+        setScores(cleanedScores);
         setNotes(existingScore.notes || '');
         setAiSummary(existingScore.aiSummary || null);
       } else {
@@ -123,9 +131,14 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
     }
   };
 
-  const isComplete = Object.keys(scores).length === questions.length;
+  // Počítat pouze skóre pro existující otázky
+  const validQuestionIds = new Set(questions.map(q => q.id));
+  const validScores = Object.keys(scores).filter(id => validQuestionIds.has(id));
+  const validScoresCount = validScores.length;
+
+  const isComplete = validScoresCount === questions.length;
   const completionPercentage = Math.round(
-    (Object.keys(scores).length / questions.length) * 100
+    (validScoresCount / questions.length) * 100
   );
 
   // Seskupit otázky podle modelu
@@ -154,7 +167,7 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
           <div className="progress-fill" style={{ width: `${completionPercentage}%` }} />
         </div>
         <div className="progress-text">
-          Vyplněno: {Object.keys(scores).length} / {questions.length} ({completionPercentage}%)
+          Vyplněno: {validScoresCount} / {questions.length} ({completionPercentage}%)
         </div>
       </div>
 
@@ -210,7 +223,7 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
           <button
             className="save-button"
             onClick={handleSave}
-            disabled={Object.keys(scores).length === 0}
+            disabled={validScoresCount === 0}
           >
             {isComplete ? 'Uložit denní záznam' : 'Uložit rozpracované'}
           </button>
@@ -234,9 +247,9 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
           <div className="saved-message">✓ Denní záznam byl úspěšně uložen</div>
         )}
 
-        {!isComplete && Object.keys(scores).length > 0 && (
+        {!isComplete && validScoresCount > 0 && (
           <div className="incomplete-warning">
-            Ještě zbývá vyplnit {questions.length - Object.keys(scores).length} otázek
+            Ještě zbývá vyplnit {questions.length - validScoresCount} otázek
           </div>
         )}
 
