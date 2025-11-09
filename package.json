@@ -3,13 +3,21 @@
   "private": true,
   "version": "1.0.0",
   "description": "Wellbeing Tracker - Desktop aplikace pro sledování duševní pohody",
-  "author": "Your Name",
+  "author": {
+    "name": "Wellbeing Tracker Team",
+    "email": "wellbeing@example.com"
+  },
+  "homepage": "https://github.com/wellbeing-tracker/app",
   "type": "module",
   "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently \"vite\" \"wait-on http://localhost:5174 && cross-env NODE_ENV=development electron . --no-sandbox\"",
     "build": "tsc -b && vite build && electron-builder",
     "build:dir": "tsc -b && vite build && electron-builder --dir",
+    "build:linux": "tsc -b && vite build && electron-builder --linux",
+    "build:win": "tsc -b && vite build && electron-builder --win",
+    "build:mac": "tsc -b && vite build && electron-builder --mac",
+    "build:all": "tsc -b && vite build && electron-builder --linux --win --mac",
     "lint": "eslint .",
     "preview": "vite preview",
     "electron": "electron . --no-sandbox",
@@ -43,6 +51,7 @@
   "build": {
     "appId": "com.wellbeing.tracker",
     "productName": "Wellbeing Tracker",
+    "icon": "build/icon.svg",
     "directories": {
       "buildResources": "build",
       "output": "release"
@@ -54,14 +63,17 @@
     ],
     "mac": {
       "target": "dmg",
-      "category": "public.app-category.healthcare-fitness"
+      "category": "public.app-category.healthcare-fitness",
+      "icon": "build/icon.svg"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "build/icon.svg"
     },
     "linux": {
       "target": "AppImage",
-      "category": "Utility"
+      "category": "Utility",
+      "icon": "build/icon.svg"
     }
   }
 }
