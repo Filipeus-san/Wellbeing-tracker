@@ -15,6 +15,8 @@ interface ElectronAPI {
   clearData: () => Promise<{ success: boolean; message?: string; error?: string }>;
   claudeSummary: (prompt: string) => Promise<{ success: boolean; content?: string; error?: string; details?: string }>;
   claudeTest: () => Promise<{ success: boolean; version?: string; message?: string; error?: string; details?: string }>;
+  codexSummary: (prompt: string) => Promise<{ success: boolean; content?: string; error?: string; details?: string }>;
+  codexTest: () => Promise<{ success: boolean; version?: string; message?: string; error?: string; details?: string }>;
 }
 
 declare global {
