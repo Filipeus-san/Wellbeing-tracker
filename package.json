@@ -7,13 +7,13 @@
   "type": "module",
   "main": "electron/main.js",
   "scripts": {
-    "dev": "concurrently \"vite\" \"wait-on http://localhost:5174 && cross-env NODE_ENV=development electron .\"",
+    "dev": "concurrently \"vite\" \"wait-on http://localhost:5174 && cross-env NODE_ENV=development electron . --no-sandbox\"",
     "build": "tsc -b && vite build && electron-builder",
     "build:dir": "tsc -b && vite build && electron-builder --dir",
     "lint": "eslint .",
     "preview": "vite preview",
-    "electron": "electron .",
-    "electron:dev": "cross-env NODE_ENV=development electron ."
+    "electron": "electron . --no-sandbox",
+    "electron:dev": "cross-env NODE_ENV=development electron . --no-sandbox"
   },
   "dependencies": {
     "date-fns": "^4.1.0",

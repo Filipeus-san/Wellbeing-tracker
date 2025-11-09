@@ -1,6 +1,10 @@
-# 🌟 React Wellbeing Tracker
+# 🌟 Wellbeing Tracker - Desktop Aplikace
 
-Moderní aplikace pro sledování duševní pohody postavená na React s TypeScript. Využívá psychologické modely **Maslow**, **SDT** (Self-Determination Theory) a **PERMA** pro komplexní měření wellbeingu.
+Moderní **desktopová aplikace** pro sledování duševní pohody postavená na **Electron + React + TypeScript**. Využívá psychologické modely **Maslow**, **SDT** (Self-Determination Theory) a **PERMA** pro komplexní měření wellbeingu.
+
+> **📱 Electron Verze**: Toto je desktopová verze aplikace. Data jsou ukládána lokálně na vašem počítači.
+>
+> **📖 Podrobný návod pro Electron**: Viz [README-ELECTRON.md](./README-ELECTRON.md)
 
 ## ✨ Hlavní funkce
 
@@ -55,35 +59,40 @@ Moderní aplikace pro sledování duševní pohody postavená na React s TypeScr
 4. **Smysl** - účel aktivit
 5. **Úspěchy** - pokrok a accomplishment
 
-## 🚀 Instalace a spuštění
+## 🚀 Rychlý start
 
-### Předpoklady
-- Node.js 20.19+ nebo 22.12+
-- npm nebo yarn
-
-### Instalace
+### Instalace a spuštění
 
 ```bash
-# Instalace závislostí
+# 1. Instalace závislostí
 npm install
 
-# Spuštění vývojového serveru
+# 2. Spuštění Electron aplikace (development)
 npm run dev
-```
 
-### Build pro produkci
-
-```bash
+# 3. Build distribučního balíčku
 npm run build
 ```
 
-Vybuildovaná aplikace bude v adresáři `dist/`.
+Po buildu najdete instalátor v `release/` složce:
+- **Linux**: `Wellbeing Tracker-1.0.0.AppImage`
+- **macOS**: `Wellbeing Tracker-1.0.0.dmg`
+- **Windows**: `Wellbeing Tracker Setup 1.0.0.exe`
+
+### Požadavky
+- Node.js 20.x+
+- npm nebo yarn
+- Claude CLI (volitelné, pro AI shrnutí)
 
 ## 📁 Struktura projektu
 
 ```
 .
-├── src/                 # Frontend aplikace
+├── electron/            # Electron backend (main proces)
+│   ├── main.js         # Hlavní Electron proces
+│   └── preload.js      # Preload script pro IPC
+│
+├── src/                # React frontend (renderer proces)
 │   ├── components/
 │   │   ├── DailyQuestionnaire.tsx   # Denní dotazník
 │   │   ├── WeeklySummary.tsx        # Týdenní shrnutí
@@ -93,16 +102,16 @@ Vybuildovaná aplikace bude v adresáři `dist/`.
 │   ├── types/
 │   │   └── index.ts                 # TypeScript typy
 │   ├── utils/
-│   │   ├── storage.ts               # LocalStorage operace
+│   │   ├── storage.ts               # IPC komunikace pro data
 │   │   ├── analytics.ts             # Výpočty a analýzy
 │   │   ├── microActions.ts          # Algoritmus mikro-akcí
-│   │   └── claudeApi.ts             # Claude CLI proxy integrace
+│   │   └── claudeApi.ts             # Claude CLI přes IPC
 │   ├── App.tsx                      # Hlavní komponenta
 │   └── main.tsx                     # Entry point
 │
-└── server/              # Backend proxy server
-    ├── index.js         # Express server pro Claude CLI
-    └── package.json     # Server dependencies
+├── dist/               # Vite build výstup
+├── release/            # Electron distribuce
+└── server/             # Deprecated (původní Express server)
 ```
 
 ## 🎨 Barevné označení skóre
@@ -126,40 +135,33 @@ Každá mikro-akce obsahuje:
 
 ## 🔐 Bezpečnost a soukromí
 
-- ✅ Všechna data ukládána **lokálně** v prohlížeči (LocalStorage)
-- ✅ Žádné servery třetích stran (kromě volitelné Claude API)
-- ✅ API klíč uložen bezpečně v LocalStorage
+- ✅ Všechna data ukládána **lokálně na vašem počítači**
+  - Linux: `~/.config/wellbeing-tracker/data/`
+  - macOS: `~/Library/Application Support/wellbeing-tracker/data/`
+  - Windows: `%APPDATA%\wellbeing-tracker\data/`
+- ✅ Žádné servery třetích stran (kromě volitelné Claude CLI)
+- ✅ Bezpečná IPC komunikace přes Electron contextBridge
 - ✅ Export/import pro zálohu dat
 - ✅ Možnost smazání všech dat
 
 ## 🤖 Nastavení Claude AI (Claude CLI)
 
-Aplikace používá **lokálně nainstalovaný Claude CLI** místo přímého volání API (řeší CORS problémy).
+Aplikace používá **lokálně nainstalovaný Claude CLI** volaný přímo z Electron main procesu.
 
-### Prerekvizity
+### Instalace Claude CLI
 
-1. **Nainstalujte Claude CLI**:
-   ```bash
-   # Pokud ještě nemáte Claude CLI nainstalované
-   # Návod: https://github.com/anthropics/anthropic-cli
-   ```
-
-2. **Spusťte backend proxy server**:
-   ```bash
-   # V samostatném terminálu
-   cd server
-   npm install
-   npm start
-   ```
-
-   Server poběží na `http://localhost:3001`
+```bash
+# Pokud ještě nemáte Claude CLI nainstalované
+# Návod: https://github.com/anthropics/anthropic-cli
+```
 
 ### Použití v aplikaci
 
-1. Přejděte do sekce **Nastavení**
-2. Zapněte **Claude AI integraci**
-3. Klikněte na **Test Claude CLI** pro ověření
-4. Uložte nastavení
+1. Spusťte aplikaci (`npm run dev`)
+2. Přejděte do sekce **Nastavení**
+3. Zapněte **Claude AI integraci**
+4. Klikněte na **Test Claude CLI** pro ověření
+5. Uložte nastavení
 
 Claude CLI se používá pro:
 - **Denní shrnutí** - po dokončení denního dotazníku
@@ -167,20 +169,24 @@ Claude CLI se používá pro:
 - **Personalizovaná doporučení** - na míru vašim skóre
 - **Motivační komentáře** - povzbuzení a konkrétní tipy
 
-**Poznámka**: Všechna volání Claude probíhají lokálně přes backend server, žádná data nejsou posílána přímo na Anthropic API z prohlížeče.
+**Poznámka**: Všechna volání Claude probíhají lokálně z Electron main procesu. Žádná data nejsou posílána přes webové API.
 
 ## 📦 Technologie
 
-### Frontend
-- **React 18** - UI framework
+### Desktop
+- **Electron** - Cross-platform desktop framework
+- **Node.js** - Backend runtime (main proces)
+
+### Frontend (Renderer)
+- **React 19** - UI framework
 - **TypeScript** - Type safety
 - **Vite** - Build tool
 - **Recharts** - Grafy a vizualizace
 - **date-fns** - Práce s datumy
-- **LocalStorage** - Perzistence dat
 
-### Backend
-- **Express** - Backend server
+### Backend (Main)
+- **Electron IPC** - Inter-process communication
+- **Node.js fs/promises** - File system operace
 - **Claude CLI** - AI asistent (volitelné)
 
 ## 🎯 Doporučené používání
@@ -224,14 +230,17 @@ Otázky jsou definovány v `src/data/questions.ts`:
 - Zkuste `npm install` znovu
 
 ### Data se neukládají
-- Zkontrolujte, zda má prohlížeč povolený LocalStorage
-- Zkuste vymazat cookies a cache
+- Zkontrolujte oprávnění k zápisu do uživatelské složky
+- Podívejte se na logy v terminálu (main proces)
 
 ### Claude CLI nefunguje
-- Zkontrolujte, že backend server běží (`cd server && npm start`)
 - Ověřte, že Claude CLI je nainstalované (`claude --version`)
 - Zkuste test v aplikaci (Nastavení → Test Claude CLI)
-- Zkontrolujte konzoli serveru pro případné chyby
+- Zkontrolujte konzoli main procesu pro případné chyby
+
+### Electron sandbox problémy
+- Aplikace používá `--no-sandbox` flag v package.json
+- To je běžné řešení pro Linux prostředí
 
 ## 📄 Licence
 

@@ -41,6 +41,8 @@ Tento příkaz:
 2. Počká, až se server spustí
 3. Spustí Electron aplikaci, která se připojí k dev serveru
 
+**Poznámka**: Aplikace používá `--no-sandbox` flag kvůli běžným problémům s SUID sandboxem v některých Linux prostředích.
+
 ### Production build
 ```bash
 # Build aplikace
