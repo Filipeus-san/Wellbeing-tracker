@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import type { DailyScore, ScoreValue } from '../types';
 import { questions, getModelLabel } from '../data/questions';
-import { saveDailyScore, getDailyScore, getSettings } from '../utils/storage';
-import { getScoreColor, generateDailyMicroActions } from '../utils/analytics';
+import { saveDailyScore, getDailyScore, getSettings, saveWeeklySummary, getWeeklySummary } from '../utils/storage';
+import { getScoreColor, generateDailyMicroActions, generateWeeklySummary } from '../utils/analytics';
 import { generateDailySummary } from '../utils/claudeApi';
+import { startOfWeek } from 'date-fns';
 import './DailyQuestionnaire.css';
 
 interface DailyQuestionnaireProps {
@@ -80,12 +81,42 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
       setSavedMessage(true);
       setTimeout(() => setSavedMessage(false), 3000);
 
+      // Přegenerovat týdenní shrnutí
+      await regenerateWeeklySummary(date);
+
       if (onComplete) {
         onComplete();
       }
     } catch (error) {
       console.error('Error saving daily score:', error);
       alert('Chyba při ukládání dat. Zkontrolujte připojení k serveru.');
+    }
+  };
+
+  const regenerateWeeklySummary = async (currentDate: string) => {
+    try {
+      // Zjistit začátek týdne pro aktuální datum
+      const dateObj = new Date(currentDate);
+      const weekStart = startOfWeek(dateObj, { weekStartsOn: 1 });
+      const weekStartStr = weekStart.toISOString().split('T')[0];
+
+      // Načíst stávající týdenní shrnutí (pokud existuje)
+      const existingWeeklySummary = await getWeeklySummary(weekStartStr);
+
+      // Vygenerovat nové týdenní shrnutí
+      const newWeeklySummary = await generateWeeklySummary(dateObj);
+
+      // Pokud existovalo AI shrnutí, zachovat ho
+      if (existingWeeklySummary?.claudeSummary) {
+        newWeeklySummary.claudeSummary = existingWeeklySummary.claudeSummary;
+      }
+
+      // Uložit nové týdenní shrnutí
+      await saveWeeklySummary(newWeeklySummary);
+      console.log('✅ Týdenní shrnutí bylo přegenerováno');
+    } catch (error) {
+      console.error('❌ Chyba při přegenerování týdenního shrnutí:', error);
+      // Nepřerušovat uložení denního záznamu kvůli chybě v týdenním shrnutí
     }
   };
 
@@ -122,6 +153,9 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
       await saveDailyScore(completeDailyScore);
       setCurrentDailyScore(completeDailyScore);
       setAiSummary(summary);
+
+      // Přegenerovat týdenní shrnutí
+      await regenerateWeeklySummary(date);
     } catch (error) {
       setSummaryError(
         error instanceof Error ? error.message : 'Chyba při generování shrnutí'
