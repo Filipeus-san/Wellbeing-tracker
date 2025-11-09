@@ -619,8 +619,8 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         </div>
       )}
 
-      {/* Mikro-akce - zobrazit pouze pokud jsou nějaká data */}
-      {dailyScores.length > 0 && summary.microActions && summary.microActions.length > 0 && (
+      {/* Mikro-akce - zobrazit pokud existují */}
+      {summary.microActions && summary.microActions.length > 0 && (
         <div className="micro-actions-section">
           <h3>💡 {t.weekly.recommendedMicroActions}</h3>
           <div className="micro-actions-grid">
