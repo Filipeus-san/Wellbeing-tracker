@@ -1,7 +1,10 @@
 import express from 'express';
 import cors from 'cors';
-import { exec } from 'child_process';
+import { exec, spawn } from 'child_process';
 import { promisify } from 'util';
+import { writeFile, unlink } from 'fs/promises';
+import { tmpdir } from 'os';
+import { join } from 'path';
 
 const execAsync = promisify(exec);
 const app = express();
@@ -9,12 +12,14 @@ const PORT = 3001;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // Zvětšit limit pro větší prompty
 
 /**
  * Endpoint pro generování shrnutí pomocí Claude CLI
  */
 app.post('/api/claude/summary', async (req, res) => {
+  let tempFile = null;
+
   try {
     const { prompt } = req.body;
 
@@ -22,21 +27,47 @@ app.post('/api/claude/summary', async (req, res) => {
       return res.status(400).json({ error: 'Prompt is required' });
     }
 
-    // Escapovat prompt pro shell
-    const escapedPrompt = prompt.replace(/'/g, "'\\''");
+    console.log('📝 Generating summary, prompt length:', prompt.length);
 
-    // Volání Claude CLI
-    const command = `claude --no-stream "${escapedPrompt}"`;
-
-    const { stdout, stderr } = await execAsync(command, {
-      maxBuffer: 1024 * 1024 * 5, // 5MB buffer
-      timeout: 60000, // 60s timeout
+    // Použít stdin místo parametru - bezpečnější a spolehlivější
+    const claude = spawn('claude', ['--no-stream'], {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      timeout: 60000,
     });
 
-    if (stderr && !stdout) {
-      console.error('Claude CLI error:', stderr);
-      return res.status(500).json({ error: 'Claude CLI error', details: stderr });
-    }
+    let stdout = '';
+    let stderr = '';
+
+    claude.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    claude.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    // Poslat prompt přes stdin
+    claude.stdin.write(prompt);
+    claude.stdin.end();
+
+    // Počkat na dokončení
+    await new Promise((resolve, reject) => {
+      claude.on('close', (code) => {
+        if (code !== 0 && !stdout) {
+          console.error('Claude CLI error:', stderr);
+          reject(new Error(`Claude CLI exited with code ${code}: ${stderr}`));
+        } else {
+          resolve();
+        }
+      });
+
+      claude.on('error', (error) => {
+        console.error('Claude CLI spawn error:', error);
+        reject(error);
+      });
+    });
+
+    console.log('✅ Summary generated successfully');
 
     // Vrátit odpověď
     res.json({
@@ -44,11 +75,20 @@ app.post('/api/claude/summary', async (req, res) => {
       content: stdout.trim(),
     });
   } catch (error) {
-    console.error('Error calling Claude CLI:', error);
+    console.error('❌ Error calling Claude CLI:', error);
     res.status(500).json({
       error: 'Failed to generate summary',
       details: error.message,
     });
+  } finally {
+    // Vyčistit temporary soubor, pokud byl vytvořen
+    if (tempFile) {
+      try {
+        await unlink(tempFile);
+      } catch (err) {
+        // Ignorovat chyby při mazání temp souboru
+      }
+    }
   }
 });
 
