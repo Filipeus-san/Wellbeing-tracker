@@ -74,6 +74,13 @@
   background: rgba(102, 126, 234, 0.1);
 }
 
+.nav-button:disabled,
+.nav-button.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 /* Main Content */
 .app-main {
   flex: 1;

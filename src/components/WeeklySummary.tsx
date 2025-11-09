@@ -24,9 +24,10 @@ import './WeeklySummary.css';
 
 interface WeeklySummaryProps {
   onRefresh?: () => void;
+  onAiGeneratingChange?: (isGenerating: boolean) => void;
 }
 
-export const WeeklySummary = ({ onRefresh }: WeeklySummaryProps) => {
+export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummaryProps) => {
   const [summary, setSummary] = useState<WeeklySummaryType | null>(null);
   const [dailyScores, setDailyScores] = useState<DailyScore[]>([]);
   const [claudeSummary, setClaudeSummary] = useState<string | null>(null);
@@ -36,6 +37,13 @@ export const WeeklySummary = ({ onRefresh }: WeeklySummaryProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
+
+  // Propagovat loading stav nahoru
+  useEffect(() => {
+    if (onAiGeneratingChange) {
+      onAiGeneratingChange(isLoadingClaude);
+    }
+  }, [isLoadingClaude, onAiGeneratingChange]);
 
   // Načíst data při načtení komponenty nebo když se změní týden/refresh
   useEffect(() => {
@@ -262,8 +270,19 @@ export const WeeklySummary = ({ onRefresh }: WeeklySummaryProps) => {
           {claudeSummary ? (
             <div className="claude-summary">
               <div className="claude-content">{claudeSummary}</div>
-              <button className="regenerate-button" onClick={handleGenerateClaude}>
-                Vygenerovat nové shrnutí
+              <button
+                className="regenerate-button"
+                onClick={handleGenerateClaude}
+                disabled={isLoadingClaude}
+              >
+                {isLoadingClaude ? (
+                  <>
+                    <span className="spinner">⏳</span>
+                    Generuji...
+                  </>
+                ) : (
+                  'Vygenerovat nové shrnutí'
+                )}
               </button>
             </div>
           ) : (
@@ -274,7 +293,14 @@ export const WeeklySummary = ({ onRefresh }: WeeklySummaryProps) => {
                 onClick={handleGenerateClaude}
                 disabled={isLoadingClaude}
               >
-                {isLoadingClaude ? 'Generuji...' : 'Vygenerovat AI shrnutí'}
+                {isLoadingClaude ? (
+                  <>
+                    <span className="spinner">⏳</span>
+                    Generuji...
+                  </>
+                ) : (
+                  'Vygenerovat AI shrnutí'
+                )}
               </button>
               {claudeError && <div className="claude-error">{claudeError}</div>}
             </div>

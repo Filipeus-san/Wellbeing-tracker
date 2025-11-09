@@ -11,9 +11,10 @@ import './DailyQuestionnaire.css';
 interface DailyQuestionnaireProps {
   date: string;
   onComplete?: () => void;
+  onAiGeneratingChange?: (isGenerating: boolean) => void;
 }
 
-export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps) => {
+export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: DailyQuestionnaireProps) => {
   const [scores, setScores] = useState<Record<string, ScoreValue>>({});
   const [mood, setMood] = useState<MoodValue | undefined>(undefined);
   const [notes, setNotes] = useState('');
@@ -33,6 +34,13 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
     };
     loadSettings();
   }, []);
+
+  // Propagovat loading stav nahoru
+  useEffect(() => {
+    if (onAiGeneratingChange) {
+      onAiGeneratingChange(isGeneratingSummary);
+    }
+  }, [isGeneratingSummary, onAiGeneratingChange]);
 
   // Načíst existující data
   useEffect(() => {
@@ -300,11 +308,16 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
               onClick={handleGenerateSummary}
               disabled={isGeneratingSummary}
             >
-              {isGeneratingSummary
-                ? '🤖 Generuji...'
-                : aiSummary
-                ? '🔄 Vygenerovat znovu'
-                : '🤖 Vygenerovat AI shrnutí'}
+              {isGeneratingSummary ? (
+                <>
+                  <span className="spinner">⏳</span>
+                  Generuji...
+                </>
+              ) : aiSummary ? (
+                '🔄 Vygenerovat znovu'
+              ) : (
+                '🤖 Vygenerovat AI shrnutí'
+              )}
             </button>
           )}
         </div>

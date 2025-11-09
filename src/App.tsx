@@ -10,13 +10,20 @@ function App() {
   const [currentView, setCurrentView] = useState<View>('daily');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
 
   const handleRefresh = () => {
     setRefreshKey((prev) => prev + 1);
   };
 
   const handleViewWeeklySummary = async () => {
+    if (isAiGenerating) return; // Blokovat změnu při generování
     setCurrentView('weekly');
+  };
+
+  const handleViewChange = (view: View) => {
+    if (isAiGenerating) return; // Blokovat změnu při generování
+    setCurrentView(view);
   };
 
   return (
@@ -32,20 +39,23 @@ function App() {
       {/* Navigation */}
       <nav className="app-nav">
         <button
-          className={`nav-button ${currentView === 'daily' ? 'active' : ''}`}
-          onClick={() => setCurrentView('daily')}
+          className={`nav-button ${currentView === 'daily' ? 'active' : ''} ${isAiGenerating ? 'disabled' : ''}`}
+          onClick={() => handleViewChange('daily')}
+          disabled={isAiGenerating}
         >
           📝 Denní dotazník
         </button>
         <button
-          className={`nav-button ${currentView === 'weekly' ? 'active' : ''}`}
+          className={`nav-button ${currentView === 'weekly' ? 'active' : ''} ${isAiGenerating ? 'disabled' : ''}`}
           onClick={handleViewWeeklySummary}
+          disabled={isAiGenerating}
         >
           📊 Týdenní shrnutí
         </button>
         <button
-          className={`nav-button ${currentView === 'settings' ? 'active' : ''}`}
-          onClick={() => setCurrentView('settings')}
+          className={`nav-button ${currentView === 'settings' ? 'active' : ''} ${isAiGenerating ? 'disabled' : ''}`}
+          onClick={() => handleViewChange('settings')}
+          disabled={isAiGenerating}
         >
           ⚙️ Nastavení
         </button>
@@ -66,13 +76,22 @@ function App() {
                 className="date-input"
               />
             </div>
-            <DailyQuestionnaire key={selectedDate} date={selectedDate} onComplete={handleRefresh} />
+            <DailyQuestionnaire
+              key={selectedDate}
+              date={selectedDate}
+              onComplete={handleRefresh}
+              onAiGeneratingChange={setIsAiGenerating}
+            />
           </div>
         )}
 
         {currentView === 'weekly' && (
           <div className="view-container">
-            <WeeklySummary key={refreshKey} onRefresh={handleRefresh} />
+            <WeeklySummary
+              key={refreshKey}
+              onRefresh={handleRefresh}
+              onAiGeneratingChange={setIsAiGenerating}
+            />
           </div>
         )}
 
