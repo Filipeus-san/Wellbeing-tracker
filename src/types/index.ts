@@ -172,11 +172,13 @@ export interface MicroAction {
 }
 
 export type AIProvider = 'claude' | 'codex';
+export type Language = 'cs' | 'en';
 
 export interface AppSettings {
   claudeApiKey?: string;
   enableClaudeIntegration: boolean;
   aiProvider?: AIProvider; // claude nebo codex
+  language?: Language; // Jazyk aplikace
 }
 
 // Pomocné typy pro výpočty

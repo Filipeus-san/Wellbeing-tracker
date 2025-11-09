@@ -17,7 +17,8 @@ export const generateClaudeSummary = async (
   }
 
   // Připravit kontext pro AI
-  const prompt = buildWeeklySummaryPrompt(weeklySummary, dailyScores);
+  const userLanguage = settings.language || 'cs';
+  const prompt = buildWeeklySummaryPrompt(weeklySummary, dailyScores, userLanguage);
 
   try {
     if (!window.electronAPI) {
@@ -51,7 +52,8 @@ export const generateDailySummary = async (dailyScore: DailyScore): Promise<stri
     throw new Error('AI integrace není zapnutá');
   }
 
-  const prompt = buildDailySummaryPrompt(dailyScore);
+  const userLanguage = settings.language || 'cs';
+  const prompt = buildDailySummaryPrompt(dailyScore, userLanguage);
 
   try {
     if (!window.electronAPI) {
@@ -80,7 +82,8 @@ export const generateDailySummary = async (dailyScore: DailyScore): Promise<stri
  */
 const buildWeeklySummaryPrompt = (
   weeklySummary: WeeklySummary,
-  dailyScores: DailyScore[]
+  dailyScores: DailyScore[],
+  language: string = 'cs'
 ): string => {
   const { averages, criticalAreas, microActions } = weeklySummary;
 
@@ -144,36 +147,42 @@ const buildWeeklySummaryPrompt = (
     .filter(Boolean)
     .join('\n');
 
-  return `Jsi wellbeing kouč. Na základě týdenních dat uživatele vytvoř stručné, motivující a personalizované shrnutí (max 300 slov).
+  const languageInstruction = language === 'en'
+    ? 'IMPORTANT: Respond in ENGLISH.'
+    : 'DŮLEŽITÉ: Odpověz v ČEŠTINĚ.';
 
-TÝDENNÍ PRŮMĚRNÁ SKÓRE (1-5):
+  return `${languageInstruction}
+
+You are a wellbeing coach. Based on the user's weekly data, create a brief, motivating, and personalized summary (max 300 words).
+
+WEEKLY AVERAGE SCORES (1-5):
 ${scoreDetails}
 
-KRITICKÉ OBLASTI (nízké skóre):
-${criticalDetails || 'Žádné kritické oblasti'}
+CRITICAL AREAS (low scores):
+${criticalDetails || 'No critical areas'}
 
-DUŠEVNÍ STAV V PRŮBĚHU TÝDNE:
-${mentalHealthDetails || 'Žádná data o duševním stavu'}
+MENTAL STATE THROUGHOUT THE WEEK:
+${mentalHealthDetails || 'No mental state data'}
 
-DOPORUČENÉ MIKRO-AKCE:
+RECOMMENDED MICRO-ACTIONS:
 ${actionsDetails}
 
-POZNÁMKY UŽIVATELE:
-${notesDetails || 'Žádné poznámky'}
+USER NOTES:
+${notesDetails || 'No notes'}
 
-Vytvoř shrnutí, které:
-1. Oceň pozitivní oblasti a pokrok
-2. Delikatně upozorni na kritické oblasti
-3. Věnuj zvláštní pozornost duševnímu stavu a emocím (nálada, úzkost, deprese, radost, vztek, vděčnost) - pokud vidíš vysoké hodnoty úzkosti/deprese/vzteku, laskavě to zohledni; pokud vidíš vysoké hodnoty radosti/vděčnosti, oceň to
-4. Dej konkrétní, motivující doporučení
-5. Měj empatický a povzbuzující tón
-6. Buď stručný a čtivý`;
+Create a summary that:
+1. Acknowledges positive areas and progress
+2. Gently points out critical areas
+3. Pays special attention to mental state and emotions (mood, anxiety, depression, joy, anger, gratitude) - if you see high values of anxiety/depression/anger, address it kindly; if you see high values of joy/gratitude, acknowledge it
+4. Provides specific, motivating recommendations
+5. Has an empathetic and encouraging tone
+6. Is concise and readable`;
 };
 
 /**
  * Sestaví prompt pro denní shrnutí
  */
-const buildDailySummaryPrompt = (dailyScore: DailyScore): string => {
+const buildDailySummaryPrompt = (dailyScore: DailyScore, language: string = 'cs'): string => {
   const scoreDetails = Object.entries(dailyScore.scores)
     .map(([questionId, score]) => {
       const question = questions.find((q) => q.id === questionId);
@@ -220,25 +229,31 @@ const buildDailySummaryPrompt = (dailyScore: DailyScore): string => {
     ? mentalHealthParts.join('\n')
     : 'Žádná data o duševním stavu a emocích';
 
-  return `Jsi wellbeing kouč. Na základě denních dat uživatele vytvoř krátký, motivující komentář (max 200 slov).
+  const languageInstruction = language === 'en'
+    ? 'IMPORTANT: Respond in ENGLISH.'
+    : 'DŮLEŽITÉ: Odpověz v ČEŠTINĚ.';
 
-DENNÍ SKÓRE (1-5):
+  return `${languageInstruction}
+
+You are a wellbeing coach. Based on the user's daily data, create a short, motivating comment (max 200 words).
+
+DAILY SCORES (1-5):
 ${scoreDetails}
 
-DUŠEVNÍ STAV:
+MENTAL STATE:
 ${mentalHealthDetails}
 
-POZNÁMKY:
-${dailyScore.notes || 'Žádné poznámky'}
+NOTES:
+${dailyScore.notes || 'No notes'}
 
-${microActionsDetails ? `DOPORUČENÉ MIKRO-AKCE NA ZÍTŘEK:\n${microActionsDetails}\n` : ''}
-Vytvoř stručný komentář, který:
-1. Oceň to, co šlo dobře (konkrétní oblasti s vysokým skóre)
-2. Jemně upozorni na oblasti pro zlepšení (nízké skóre)
-3. Věnuj zvláštní pozornost duševnímu stavu a emocím (nálada, úzkost, deprese, radost, vztek, vděčnost) - pokud vidíš vysoké hodnoty úzkosti/deprese/vzteku, laskavě to zohledni; pokud vidíš vysoké hodnoty radosti/vděčnosti, oceň to
-4. Vyber 2-3 nejdůležitější mikro-akce a zdůrazni je jako konkrétní kroky na zítřek
-5. Měj empatický, povzbuzující a motivační tón
-6. Buď stručný ale inspirující`;
+${microActionsDetails ? `RECOMMENDED MICRO-ACTIONS FOR TOMORROW:\n${microActionsDetails}\n` : ''}
+Create a concise comment that:
+1. Acknowledges what went well (specific areas with high scores)
+2. Gently points out areas for improvement (low scores)
+3. Pays special attention to mental state and emotions (mood, anxiety, depression, joy, anger, gratitude) - if you see high values of anxiety/depression/anger, address it kindly; if you see high values of joy/gratitude, acknowledge it
+4. Highlights 2-3 most important micro-actions as concrete steps for tomorrow
+5. Has an empathetic, encouraging, and motivational tone
+6. Is concise but inspiring`;
 };
 
 /**

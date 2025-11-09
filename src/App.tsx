@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { DailyQuestionnaire } from './components/DailyQuestionnaire';
 import { WeeklySummary } from './components/WeeklySummary';
 import { Settings } from './components/Settings';
+import { LanguageProvider } from './i18n/LanguageContext';
 import './App.css';
 
 type View = 'daily' | 'weekly' | 'settings';
@@ -27,14 +28,15 @@ function App() {
   };
 
   return (
-    <div className="app">
-      {/* Header */}
-      <header className="app-header">
-        <div className="header-content">
-          <h1 className="app-title">🌟 Wellbeing Tracker</h1>
-          <p className="app-subtitle">Sleduj svoji duševní pohodu pomocí Maslow, SDT a PERMA</p>
-        </div>
-      </header>
+    <LanguageProvider>
+      <div className="app">
+        {/* Header */}
+        <header className="app-header">
+          <div className="header-content">
+            <h1 className="app-title">🌟 Wellbeing Tracker</h1>
+            <p className="app-subtitle">Sleduj svoji duševní pohodu pomocí Maslow, SDT a PERMA</p>
+          </div>
+        </header>
 
       {/* Navigation */}
       <nav className="app-nav">
@@ -102,13 +104,14 @@ function App() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="app-footer">
-        <p>
-          Vytvořeno s ❤️ pro podporu duševní pohody | Data ukládána lokálně
-        </p>
-      </footer>
-    </div>
+        {/* Footer */}
+        <footer className="app-footer">
+          <p>
+            Vytvořeno s ❤️ pro podporu duševní pohody | Data ukládána lokálně
+          </p>
+        </footer>
+      </div>
+    </LanguageProvider>
   );
 }
 

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getSettings, saveSettings, exportData, importData, clearAllData } from '../utils/storage';
 import { testAiCLI } from '../utils/claudeApi';
-import type { AppSettings } from '../types';
+import type { AppSettings, Language } from '../types';
+import { useLanguage } from '../i18n/LanguageContext';
 import './Settings.css';
 
 interface SettingsProps {
@@ -9,9 +10,11 @@ interface SettingsProps {
 }
 
 export const Settings = ({ onUpdate }: SettingsProps) => {
+  const { language, setLanguage, t } = useLanguage();
   const [settings, setSettings] = useState<AppSettings>({
     enableClaudeIntegration: false,
-    aiProvider: 'claude'
+    aiProvider: 'claude',
+    language: language
   });
   const [isTestingCLI, setIsTestingCLI] = useState(false);
   const [cliTestResult, setCliTestResult] = useState<'success' | 'error' | null>(null);
@@ -26,11 +29,17 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
     loadSettings();
   }, []);
 
+  const handleLanguageChange = async (newLang: Language) => {
+    setSettings({ ...settings, language: newLang });
+    setLanguage(newLang);
+  };
+
   const handleSaveSettings = async () => {
     try {
       const newSettings: AppSettings = {
         enableClaudeIntegration: settings.enableClaudeIntegration,
         aiProvider: settings.aiProvider || 'claude',
+        language: settings.language,
       };
 
       await saveSettings(newSettings);
@@ -41,7 +50,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
       if (onUpdate) onUpdate();
     } catch (error) {
       console.error('Error saving settings:', error);
-      alert('Chyba při ukládání nastavení.');
+      alert('Error saving settings');
     }
   };
 
@@ -121,11 +130,39 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
 
   return (
     <div className="settings">
-      <h2>Nastavení</h2>
+      <h2>{t.settings.title}</h2>
+
+      {/* Language Settings */}
+      <div className="settings-section">
+        <h3>🌍 {t.settings.language}</h3>
+        <p className="section-description">
+          {t.settings.selectLanguage}
+        </p>
+
+        <div className="setting-item">
+          <label htmlFor="language-select">{t.settings.language}:</label>
+          <select
+            id="language-select"
+            value={settings.language || language}
+            onChange={(e) => handleLanguageChange(e.target.value as Language)}
+            style={{
+              marginLeft: '10px',
+              padding: '8px 12px',
+              borderRadius: '6px',
+              border: '1px solid #d1d5db',
+              fontSize: '14px',
+              backgroundColor: 'white',
+            }}
+          >
+            <option value="cs">{t.settings.czech}</option>
+            <option value="en">{t.settings.english}</option>
+          </select>
+        </div>
+      </div>
 
       {/* AI Integration */}
       <div className="settings-section">
-        <h3>🤖 AI Integrace</h3>
+        <h3>🤖 {t.settings.aiIntegration}</h3>
         <p className="section-description">
           Zapněte integraci s AI pro personalizovaná shrnutí a doporučení.
         </p>
