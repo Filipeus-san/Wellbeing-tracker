@@ -18,6 +18,12 @@ export interface Translations {
     year: string;
   };
 
+  // App
+  app: {
+    subtitle: string;
+    footer: string;
+  };
+
   // Navigation
   nav: {
     dailyQuestionnaire: string;
@@ -237,6 +243,10 @@ export const translations: Record<Language, Translations> = {
       month: 'Měsíc',
       year: 'Rok',
     },
+    app: {
+      subtitle: 'Sleduj svoji duševní pohodu pomocí Maslow, SDT a PERMA',
+      footer: 'Vytvořeno s ❤️ pro podporu duševní pohody | Data ukládána lokálně',
+    },
     nav: {
       dailyQuestionnaire: 'Denní dotazník',
       weeklySummary: 'Týdenní shrnutí',
@@ -426,6 +436,10 @@ export const translations: Record<Language, Translations> = {
       week: 'Week',
       month: 'Month',
       year: 'Year',
+    },
+    app: {
+      subtitle: 'Track your mental wellbeing with Maslow, SDT and PERMA',
+      footer: 'Created with ❤️ for mental wellbeing support | Data stored locally',
     },
     nav: {
       dailyQuestionnaire: 'Daily Questionnaire',

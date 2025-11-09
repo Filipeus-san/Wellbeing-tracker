@@ -34,7 +34,7 @@ function AppContent() {
       <header className="app-header">
         <div className="header-content">
           <h1 className="app-title">🌟 Wellbeing Tracker</h1>
-          <p className="app-subtitle">Track your mental wellbeing with Maslow, SDT and PERMA</p>
+          <p className="app-subtitle">{t.app.subtitle}</p>
         </div>
       </header>
 
@@ -107,7 +107,7 @@ function AppContent() {
       {/* Footer */}
       <footer className="app-footer">
         <p>
-          Created with ❤️ for mental wellbeing support | Data stored locally
+          {t.app.footer}
         </p>
       </footer>
     </div>
