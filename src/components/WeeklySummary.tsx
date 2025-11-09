@@ -279,6 +279,22 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         </div>
       </div>
 
+      {/* Mikro-akce - zobrazit pokud existují */}
+      {summary.microActions && summary.microActions.length > 0 && (
+        <div className="micro-actions-section">
+          <h3>💡 {t.weekly.recommendedMicroActions}</h3>
+          <div className="micro-actions-grid">
+            {summary.microActions.map((action) => (
+              <div key={action.id} className={`micro-action-card priority-${action.priority}`}>
+                <div className="action-priority">{action.priority}</div>
+                <h4>{getMicroActionText(action.id, 'title', language) || action.title}</h4>
+                <p>{getMicroActionText(action.id, 'description', language) || action.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Claude AI Shrnutí - zobrazit pouze pokud jsou data */}
       {canUseClaude && dailyScores.length > 0 && (
         <div className="claude-section">
@@ -616,22 +632,6 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
               <Bar dataKey="score" fill="#ef4444" />
             </BarChart>
           </ResponsiveContainer>
-        </div>
-      )}
-
-      {/* Mikro-akce - zobrazit pokud existují */}
-      {summary.microActions && summary.microActions.length > 0 && (
-        <div className="micro-actions-section">
-          <h3>💡 {t.weekly.recommendedMicroActions}</h3>
-          <div className="micro-actions-grid">
-            {summary.microActions.map((action) => (
-              <div key={action.id} className={`micro-action-card priority-${action.priority}`}>
-                <div className="action-priority">{action.priority}</div>
-                <h4>{getMicroActionText(action.id, 'title', language) || action.title}</h4>
-                <p>{getMicroActionText(action.id, 'description', language) || action.description}</p>
-              </div>
-            ))}
-          </div>
         </div>
       )}
 
