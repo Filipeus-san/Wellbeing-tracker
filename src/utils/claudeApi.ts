@@ -4,7 +4,7 @@ import { getSettings } from './storage';
 import { MOODS, getAnxietyLabel, getDepressionLabel, getJoyLabel, getAngerLabel, getGratitudeLabel } from '../types';
 
 /**
- * Volání AI CLI (Claude nebo Codex) přes Electron IPC
+ * Volání AI CLI (Claude, Codex nebo Copilot) přes Electron IPC
  */
 export const generateClaudeSummary = async (
   weeklySummary: WeeklySummary,
@@ -27,12 +27,19 @@ export const generateClaudeSummary = async (
 
     // Vybrat správný CLI podle nastavení
     const aiProvider = settings.aiProvider || 'claude';
-    const result = aiProvider === 'codex'
-      ? await window.electronAPI.codexSummary(prompt)
-      : await window.electronAPI.claudeSummary(prompt);
+    let result;
+
+    if (aiProvider === 'codex') {
+      result = await window.electronAPI.codexSummary(prompt);
+    } else if (aiProvider === 'copilot') {
+      result = await window.electronAPI.copilotSummary(prompt);
+    } else {
+      result = await window.electronAPI.claudeSummary(prompt);
+    }
 
     if (!result.success) {
-      throw new Error(result.error || `Chyba při volání ${aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI`);
+      const providerName = aiProvider === 'codex' ? 'Codex' : aiProvider === 'copilot' ? 'Copilot' : 'Claude';
+      throw new Error(result.error || `Chyba při volání ${providerName} CLI`);
     }
 
     return result.content || '';
@@ -43,7 +50,7 @@ export const generateClaudeSummary = async (
 };
 
 /**
- * Vygeneruje denní shrnutí pomocí AI (Claude nebo Codex)
+ * Vygeneruje denní shrnutí pomocí AI (Claude, Codex nebo Copilot)
  */
 export const generateDailySummary = async (dailyScore: DailyScore): Promise<string> => {
   const settings = await getSettings();
@@ -62,12 +69,19 @@ export const generateDailySummary = async (dailyScore: DailyScore): Promise<stri
 
     // Vybrat správný CLI podle nastavení
     const aiProvider = settings.aiProvider || 'claude';
-    const result = aiProvider === 'codex'
-      ? await window.electronAPI.codexSummary(prompt)
-      : await window.electronAPI.claudeSummary(prompt);
+    let result;
+
+    if (aiProvider === 'codex') {
+      result = await window.electronAPI.codexSummary(prompt);
+    } else if (aiProvider === 'copilot') {
+      result = await window.electronAPI.copilotSummary(prompt);
+    } else {
+      result = await window.electronAPI.claudeSummary(prompt);
+    }
 
     if (!result.success) {
-      throw new Error(result.error || `Chyba při volání ${aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI`);
+      const providerName = aiProvider === 'codex' ? 'Codex' : aiProvider === 'copilot' ? 'Copilot' : 'Claude';
+      throw new Error(result.error || `Chyba při volání ${providerName} CLI`);
     }
 
     return result.content || '';
@@ -257,9 +271,9 @@ Create a concise comment that:
 };
 
 /**
- * Testuje, jestli AI CLI (Claude nebo Codex) je dostupné
+ * Testuje, jestli AI CLI (Claude, Codex nebo Copilot) je dostupné
  */
-export const testAiCLI = async (provider?: 'claude' | 'codex'): Promise<boolean> => {
+export const testAiCLI = async (provider?: 'claude' | 'codex' | 'copilot'): Promise<boolean> => {
   try {
     if (!window.electronAPI) {
       return false;
@@ -271,9 +285,14 @@ export const testAiCLI = async (provider?: 'claude' | 'codex'): Promise<boolean>
       provider = settings.aiProvider || 'claude';
     }
 
-    const result = provider === 'codex'
-      ? await window.electronAPI.codexTest()
-      : await window.electronAPI.claudeTest();
+    let result;
+    if (provider === 'codex') {
+      result = await window.electronAPI.codexTest();
+    } else if (provider === 'copilot') {
+      result = await window.electronAPI.copilotTest();
+    } else {
+      result = await window.electronAPI.claudeTest();
+    }
 
     return result.success === true;
   } catch (error) {

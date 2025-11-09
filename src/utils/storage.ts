@@ -17,6 +17,8 @@ interface ElectronAPI {
   claudeTest: () => Promise<{ success: boolean; version?: string; message?: string; error?: string; details?: string }>;
   codexSummary: (prompt: string) => Promise<{ success: boolean; content?: string; error?: string; details?: string }>;
   codexTest: () => Promise<{ success: boolean; version?: string; message?: string; error?: string; details?: string }>;
+  copilotSummary: (prompt: string) => Promise<{ success: boolean; content?: string; error?: string; details?: string }>;
+  copilotTest: () => Promise<{ success: boolean; version?: string; message?: string; error?: string; details?: string }>;
 }
 
 declare global {

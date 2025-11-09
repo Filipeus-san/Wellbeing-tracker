@@ -31,6 +31,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Codex CLI
   codexSummary: (prompt) => ipcRenderer.invoke('codex-summary', prompt),
   codexTest: () => ipcRenderer.invoke('codex-test'),
+
+  // Copilot CLI
+  copilotSummary: (prompt) => ipcRenderer.invoke('copilot-summary', prompt),
+  copilotTest: () => ipcRenderer.invoke('copilot-test'),
 });
 
 console.log('✅ Preload script loaded, electronAPI exposed');

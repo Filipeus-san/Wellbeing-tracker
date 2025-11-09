@@ -462,3 +462,112 @@ ipcMain.handle('codex-test', async () => {
     };
   }
 });
+
+// ==================== COPILOT CLI ====================
+
+ipcMain.handle('copilot-summary', async (event, prompt) => {
+  try {
+    if (!prompt) {
+      throw new Error('Prompt is required');
+    }
+
+    console.log('📝 Generating summary with Copilot CLI, prompt length:', prompt.length);
+
+    const copilot = spawn('gh', ['copilot', 'suggest', '-t', 'shell'], {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      timeout: 60000,
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    copilot.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    copilot.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    // Poslat prompt přes stdin
+    copilot.stdin.write(prompt);
+    copilot.stdin.end();
+
+    // Počkat na dokončení
+    await new Promise((resolve, reject) => {
+      copilot.on('close', (code) => {
+        if (code !== 0 && !stdout) {
+          console.error('Copilot CLI error:', stderr);
+          reject(new Error(`Copilot CLI exited with code ${code}: ${stderr}`));
+        } else {
+          resolve();
+        }
+      });
+
+      copilot.on('error', (error) => {
+        console.error('Copilot CLI spawn error:', error);
+        reject(error);
+      });
+    });
+
+    console.log('✅ Summary generated successfully with Copilot');
+
+    return {
+      success: true,
+      content: stdout.trim(),
+    };
+  } catch (error) {
+    console.error('❌ Error calling Copilot CLI:', error);
+    return {
+      success: false,
+      error: 'Failed to generate summary with Copilot',
+      details: error.message,
+    };
+  }
+});
+
+ipcMain.handle('copilot-test', async () => {
+  try {
+    const copilot = spawn('gh', ['copilot', '--version'], {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      timeout: 5000,
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    copilot.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    copilot.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    await new Promise((resolve, reject) => {
+      copilot.on('close', (code) => {
+        if (code !== 0) {
+          reject(new Error(`Copilot CLI exited with code ${code}: ${stderr}`));
+        } else {
+          resolve();
+        }
+      });
+
+      copilot.on('error', (error) => {
+        reject(error);
+      });
+    });
+
+    return {
+      success: true,
+      version: stdout.trim(),
+      message: 'Copilot CLI is available',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: 'Copilot CLI is not available',
+      details: error.message,
+    };
+  }
+});

@@ -97,6 +97,7 @@ export interface Translations {
     selectAiProvider: string;
     claude: string;
     codex: string;
+    copilot: string;
     testConnection: string;
     testing: string;
     connectionSuccessful: string;
@@ -105,6 +106,7 @@ export interface Translations {
     cliUsesLocal: string;
     installClaude: string;
     installCodex: string;
+    installCopilot: string;
     dataManagement: string;
     exportData: string;
     importData: string;
@@ -329,6 +331,7 @@ export const translations: Record<Language, Translations> = {
       selectAiProvider: 'Vyberte AI poskytovatele',
       claude: 'Claude CLI (Anthropic)',
       codex: 'Codex CLI (OpenAI)',
+      copilot: 'GitHub Copilot CLI',
       testConnection: 'Otestovat připojení',
       testing: 'Testuji...',
       connectionSuccessful: 'CLI je dostupné',
@@ -337,6 +340,7 @@ export const translations: Record<Language, Translations> = {
       cliUsesLocal: 'Aplikace používá lokálně nainstalovaný',
       installClaude: 'Pokud Claude CLI není nainstalované, nainstalujte ho pomocí',
       installCodex: 'Pokud Codex CLI není nainstalované, nainstalujte ho pomocí',
+      installCopilot: 'Pokud GitHub Copilot CLI není nainstalované, nainstalujte ho pomocí',
       dataManagement: 'Správa dat',
       exportData: 'Exportovat data (JSON)',
       importData: 'Importovat data',
@@ -539,6 +543,7 @@ export const translations: Record<Language, Translations> = {
       selectAiProvider: 'Select AI Provider',
       claude: 'Claude CLI (Anthropic)',
       codex: 'Codex CLI (OpenAI)',
+      copilot: 'GitHub Copilot CLI',
       testConnection: 'Test Connection',
       testing: 'Testing...',
       connectionSuccessful: 'CLI is available',
@@ -547,6 +552,7 @@ export const translations: Record<Language, Translations> = {
       cliUsesLocal: 'The application uses locally installed',
       installClaude: 'If Claude CLI is not installed, install it using',
       installCodex: 'If Codex CLI is not installed, install it using',
+      installCopilot: 'If GitHub Copilot CLI is not installed, install it using',
       dataManagement: 'Data Management',
       exportData: 'Export Data (JSON)',
       importData: 'Import Data',

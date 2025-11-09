@@ -184,7 +184,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
                 id="ai-provider"
                 value={settings.aiProvider || 'claude'}
                 onChange={(e) =>
-                  setSettings({ ...settings, aiProvider: e.target.value as 'claude' | 'codex' })
+                  setSettings({ ...settings, aiProvider: e.target.value as 'claude' | 'codex' | 'copilot' })
                 }
                 style={{
                   marginLeft: '10px',
@@ -197,12 +197,17 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
               >
                 <option value="claude">{t.settings.claude}</option>
                 <option value="codex">{t.settings.codex}</option>
+                <option value="copilot">{t.settings.copilot}</option>
               </select>
             </div>
 
             <p className="help-text">
               {t.settings.cliUsesLocal}{' '}
-              <strong>{settings.aiProvider === 'codex' ? t.settings.codex : t.settings.claude}</strong> {language === 'cs' ? 'volaný přímo z Electronu' : 'called directly from Electron'}.
+              <strong>
+                {settings.aiProvider === 'codex' ? t.settings.codex :
+                 settings.aiProvider === 'copilot' ? t.settings.copilot :
+                 t.settings.claude}
+              </strong> {language === 'cs' ? 'volaný přímo z Electronu' : 'called directly from Electron'}.
             </p>
 
             <div className="api-key-actions">
@@ -211,17 +216,17 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
                 onClick={handleTestCLI}
                 disabled={isTestingCLI}
               >
-                {isTestingCLI ? t.settings.testing : `${language === 'cs' ? 'Test' : 'Test'} ${settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI`}
+                {isTestingCLI ? t.settings.testing : `${language === 'cs' ? 'Test' : 'Test'} ${settings.aiProvider === 'codex' ? 'Codex' : settings.aiProvider === 'copilot' ? 'Copilot' : 'Claude'} CLI`}
               </button>
 
               {cliTestResult === 'success' && (
                 <span className="test-result success">
-                  ✓ {settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} {t.settings.connectionSuccessful}
+                  ✓ {settings.aiProvider === 'codex' ? 'Codex' : settings.aiProvider === 'copilot' ? 'Copilot' : 'Claude'} {t.settings.connectionSuccessful}
                 </span>
               )}
               {cliTestResult === 'error' && (
                 <span className="test-result error">
-                  ✗ {settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} {t.settings.connectionFailed} ({t.settings.cliNotAvailable} {settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI)
+                  ✗ {settings.aiProvider === 'codex' ? 'Codex' : settings.aiProvider === 'copilot' ? 'Copilot' : 'Claude'} {t.settings.connectionFailed} ({t.settings.cliNotAvailable} {settings.aiProvider === 'codex' ? 'Codex' : settings.aiProvider === 'copilot' ? 'Copilot' : 'Claude'} CLI)
                 </span>
               )}
             </div>
@@ -231,6 +236,11 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
                 <>
                   {t.settings.installCodex}:{' '}
                   <code>npm install -g @openai/codex-cli</code>
+                </>
+              ) : settings.aiProvider === 'copilot' ? (
+                <>
+                  {t.settings.installCopilot}:{' '}
+                  <code>gh extension install github/gh-copilot</code>
                 </>
               ) : (
                 <>

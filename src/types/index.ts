@@ -194,13 +194,13 @@ export interface MicroAction {
   priority: 'high' | 'medium' | 'low';
 }
 
-export type AIProvider = 'claude' | 'codex';
+export type AIProvider = 'claude' | 'codex' | 'copilot';
 export type Language = 'cs' | 'en';
 
 export interface AppSettings {
   claudeApiKey?: string;
   enableClaudeIntegration: boolean;
-  aiProvider?: AIProvider; // claude nebo codex
+  aiProvider?: AIProvider; // claude, codex nebo copilot
   language?: Language; // Jazyk aplikace
 }
 
