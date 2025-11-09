@@ -27,6 +27,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Claude CLI
   claudeSummary: (prompt) => ipcRenderer.invoke('claude-summary', prompt),
   claudeTest: () => ipcRenderer.invoke('claude-test'),
+
+  // Codex CLI
+  codexSummary: (prompt) => ipcRenderer.invoke('codex-summary', prompt),
+  codexTest: () => ipcRenderer.invoke('codex-test'),
 });
 
 console.log('✅ Preload script loaded, electronAPI exposed');

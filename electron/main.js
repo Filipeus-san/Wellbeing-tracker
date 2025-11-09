@@ -245,7 +245,7 @@ ipcMain.handle('clear-data', async () => {
   }
 });
 
-// ==================== CLAUDE CLI ====================
+// ==================== AI CLI (CLAUDE & CODEX) ====================
 
 ipcMain.handle('claude-summary', async (event, prompt) => {
   try {
@@ -253,7 +253,7 @@ ipcMain.handle('claude-summary', async (event, prompt) => {
       throw new Error('Prompt is required');
     }
 
-    console.log('📝 Generating summary, prompt length:', prompt.length);
+    console.log('📝 Generating summary with Claude CLI, prompt length:', prompt.length);
 
     const claude = spawn('claude', ['--print'], {
       stdio: ['pipe', 'pipe', 'pipe'],
@@ -292,7 +292,7 @@ ipcMain.handle('claude-summary', async (event, prompt) => {
       });
     });
 
-    console.log('✅ Summary generated successfully');
+    console.log('✅ Summary generated successfully with Claude');
 
     return {
       success: true,
@@ -349,6 +349,115 @@ ipcMain.handle('claude-test', async () => {
     return {
       success: false,
       error: 'Claude CLI is not available',
+      details: error.message,
+    };
+  }
+});
+
+// ==================== CODEX CLI ====================
+
+ipcMain.handle('codex-summary', async (event, prompt) => {
+  try {
+    if (!prompt) {
+      throw new Error('Prompt is required');
+    }
+
+    console.log('📝 Generating summary with Codex CLI, prompt length:', prompt.length);
+
+    const codex = spawn('codex', ['-'], {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      timeout: 60000,
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    codex.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    codex.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    // Poslat prompt přes stdin
+    codex.stdin.write(prompt);
+    codex.stdin.end();
+
+    // Počkat na dokončení
+    await new Promise((resolve, reject) => {
+      codex.on('close', (code) => {
+        if (code !== 0 && !stdout) {
+          console.error('Codex CLI error:', stderr);
+          reject(new Error(`Codex CLI exited with code ${code}: ${stderr}`));
+        } else {
+          resolve();
+        }
+      });
+
+      codex.on('error', (error) => {
+        console.error('Codex CLI spawn error:', error);
+        reject(error);
+      });
+    });
+
+    console.log('✅ Summary generated successfully with Codex');
+
+    return {
+      success: true,
+      content: stdout.trim(),
+    };
+  } catch (error) {
+    console.error('❌ Error calling Codex CLI:', error);
+    return {
+      success: false,
+      error: 'Failed to generate summary with Codex',
+      details: error.message,
+    };
+  }
+});
+
+ipcMain.handle('codex-test', async () => {
+  try {
+    const codex = spawn('codex', ['--version'], {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      timeout: 5000,
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    codex.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    codex.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    await new Promise((resolve, reject) => {
+      codex.on('close', (code) => {
+        if (code !== 0) {
+          reject(new Error(`Codex CLI exited with code ${code}: ${stderr}`));
+        } else {
+          resolve();
+        }
+      });
+
+      codex.on('error', (error) => {
+        reject(error);
+      });
+    });
+
+    return {
+      success: true,
+      version: stdout.trim(),
+      message: 'Codex CLI is available',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: 'Codex CLI is not available',
       details: error.message,
     };
   }

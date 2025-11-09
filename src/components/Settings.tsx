@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getSettings, saveSettings, exportData, importData, clearAllData } from '../utils/storage';
-import { testClaudeApiKey } from '../utils/claudeApi';
+import { testAiCLI } from '../utils/claudeApi';
 import type { AppSettings } from '../types';
 import './Settings.css';
 
@@ -9,7 +9,10 @@ interface SettingsProps {
 }
 
 export const Settings = ({ onUpdate }: SettingsProps) => {
-  const [settings, setSettings] = useState<AppSettings>({ enableClaudeIntegration: false });
+  const [settings, setSettings] = useState<AppSettings>({
+    enableClaudeIntegration: false,
+    aiProvider: 'claude'
+  });
   const [isTestingCLI, setIsTestingCLI] = useState(false);
   const [cliTestResult, setCliTestResult] = useState<'success' | 'error' | null>(null);
   const [saveMessage, setSaveMessage] = useState(false);
@@ -27,6 +30,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
     try {
       const newSettings: AppSettings = {
         enableClaudeIntegration: settings.enableClaudeIntegration,
+        aiProvider: settings.aiProvider || 'claude',
       };
 
       await saveSettings(newSettings);
@@ -46,7 +50,9 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
     setCliTestResult(null);
 
     try {
-      const isValid = await testClaudeApiKey();
+      // Testovat aktuálně vybraného poskytovatele
+      const provider = settings.aiProvider || 'claude';
+      const isValid = await testAiCLI(provider);
       setCliTestResult(isValid ? 'success' : 'error');
     } catch (error) {
       setCliTestResult('error');
@@ -117,12 +123,11 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
     <div className="settings">
       <h2>Nastavení</h2>
 
-      {/* Claude CLI Integration */}
+      {/* AI Integration */}
       <div className="settings-section">
-        <h3>🤖 Claude AI Integrace</h3>
+        <h3>🤖 AI Integrace</h3>
         <p className="section-description">
-          Zapněte integraci s lokálně nainstalovaným Claude CLI pro personalizovaná shrnutí a
-          doporučení.
+          Zapněte integraci s AI pro personalizovaná shrnutí a doporučení.
         </p>
 
         <div className="setting-item">
@@ -134,14 +139,37 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
                 setSettings({ ...settings, enableClaudeIntegration: e.target.checked })
               }
             />
-            Povolit Claude AI integraci
+            Povolit AI integraci
           </label>
         </div>
 
         {settings.enableClaudeIntegration && (
           <div className="api-key-section">
+            <div className="setting-item">
+              <label htmlFor="ai-provider">Vyberte AI poskytovatele:</label>
+              <select
+                id="ai-provider"
+                value={settings.aiProvider || 'claude'}
+                onChange={(e) =>
+                  setSettings({ ...settings, aiProvider: e.target.value as 'claude' | 'codex' })
+                }
+                style={{
+                  marginLeft: '10px',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #d1d5db',
+                  fontSize: '14px',
+                  backgroundColor: 'white',
+                }}
+              >
+                <option value="claude">Claude CLI (Anthropic)</option>
+                <option value="codex">Codex CLI (OpenAI)</option>
+              </select>
+            </div>
+
             <p className="help-text">
-              Aplikace používá lokálně nainstalovaný <strong>Claude CLI</strong> volaný přímo z Electronu.
+              Aplikace používá lokálně nainstalovaný{' '}
+              <strong>{settings.aiProvider === 'codex' ? 'Codex CLI' : 'Claude CLI'}</strong> volaný přímo z Electronu.
             </p>
 
             <div className="api-key-actions">
@@ -150,22 +178,33 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
                 onClick={handleTestCLI}
                 disabled={isTestingCLI}
               >
-                {isTestingCLI ? 'Testuji...' : 'Test Claude CLI'}
+                {isTestingCLI ? 'Testuji...' : `Test ${settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI`}
               </button>
 
               {cliTestResult === 'success' && (
-                <span className="test-result success">✓ Claude CLI je dostupné</span>
+                <span className="test-result success">
+                  ✓ {settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI je dostupné
+                </span>
               )}
               {cliTestResult === 'error' && (
                 <span className="test-result error">
-                  ✗ Claude CLI není dostupné (nainstalujte Claude CLI)
+                  ✗ {settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI není dostupné (nainstalujte {settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI)
                 </span>
               )}
             </div>
 
             <p className="help-text">
-              Pokud Claude CLI není nainstalované, nainstalujte ho pomocí:{' '}
-              <code>npm install -g @anthropic-ai/claude-cli</code>
+              {settings.aiProvider === 'codex' ? (
+                <>
+                  Pokud Codex CLI není nainstalované, nainstalujte ho pomocí:{' '}
+                  <code>npm install -g @openai/codex-cli</code>
+                </>
+              ) : (
+                <>
+                  Pokud Claude CLI není nainstalované, nainstalujte ho pomocí:{' '}
+                  <code>npm install -g @anthropic-ai/claude-cli</code>
+                </>
+              )}
             </p>
           </div>
         )}

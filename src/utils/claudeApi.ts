@@ -3,7 +3,7 @@ import { questions } from '../data/questions';
 import { getSettings } from './storage';
 
 /**
- * Volání Claude CLI přes Electron IPC
+ * Volání AI CLI (Claude nebo Codex) přes Electron IPC
  */
 export const generateClaudeSummary = async (
   weeklySummary: WeeklySummary,
@@ -12,10 +12,10 @@ export const generateClaudeSummary = async (
   const settings = await getSettings();
 
   if (!settings.enableClaudeIntegration) {
-    throw new Error('Claude integrace není zapnutá');
+    throw new Error('AI integrace není zapnutá');
   }
 
-  // Připravit kontext pro Claude
+  // Připravit kontext pro AI
   const prompt = buildWeeklySummaryPrompt(weeklySummary, dailyScores);
 
   try {
@@ -23,27 +23,31 @@ export const generateClaudeSummary = async (
       throw new Error('Electron API is not available');
     }
 
-    const result = await window.electronAPI.claudeSummary(prompt);
+    // Vybrat správný CLI podle nastavení
+    const aiProvider = settings.aiProvider || 'claude';
+    const result = aiProvider === 'codex'
+      ? await window.electronAPI.codexSummary(prompt)
+      : await window.electronAPI.claudeSummary(prompt);
 
     if (!result.success) {
-      throw new Error(result.error || 'Chyba při volání Claude CLI');
+      throw new Error(result.error || `Chyba při volání ${aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI`);
     }
 
     return result.content || '';
   } catch (error) {
-    console.error('Error calling Claude CLI:', error);
+    console.error('Error calling AI CLI:', error);
     throw error;
   }
 };
 
 /**
- * Vygeneruje denní shrnutí pomocí Claude
+ * Vygeneruje denní shrnutí pomocí AI (Claude nebo Codex)
  */
 export const generateDailySummary = async (dailyScore: DailyScore): Promise<string> => {
   const settings = await getSettings();
 
   if (!settings.enableClaudeIntegration) {
-    throw new Error('Claude integrace není zapnutá');
+    throw new Error('AI integrace není zapnutá');
   }
 
   const prompt = buildDailySummaryPrompt(dailyScore);
@@ -53,15 +57,19 @@ export const generateDailySummary = async (dailyScore: DailyScore): Promise<stri
       throw new Error('Electron API is not available');
     }
 
-    const result = await window.electronAPI.claudeSummary(prompt);
+    // Vybrat správný CLI podle nastavení
+    const aiProvider = settings.aiProvider || 'claude';
+    const result = aiProvider === 'codex'
+      ? await window.electronAPI.codexSummary(prompt)
+      : await window.electronAPI.claudeSummary(prompt);
 
     if (!result.success) {
-      throw new Error(result.error || 'Chyba při volání Claude CLI');
+      throw new Error(result.error || `Chyba při volání ${aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI`);
     }
 
     return result.content || '';
   } catch (error) {
-    console.error('Error calling Claude CLI:', error);
+    console.error('Error calling AI CLI:', error);
     throw error;
   }
 };
@@ -157,23 +165,37 @@ Vytvoř stručný komentář, který:
 };
 
 /**
- * Testuje, jestli Claude CLI je dostupné
+ * Testuje, jestli AI CLI (Claude nebo Codex) je dostupné
  */
-export const testClaudeCLI = async (): Promise<boolean> => {
+export const testAiCLI = async (provider?: 'claude' | 'codex'): Promise<boolean> => {
   try {
     if (!window.electronAPI) {
       return false;
     }
 
-    const result = await window.electronAPI.claudeTest();
+    // Pokud není poskytovatel specifikován, načíst z nastavení
+    if (!provider) {
+      const settings = await getSettings();
+      provider = settings.aiProvider || 'claude';
+    }
+
+    const result = provider === 'codex'
+      ? await window.electronAPI.codexTest()
+      : await window.electronAPI.claudeTest();
+
     return result.success === true;
   } catch (error) {
-    console.error('Error testing Claude CLI:', error);
+    console.error('Error testing AI CLI:', error);
     return false;
   }
 };
 
+// Zachovat kompatibilitu se starým názvem
+export const testClaudeCLI = async (): Promise<boolean> => {
+  return testAiCLI('claude');
+};
+
 // Zachovat kompatibilitu se starým názvem (pro Settings komponentu)
 export const testClaudeApiKey = async (): Promise<boolean> => {
-  return testClaudeCLI();
+  return testAiCLI();
 };

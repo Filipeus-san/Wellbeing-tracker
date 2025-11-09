@@ -72,9 +72,12 @@ export interface MicroAction {
   priority: 'high' | 'medium' | 'low';
 }
 
+export type AIProvider = 'claude' | 'codex';
+
 export interface AppSettings {
   claudeApiKey?: string;
   enableClaudeIntegration: boolean;
+  aiProvider?: AIProvider; // claude nebo codex
 }
 
 // Pomocné typy pro výpočty
