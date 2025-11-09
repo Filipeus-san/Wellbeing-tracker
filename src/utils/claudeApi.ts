@@ -1,6 +1,7 @@
 import type { WeeklySummary, DailyScore } from '../types';
 import { questions } from '../data/questions';
 import { getSettings } from './storage';
+import { MOODS, getAnxietyLabel, getDepressionLabel } from '../types';
 
 /**
  * Volání AI CLI (Claude nebo Codex) přes Electron IPC
@@ -107,6 +108,30 @@ const buildWeeklySummaryPrompt = (
     .map((ds) => `Den ${ds.date}: ${ds.notes}`)
     .join('\n');
 
+  // Přidat informace o náladě, úzkosti a depresi
+  const mentalHealthDetails = dailyScores
+    .map((ds) => {
+      const date = new Date(ds.date).toLocaleDateString('cs-CZ', { weekday: 'short', day: 'numeric', month: 'numeric' });
+      const parts = [];
+
+      if (ds.mood) {
+        const moodData = MOODS[ds.mood];
+        parts.push(`Nálada: ${moodData.label} ${moodData.emoji}`);
+      }
+
+      if (ds.anxiety !== undefined) {
+        parts.push(`Úzkost: ${ds.anxiety}/10 (${getAnxietyLabel(ds.anxiety)})`);
+      }
+
+      if (ds.depression !== undefined) {
+        parts.push(`Deprese: ${ds.depression}/10 (${getDepressionLabel(ds.depression)})`);
+      }
+
+      return parts.length > 0 ? `${date}: ${parts.join(', ')}` : null;
+    })
+    .filter(Boolean)
+    .join('\n');
+
   return `Jsi wellbeing kouč. Na základě týdenních dat uživatele vytvoř stručné, motivující a personalizované shrnutí (max 300 slov).
 
 TÝDENNÍ PRŮMĚRNÁ SKÓRE (1-5):
@@ -114,6 +139,9 @@ ${scoreDetails}
 
 KRITICKÉ OBLASTI (nízké skóre):
 ${criticalDetails || 'Žádné kritické oblasti'}
+
+DUŠEVNÍ STAV V PRŮBĚHU TÝDNE:
+${mentalHealthDetails || 'Žádná data o duševním stavu'}
 
 DOPORUČENÉ MIKRO-AKCE:
 ${actionsDetails}
@@ -124,9 +152,10 @@ ${notesDetails || 'Žádné poznámky'}
 Vytvoř shrnutí, které:
 1. Oceň pozitivní oblasti a pokrok
 2. Delikatně upozorni na kritické oblasti
-3. Dej konkrétní, motivující doporučení
-4. Měj empatický a povzbuzující tón
-5. Buď stručný a čtivý`;
+3. Věnuj zvláštní pozornost duševnímu stavu (nálada, úzkost, deprese) - pokud vidíš vysoké hodnoty úzkosti/deprese, laskavě to zohledni
+4. Dej konkrétní, motivující doporučení
+5. Měj empatický a povzbuzující tón
+6. Buď stručný a čtivý`;
 };
 
 /**
@@ -147,10 +176,33 @@ const buildDailySummaryPrompt = (dailyScore: DailyScore): string => {
         .join('\n')
     : '';
 
+  // Přidat informace o náladě, úzkosti a depresi
+  const mentalHealthParts = [];
+
+  if (dailyScore.mood) {
+    const moodData = MOODS[dailyScore.mood];
+    mentalHealthParts.push(`Nálada: ${moodData.label} ${moodData.emoji}`);
+  }
+
+  if (dailyScore.anxiety !== undefined) {
+    mentalHealthParts.push(`Úzkost: ${dailyScore.anxiety}/10 (${getAnxietyLabel(dailyScore.anxiety)})`);
+  }
+
+  if (dailyScore.depression !== undefined) {
+    mentalHealthParts.push(`Deprese: ${dailyScore.depression}/10 (${getDepressionLabel(dailyScore.depression)})`);
+  }
+
+  const mentalHealthDetails = mentalHealthParts.length > 0
+    ? mentalHealthParts.join('\n')
+    : 'Žádná data o duševním stavu';
+
   return `Jsi wellbeing kouč. Na základě denních dat uživatele vytvoř krátký, motivující komentář (max 200 slov).
 
 DENNÍ SKÓRE (1-5):
 ${scoreDetails}
+
+DUŠEVNÍ STAV:
+${mentalHealthDetails}
 
 POZNÁMKY:
 ${dailyScore.notes || 'Žádné poznámky'}
@@ -159,9 +211,10 @@ ${microActionsDetails ? `DOPORUČENÉ MIKRO-AKCE NA ZÍTŘEK:\n${microActionsDet
 Vytvoř stručný komentář, který:
 1. Oceň to, co šlo dobře (konkrétní oblasti s vysokým skóre)
 2. Jemně upozorni na oblasti pro zlepšení (nízké skóre)
-3. Vyber 2-3 nejdůležitější mikro-akce a zdůrazni je jako konkrétní kroky na zítřek
-4. Měj empatický, povzbuzující a motivační tón
-5. Buď stručný ale inspirující`;
+3. Věnuj zvláštní pozornost duševnímu stavu (nálada, úzkost, deprese) - pokud vidíš vysoké hodnoty úzkosti/deprese, laskavě to zohledni
+4. Vyber 2-3 nejdůležitější mikro-akce a zdůrazni je jako konkrétní kroky na zítřek
+5. Měj empatický, povzbuzující a motivační tón
+6. Buď stručný ale inspirující`;
 };
 
 /**

@@ -14,7 +14,7 @@ import {
   Radar,
 } from 'recharts';
 import type { WeeklySummary as WeeklySummaryType, DailyScore } from '../types';
-import { MOODS } from '../types';
+import { MOODS, getAnxietyColor, getDepressionColor } from '../types';
 import { questions, getCategoryLabel } from '../data/questions';
 import { getScoreColor, getScoreLabel, calculateCategoryAverages, generateWeeklySummary } from '../utils/analytics';
 import { generateClaudeSummary } from '../utils/claudeApi';
@@ -335,6 +335,94 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                     </div>
                   ) : (
                     <div className="mood-display no-mood">
+                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>Nezadáno</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Týdenní úzkost */}
+      {dailyScores.some(score => score.anxiety !== undefined) && (
+        <div className="mental-health-overview-section">
+          <h3>😰 Úzkost v průběhu týdne</h3>
+          <div className="daily-mental-health">
+            {dailyScores.map((score) => {
+              const date = new Date(score.date);
+              const dayName = date.toLocaleDateString('cs-CZ', { weekday: 'short' });
+              const dayDate = date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' });
+              const anxietyLevel = score.anxiety ?? null;
+
+              return (
+                <div key={score.date} className="day-mental-health-item">
+                  <div className="day-info">
+                    <div className="day-name">{dayName}</div>
+                    <div className="day-date">{dayDate}</div>
+                  </div>
+                  {anxietyLevel !== null ? (
+                    <div className="mental-health-display">
+                      <div className="mental-health-bar-container">
+                        <div
+                          className="mental-health-bar"
+                          style={{
+                            width: `${(anxietyLevel / 10) * 100}%`,
+                            backgroundColor: getAnxietyColor(anxietyLevel)
+                          }}
+                        />
+                      </div>
+                      <span className="mental-health-value" style={{ color: getAnxietyColor(anxietyLevel) }}>
+                        {anxietyLevel}/10
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="mental-health-display">
+                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>Nezadáno</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Týdenní deprese */}
+      {dailyScores.some(score => score.depression !== undefined) && (
+        <div className="mental-health-overview-section">
+          <h3>😔 Deprese v průběhu týdne</h3>
+          <div className="daily-mental-health">
+            {dailyScores.map((score) => {
+              const date = new Date(score.date);
+              const dayName = date.toLocaleDateString('cs-CZ', { weekday: 'short' });
+              const dayDate = date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' });
+              const depressionLevel = score.depression ?? null;
+
+              return (
+                <div key={score.date} className="day-mental-health-item">
+                  <div className="day-info">
+                    <div className="day-name">{dayName}</div>
+                    <div className="day-date">{dayDate}</div>
+                  </div>
+                  {depressionLevel !== null ? (
+                    <div className="mental-health-display">
+                      <div className="mental-health-bar-container">
+                        <div
+                          className="mental-health-bar"
+                          style={{
+                            width: `${(depressionLevel / 10) * 100}%`,
+                            backgroundColor: getDepressionColor(depressionLevel)
+                          }}
+                        />
+                      </div>
+                      <span className="mental-health-value" style={{ color: getDepressionColor(depressionLevel) }}>
+                        {depressionLevel}/10
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="mental-health-display">
                       <span style={{ color: '#9ca3af', fontSize: '12px' }}>Nezadáno</span>
                     </div>
                   )}
