@@ -354,10 +354,6 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
               </div>
             </div>
           )}
-
-          <button className="close-summary-button" onClick={() => setAiSummary(null)}>
-            Zavřít
-          </button>
         </div>
       )}
     </div>
