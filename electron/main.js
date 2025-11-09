@@ -79,7 +79,6 @@ function createWindow() {
     const indexPath = join(__dirname, '../dist/index.html');
     console.log('📂 Loading index from:', indexPath);
     mainWindow.loadFile(indexPath);
-    mainWindow.webContents.openDevTools(); // Otevřít DevTools i v production pro debugging
   }
 }
 
