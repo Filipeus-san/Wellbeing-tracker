@@ -12,7 +12,7 @@ export const generateClaudeSummary = async (
   weeklySummary: WeeklySummary,
   dailyScores: DailyScore[]
 ): Promise<string> => {
-  const settings = getSettings();
+  const settings = await getSettings();
 
   if (!settings.enableClaudeIntegration) {
     throw new Error('Claude integrace není zapnutá');
@@ -50,7 +50,7 @@ export const generateClaudeSummary = async (
  * Vygeneruje denní shrnutí pomocí Claude
  */
 export const generateDailySummary = async (dailyScore: DailyScore): Promise<string> => {
-  const settings = getSettings();
+  const settings = await getSettings();
 
   if (!settings.enableClaudeIntegration) {
     throw new Error('Claude integrace není zapnutá');
