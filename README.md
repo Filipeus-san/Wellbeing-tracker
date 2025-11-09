@@ -8,6 +8,7 @@ Moderní aplikace pro sledování duševní pohody postavená na React s TypeScr
 - 13 otázek pokrývajících všechny oblasti wellbeingu
 - Hodnocení na škále 1-5 s barevným označením
 - Prostor pro osobní poznámky
+- **🤖 AI denní shrnutí a doporučení** (po dokončení dotazníku)
 - Uložení do LocalStorage pro offline přístup
 - Možnost vyplnění pro libovolné datum
 
@@ -160,10 +161,11 @@ Aplikace používá **lokálně nainstalovaný Claude CLI** místo přímého vo
 3. Klikněte na **Test Claude CLI** pro ověření
 4. Uložte nastavení
 
-Claude CLI se používá pouze pro:
-- Generování týdenních shrnutí
-- Personalizovaná doporučení
-- Motivační komentáře
+Claude CLI se používá pro:
+- **Denní shrnutí** - po dokončení denního dotazníku
+- **Týdenní shrnutí** - analýza celého týdne
+- **Personalizovaná doporučení** - na míru vašim skóre
+- **Motivační komentáře** - povzbuzení a konkrétní tipy
 
 **Poznámka**: Všechna volání Claude probíhají lokálně přes backend server, žádná data nejsou posílána přímo na Anthropic API z prohlížeče.
 

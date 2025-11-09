@@ -60,11 +60,16 @@ Server poběží na `http://localhost:3001`.
    - Vyplňte 13 otázek (škála 1-5)
    - Můžete přidat poznámky
    - Klikněte **Uložit denní záznam**
+   - 🆕 **Po dokončení**: Klikněte na **🤖 Vygenerovat AI shrnutí** pro:
+     - Personalizovaný feedback k dnešnímu dni
+     - Ocenění pozitivních oblastí
+     - Konkrétní doporučení na zítřek
+     - Motivační komentář od AI kouče
 
 2. **Týdenní shrnutí**:
    - Po vyplnění několika dní přejděte do **Týdenní shrnutí**
    - Uvidíte grafy, kritické oblasti a mikro-akce
-   - (Volitelně) Vygenerujte AI shrnutí
+   - (Volitelně) Vygenerujte AI shrnutí týdne
 
 3. **Export dat**:
    - V **Nastavení** můžete exportovat data jako zálohu

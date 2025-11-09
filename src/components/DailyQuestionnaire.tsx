@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import type { DailyScore, ScoreValue } from '../types';
 import { questions, getModelLabel } from '../data/questions';
-import { saveDailyScore, getDailyScore } from '../utils/storage';
+import { saveDailyScore, getDailyScore, getSettings } from '../utils/storage';
 import { getScoreColor } from '../utils/analytics';
+import { generateDailySummary } from '../utils/claudeApi';
 import './DailyQuestionnaire.css';
 
 interface DailyQuestionnaireProps {
@@ -14,6 +15,12 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
   const [scores, setScores] = useState<Record<string, ScoreValue>>({});
   const [notes, setNotes] = useState('');
   const [savedMessage, setSavedMessage] = useState(false);
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
+
+  const settings = getSettings();
+  const canUseAI = settings.enableClaudeIntegration;
 
   // Načíst existující data
   useEffect(() => {
@@ -44,6 +51,31 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
 
     if (onComplete) {
       onComplete();
+    }
+  };
+
+  const handleGenerateSummary = async () => {
+    // Uložit před generováním
+    const dailyScore: DailyScore = {
+      date,
+      scores,
+      notes: notes.trim() || undefined,
+    };
+
+    saveDailyScore(dailyScore);
+
+    setIsGeneratingSummary(true);
+    setSummaryError(null);
+
+    try {
+      const summary = await generateDailySummary(dailyScore);
+      setAiSummary(summary);
+    } catch (error) {
+      setSummaryError(
+        error instanceof Error ? error.message : 'Chyba při generování shrnutí'
+      );
+    } finally {
+      setIsGeneratingSummary(false);
     }
   };
 
@@ -122,13 +154,25 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
       </div>
 
       <div className="questionnaire-footer">
-        <button
-          className="save-button"
-          onClick={handleSave}
-          disabled={Object.keys(scores).length === 0}
-        >
-          {isComplete ? 'Uložit denní záznam' : 'Uložit rozpracované'}
-        </button>
+        <div className="footer-buttons">
+          <button
+            className="save-button"
+            onClick={handleSave}
+            disabled={Object.keys(scores).length === 0}
+          >
+            {isComplete ? 'Uložit denní záznam' : 'Uložit rozpracované'}
+          </button>
+
+          {canUseAI && isComplete && (
+            <button
+              className="ai-summary-button"
+              onClick={handleGenerateSummary}
+              disabled={isGeneratingSummary}
+            >
+              {isGeneratingSummary ? '🤖 Generuji...' : '🤖 Vygenerovat AI shrnutí'}
+            </button>
+          )}
+        </div>
 
         {savedMessage && (
           <div className="saved-message">✓ Denní záznam byl úspěšně uložen</div>
@@ -139,7 +183,20 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
             Ještě zbývá vyplnit {questions.length - Object.keys(scores).length} otázek
           </div>
         )}
+
+        {summaryError && <div className="summary-error">❌ {summaryError}</div>}
       </div>
+
+      {/* AI Shrnutí */}
+      {aiSummary && (
+        <div className="ai-summary-section">
+          <h3>🤖 AI Wellbeing Kouč - Denní shrnutí</h3>
+          <div className="ai-summary-content">{aiSummary}</div>
+          <button className="close-summary-button" onClick={() => setAiSummary(null)}>
+            Zavřít
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -146,6 +146,13 @@
   gap: 15px;
 }
 
+.footer-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .save-button {
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
@@ -170,6 +177,30 @@
   box-shadow: none;
 }
 
+.ai-summary-button {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ai-summary-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.ai-summary-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .saved-message {
   background: #10b981;
   color: white;
@@ -183,6 +214,58 @@
   color: #f59e0b;
   font-size: 14px;
   font-weight: 500;
+}
+
+.summary-error {
+  color: #ef4444;
+  background: #fef2f2;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid #fecaca;
+}
+
+/* AI Shrnutí sekce */
+.ai-summary-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease;
+}
+
+.ai-summary-section h3 {
+  margin: 0 0 15px 0;
+  font-size: 22px;
+}
+
+.ai-summary-content {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 15px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  backdrop-filter: blur(10px);
+}
+
+.close-summary-button {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.close-summary-button:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 @keyframes slideIn {
@@ -209,5 +292,15 @@
 
   .question-text {
     font-size: 14px;
+  }
+
+  .footer-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .save-button,
+  .ai-summary-button {
+    width: 100%;
   }
 }
