@@ -100,7 +100,8 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
 
   const handleSave = async () => {
     try {
-      const dailyScore: DailyScore = {
+      // Vygenerovat mikro-akce ihned
+      const baseDailyScore: DailyScore = {
         date,
         scores,
         mood,
@@ -110,6 +111,15 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         anger,
         gratitude,
         notes: notes.trim() || undefined,
+      };
+
+      // Vygenerovat mikro-akce založené na denním skóre
+      const microActions = generateDailyMicroActions(baseDailyScore);
+
+      // Uložit s mikro-akcemi
+      const dailyScore: DailyScore = {
+        ...baseDailyScore,
+        microActions,
       };
 
       await saveDailyScore(dailyScore);
@@ -513,6 +523,28 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         {summaryError && <div className="summary-error">❌ {summaryError}</div>}
       </div>
 
+      {/* Mikro-akce na zítřek - zobrazit ihned po uložení */}
+      {currentDailyScore?.microActions && currentDailyScore.microActions.length > 0 && (
+        <div className="daily-micro-actions">
+          <h4>💡 {t.daily.recommendedActions}</h4>
+          <div className="micro-actions-list">
+            {currentDailyScore.microActions.map((action) => (
+              <div key={action.id} className={`micro-action-item priority-${action.priority}`}>
+                <div className="action-icon">
+                  {action.priority === 'high' && '🔥'}
+                  {action.priority === 'medium' && '⭐'}
+                  {action.priority === 'low' && '💫'}
+                </div>
+                <div className="action-content">
+                  <div className="action-title">{getMicroActionText(action.id, 'title', language) || action.title}</div>
+                  <div className="action-description">{getMicroActionText(action.id, 'description', language) || action.description}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* AI Shrnutí */}
       {aiSummary && (
         <div className="ai-summary-section">
@@ -523,28 +555,6 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
             )}
           </div>
           <div className="ai-summary-content">{aiSummary}</div>
-
-          {/* Mikro-akce na zítřek */}
-          {currentDailyScore?.microActions && (
-            <div className="daily-micro-actions">
-              <h4>💡 {t.daily.recommendedActions}</h4>
-              <div className="micro-actions-list">
-                {currentDailyScore.microActions.map((action) => (
-                  <div key={action.id} className={`micro-action-item priority-${action.priority}`}>
-                    <div className="action-icon">
-                      {action.priority === 'high' && '🔥'}
-                      {action.priority === 'medium' && '⭐'}
-                      {action.priority === 'low' && '💫'}
-                    </div>
-                    <div className="action-content">
-                      <div className="action-title">{getMicroActionText(action.id, 'title', language) || action.title}</div>
-                      <div className="action-description">{getMicroActionText(action.id, 'description', language) || action.description}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>
