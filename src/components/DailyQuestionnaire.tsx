@@ -5,6 +5,7 @@ import { questions, getModelLabel, getQuestionText } from '../data/questions';
 import { saveDailyScore, getDailyScore, getSettings, saveWeeklySummary, getWeeklySummary } from '../utils/storage';
 import { getScoreColor, generateDailyMicroActions, generateWeeklySummary } from '../utils/analytics';
 import { generateDailySummary } from '../utils/claudeApi';
+import { getMicroActionText } from '../utils/microActions';
 import { startOfWeek } from 'date-fns';
 import { useLanguage } from '../i18n/LanguageContext';
 import './DailyQuestionnaire.css';
@@ -536,8 +537,8 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
                       {action.priority === 'low' && '💫'}
                     </div>
                     <div className="action-content">
-                      <div className="action-title">{action.title}</div>
-                      <div className="action-description">{action.description}</div>
+                      <div className="action-title">{getMicroActionText(action.id, 'title', language) || action.title}</div>
+                      <div className="action-description">{getMicroActionText(action.id, 'description', language) || action.description}</div>
                     </div>
                   </div>
                 ))}

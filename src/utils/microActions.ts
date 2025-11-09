@@ -1,6 +1,50 @@
-import type { MicroAction } from '../types';
+import type { MicroAction, Language } from '../types';
 import { WellbeingCategory } from '../types';
 import { questions } from '../data/questions';
+
+/**
+ * Překlady pro mikro-akce
+ */
+const microActionTranslations: Record<string, { title: { cs: string; en: string }; description: { cs: string; en: string } }> = {
+  // Již existující české texty zůstanou jako fallback
+  physio_1: {
+    title: { cs: 'Kvalitní spánek', en: 'Quality Sleep' },
+    description: { cs: 'Spi alespoň 7-8 hodin. Jdi spát ve stejnou dobu každý den.', en: 'Sleep at least 7-8 hours. Go to bed at the same time every day.' }
+  },
+  physio_2: {
+    title: { cs: 'Pravidelné jídlo', en: 'Regular Meals' },
+    description: { cs: 'Sněz 3 vyvážená jídla denně. Nezapomeň na snídani.', en: 'Eat 3 balanced meals daily. Don\'t skip breakfast.' }
+  },
+  physio_3: {
+    title: { cs: 'Hydratace', en: 'Hydration' },
+    description: { cs: 'Vypij alespoň 2 litry vody denně.', en: 'Drink at least 2 liters of water daily.' }
+  },
+  physio_4: {
+    title: { cs: '10 minut pohybu', en: '10 Minutes Movement' },
+    description: { cs: 'Krátká procházka, protažení nebo lehké cvičení.', en: 'Short walk, stretching, or light exercise.' }
+  },
+  safety_1: {
+    title: { cs: 'Finanční plán', en: 'Financial Plan' },
+    description: { cs: 'Udělej si přehled příjmů a výdajů na tento týden.', en: 'Review your income and expenses for this week.' }
+  },
+  safety_2: {
+    title: { cs: 'Úklid prostoru', en: 'Space Cleaning' },
+    description: { cs: 'Uklid si svůj pracovní nebo osobní prostor.', en: 'Clean your work or personal space.' }
+  },
+  safety_3: {
+    title: { cs: 'Zdravotní check', en: 'Health Check' },
+    description: { cs: 'Naplánuj nebo absolvuj preventivní lékařskou prohlídku.', en: 'Schedule or attend a preventive medical checkup.' }
+  },
+};
+
+export const getMicroActionText = (actionId: string, field: 'title' | 'description', lang: Language = 'cs'): string => {
+  const translation = microActionTranslations[actionId];
+  if (translation) {
+    return translation[field][lang];
+  }
+  // Fallback pro akce které nemají překlad
+  return actionId;
+};
 
 /**
  * Databáze mikro-akcí pro každou kategorii
