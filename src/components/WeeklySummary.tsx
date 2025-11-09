@@ -254,8 +254,8 @@ export const WeeklySummary = ({ onRefresh }: WeeklySummaryProps) => {
         </div>
       </div>
 
-      {/* Claude AI Shrnutí */}
-      {canUseClaude && (
+      {/* Claude AI Shrnutí - zobrazit pouze pokud jsou data */}
+      {canUseClaude && dailyScores.length > 0 && (
         <div className="claude-section">
           <h3>🤖 AI Wellbeing Kouč</h3>
           {claudeSummary ? (
