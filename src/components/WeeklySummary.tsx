@@ -14,7 +14,7 @@ import {
   Radar,
 } from 'recharts';
 import type { WeeklySummary as WeeklySummaryType, DailyScore } from '../types';
-import { MOODS, getAnxietyColor, getDepressionColor } from '../types';
+import { MOODS, getAnxietyColor, getDepressionColor, getJoyColor, getAngerColor, getGratitudeColor } from '../types';
 import { questions, getCategoryLabel } from '../data/questions';
 import { getScoreColor, getScoreLabel, calculateCategoryAverages, generateWeeklySummary } from '../utils/analytics';
 import { generateClaudeSummary } from '../utils/claudeApi';
@@ -419,6 +419,138 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                       </div>
                       <span className="mental-health-value" style={{ color: getDepressionColor(depressionLevel) }}>
                         {depressionLevel}/10
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="mental-health-display">
+                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>Nezadáno</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Týdenní radost */}
+      {dailyScores.some(score => score.joy !== undefined) && (
+        <div className="mental-health-overview-section">
+          <h3>😊 Radost v průběhu týdne</h3>
+          <div className="daily-mental-health">
+            {dailyScores.map((score) => {
+              const date = new Date(score.date);
+              const dayName = date.toLocaleDateString('cs-CZ', { weekday: 'short' });
+              const dayDate = date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' });
+              const joyLevel = score.joy ?? null;
+
+              return (
+                <div key={score.date} className="day-mental-health-item">
+                  <div className="day-info">
+                    <div className="day-name">{dayName}</div>
+                    <div className="day-date">{dayDate}</div>
+                  </div>
+                  {joyLevel !== null ? (
+                    <div className="mental-health-display">
+                      <div className="mental-health-bar-container">
+                        <div
+                          className="mental-health-bar"
+                          style={{
+                            width: `${(joyLevel / 10) * 100}%`,
+                            backgroundColor: getJoyColor(joyLevel)
+                          }}
+                        />
+                      </div>
+                      <span className="mental-health-value" style={{ color: getJoyColor(joyLevel) }}>
+                        {joyLevel}/10
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="mental-health-display">
+                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>Nezadáno</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Týdenní vztek */}
+      {dailyScores.some(score => score.anger !== undefined) && (
+        <div className="mental-health-overview-section">
+          <h3>😠 Vztek v průběhu týdne</h3>
+          <div className="daily-mental-health">
+            {dailyScores.map((score) => {
+              const date = new Date(score.date);
+              const dayName = date.toLocaleDateString('cs-CZ', { weekday: 'short' });
+              const dayDate = date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' });
+              const angerLevel = score.anger ?? null;
+
+              return (
+                <div key={score.date} className="day-mental-health-item">
+                  <div className="day-info">
+                    <div className="day-name">{dayName}</div>
+                    <div className="day-date">{dayDate}</div>
+                  </div>
+                  {angerLevel !== null ? (
+                    <div className="mental-health-display">
+                      <div className="mental-health-bar-container">
+                        <div
+                          className="mental-health-bar"
+                          style={{
+                            width: `${(angerLevel / 10) * 100}%`,
+                            backgroundColor: getAngerColor(angerLevel)
+                          }}
+                        />
+                      </div>
+                      <span className="mental-health-value" style={{ color: getAngerColor(angerLevel) }}>
+                        {angerLevel}/10
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="mental-health-display">
+                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>Nezadáno</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Týdenní vděčnost */}
+      {dailyScores.some(score => score.gratitude !== undefined) && (
+        <div className="mental-health-overview-section">
+          <h3>🙏 Vděčnost v průběhu týdne</h3>
+          <div className="daily-mental-health">
+            {dailyScores.map((score) => {
+              const date = new Date(score.date);
+              const dayName = date.toLocaleDateString('cs-CZ', { weekday: 'short' });
+              const dayDate = date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' });
+              const gratitudeLevel = score.gratitude ?? null;
+
+              return (
+                <div key={score.date} className="day-mental-health-item">
+                  <div className="day-info">
+                    <div className="day-name">{dayName}</div>
+                    <div className="day-date">{dayDate}</div>
+                  </div>
+                  {gratitudeLevel !== null ? (
+                    <div className="mental-health-display">
+                      <div className="mental-health-bar-container">
+                        <div
+                          className="mental-health-bar"
+                          style={{
+                            width: `${(gratitudeLevel / 10) * 100}%`,
+                            backgroundColor: getGratitudeColor(gratitudeLevel)
+                          }}
+                        />
+                      </div>
+                      <span className="mental-health-value" style={{ color: getGratitudeColor(gratitudeLevel) }}>
+                        {gratitudeLevel}/10
                       </span>
                     </div>
                   ) : (

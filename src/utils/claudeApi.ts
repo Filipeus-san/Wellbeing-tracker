@@ -1,7 +1,7 @@
 import type { WeeklySummary, DailyScore } from '../types';
 import { questions } from '../data/questions';
 import { getSettings } from './storage';
-import { MOODS, getAnxietyLabel, getDepressionLabel } from '../types';
+import { MOODS, getAnxietyLabel, getDepressionLabel, getJoyLabel, getAngerLabel, getGratitudeLabel } from '../types';
 
 /**
  * Volání AI CLI (Claude nebo Codex) přes Electron IPC
@@ -108,7 +108,7 @@ const buildWeeklySummaryPrompt = (
     .map((ds) => `Den ${ds.date}: ${ds.notes}`)
     .join('\n');
 
-  // Přidat informace o náladě, úzkosti a depresi
+  // Přidat informace o náladě a emocích
   const mentalHealthDetails = dailyScores
     .map((ds) => {
       const date = new Date(ds.date).toLocaleDateString('cs-CZ', { weekday: 'short', day: 'numeric', month: 'numeric' });
@@ -125,6 +125,18 @@ const buildWeeklySummaryPrompt = (
 
       if (ds.depression !== undefined) {
         parts.push(`Deprese: ${ds.depression}/10 (${getDepressionLabel(ds.depression)})`);
+      }
+
+      if (ds.joy !== undefined) {
+        parts.push(`Radost: ${ds.joy}/10 (${getJoyLabel(ds.joy)})`);
+      }
+
+      if (ds.anger !== undefined) {
+        parts.push(`Vztek: ${ds.anger}/10 (${getAngerLabel(ds.anger)})`);
+      }
+
+      if (ds.gratitude !== undefined) {
+        parts.push(`Vděčnost: ${ds.gratitude}/10 (${getGratitudeLabel(ds.gratitude)})`);
       }
 
       return parts.length > 0 ? `${date}: ${parts.join(', ')}` : null;
@@ -152,7 +164,7 @@ ${notesDetails || 'Žádné poznámky'}
 Vytvoř shrnutí, které:
 1. Oceň pozitivní oblasti a pokrok
 2. Delikatně upozorni na kritické oblasti
-3. Věnuj zvláštní pozornost duševnímu stavu (nálada, úzkost, deprese) - pokud vidíš vysoké hodnoty úzkosti/deprese, laskavě to zohledni
+3. Věnuj zvláštní pozornost duševnímu stavu a emocím (nálada, úzkost, deprese, radost, vztek, vděčnost) - pokud vidíš vysoké hodnoty úzkosti/deprese/vzteku, laskavě to zohledni; pokud vidíš vysoké hodnoty radosti/vděčnosti, oceň to
 4. Dej konkrétní, motivující doporučení
 5. Měj empatický a povzbuzující tón
 6. Buď stručný a čtivý`;
@@ -176,7 +188,7 @@ const buildDailySummaryPrompt = (dailyScore: DailyScore): string => {
         .join('\n')
     : '';
 
-  // Přidat informace o náladě, úzkosti a depresi
+  // Přidat informace o náladě a emocích
   const mentalHealthParts = [];
 
   if (dailyScore.mood) {
@@ -192,9 +204,21 @@ const buildDailySummaryPrompt = (dailyScore: DailyScore): string => {
     mentalHealthParts.push(`Deprese: ${dailyScore.depression}/10 (${getDepressionLabel(dailyScore.depression)})`);
   }
 
+  if (dailyScore.joy !== undefined) {
+    mentalHealthParts.push(`Radost: ${dailyScore.joy}/10 (${getJoyLabel(dailyScore.joy)})`);
+  }
+
+  if (dailyScore.anger !== undefined) {
+    mentalHealthParts.push(`Vztek: ${dailyScore.anger}/10 (${getAngerLabel(dailyScore.anger)})`);
+  }
+
+  if (dailyScore.gratitude !== undefined) {
+    mentalHealthParts.push(`Vděčnost: ${dailyScore.gratitude}/10 (${getGratitudeLabel(dailyScore.gratitude)})`);
+  }
+
   const mentalHealthDetails = mentalHealthParts.length > 0
     ? mentalHealthParts.join('\n')
-    : 'Žádná data o duševním stavu';
+    : 'Žádná data o duševním stavu a emocích';
 
   return `Jsi wellbeing kouč. Na základě denních dat uživatele vytvoř krátký, motivující komentář (max 200 slov).
 
@@ -211,7 +235,7 @@ ${microActionsDetails ? `DOPORUČENÉ MIKRO-AKCE NA ZÍTŘEK:\n${microActionsDet
 Vytvoř stručný komentář, který:
 1. Oceň to, co šlo dobře (konkrétní oblasti s vysokým skóre)
 2. Jemně upozorni na oblasti pro zlepšení (nízké skóre)
-3. Věnuj zvláštní pozornost duševnímu stavu (nálada, úzkost, deprese) - pokud vidíš vysoké hodnoty úzkosti/deprese, laskavě to zohledni
+3. Věnuj zvláštní pozornost duševnímu stavu a emocím (nálada, úzkost, deprese, radost, vztek, vděčnost) - pokud vidíš vysoké hodnoty úzkosti/deprese/vzteku, laskavě to zohledni; pokud vidíš vysoké hodnoty radosti/vděčnosti, oceň to
 4. Vyber 2-3 nejdůležitější mikro-akce a zdůrazni je jako konkrétní kroky na zítřek
 5. Měj empatický, povzbuzující a motivační tón
 6. Buď stručný ale inspirující`;

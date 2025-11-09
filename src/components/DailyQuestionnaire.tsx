@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import type { DailyScore, ScoreValue, MoodValue, AnxietyLevel, DepressionLevel } from '../types';
-import { MOODS, getAnxietyLabel, getDepressionLabel, getAnxietyColor, getDepressionColor } from '../types';
+import type { DailyScore, ScoreValue, MoodValue, AnxietyLevel, DepressionLevel, JoyLevel, AngerLevel, GratitudeLevel } from '../types';
+import { MOODS, getAnxietyLabel, getDepressionLabel, getAnxietyColor, getDepressionColor, getJoyLabel, getJoyColor, getAngerLabel, getAngerColor, getGratitudeLabel, getGratitudeColor } from '../types';
 import { questions, getModelLabel } from '../data/questions';
 import { saveDailyScore, getDailyScore, getSettings, saveWeeklySummary, getWeeklySummary } from '../utils/storage';
 import { getScoreColor, generateDailyMicroActions, generateWeeklySummary } from '../utils/analytics';
@@ -17,8 +17,11 @@ interface DailyQuestionnaireProps {
 export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: DailyQuestionnaireProps) => {
   const [scores, setScores] = useState<Record<string, ScoreValue>>({});
   const [mood, setMood] = useState<MoodValue | undefined>(undefined);
-  const [anxiety, setAnxiety] = useState<AnxietyLevel>(5);
-  const [depression, setDepression] = useState<DepressionLevel>(5);
+  const [anxiety, setAnxiety] = useState<AnxietyLevel>(0);
+  const [depression, setDepression] = useState<DepressionLevel>(0);
+  const [joy, setJoy] = useState<JoyLevel>(0);
+  const [anger, setAnger] = useState<AngerLevel>(0);
+  const [gratitude, setGratitude] = useState<GratitudeLevel>(0);
   const [notes, setNotes] = useState('');
   const [savedMessage, setSavedMessage] = useState(false);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
@@ -61,16 +64,22 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         });
         setScores(cleanedScores);
         setMood(existingScore.mood);
-        setAnxiety(existingScore.anxiety ?? 5);
-        setDepression(existingScore.depression ?? 5);
+        setAnxiety(existingScore.anxiety ?? 0);
+        setDepression(existingScore.depression ?? 0);
+        setJoy(existingScore.joy ?? 0);
+        setAnger(existingScore.anger ?? 0);
+        setGratitude(existingScore.gratitude ?? 0);
         setNotes(existingScore.notes || '');
         setAiSummary(existingScore.aiSummary || null);
       } else {
         // Reset state při změně data
         setScores({});
         setMood(undefined);
-        setAnxiety(5);
-        setDepression(5);
+        setAnxiety(0);
+        setDepression(0);
+        setJoy(0);
+        setAnger(0);
+        setGratitude(0);
         setNotes('');
         setAiSummary(null);
       }
@@ -94,6 +103,9 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         mood,
         anxiety,
         depression,
+        joy,
+        anger,
+        gratitude,
         notes: notes.trim() || undefined,
       };
 
@@ -153,6 +165,9 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         mood,
         anxiety,
         depression,
+        joy,
+        anger,
+        gratitude,
         notes: notes.trim() || undefined,
       };
 
@@ -312,6 +327,96 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
             <div className="slider-labels">
               <span>0 - Žádná</span>
               <span>10 - Extrémní</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Měření radosti */}
+        <div className="mental-health-section">
+          <div className="slider-container">
+            <div className="slider-header">
+              <h3 className="slider-title">😊 Míra radosti</h3>
+              <div
+                className="slider-value"
+                style={{ color: getJoyColor(joy) }}
+              >
+                {joy}/10 - {getJoyLabel(joy)}
+              </div>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="10"
+              value={joy}
+              onChange={(e) => setJoy(parseInt(e.target.value) as JoyLevel)}
+              className="mental-health-slider"
+              style={{
+                background: `linear-gradient(to right, #9ca3af 0%, ${getJoyColor(joy)} ${joy * 10}%, #e5e7eb ${joy * 10}%, #e5e7eb 100%)`
+              }}
+            />
+            <div className="slider-labels">
+              <span>0 - Žádná</span>
+              <span>10 - Extrémní</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Měření vzteku */}
+        <div className="mental-health-section">
+          <div className="slider-container">
+            <div className="slider-header">
+              <h3 className="slider-title">😠 Míra vzteku</h3>
+              <div
+                className="slider-value"
+                style={{ color: getAngerColor(anger) }}
+              >
+                {anger}/10 - {getAngerLabel(anger)}
+              </div>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="10"
+              value={anger}
+              onChange={(e) => setAnger(parseInt(e.target.value) as AngerLevel)}
+              className="mental-health-slider"
+              style={{
+                background: `linear-gradient(to right, #10b981 0%, ${getAngerColor(anger)} ${anger * 10}%, #e5e7eb ${anger * 10}%, #e5e7eb 100%)`
+              }}
+            />
+            <div className="slider-labels">
+              <span>0 - Žádný</span>
+              <span>10 - Extrémní</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Měření vděčnosti */}
+        <div className="mental-health-section">
+          <div className="slider-container">
+            <div className="slider-header">
+              <h3 className="slider-title">🙏 Míra vděčnosti</h3>
+              <div
+                className="slider-value"
+                style={{ color: getGratitudeColor(gratitude) }}
+              >
+                {gratitude}/10 - {getGratitudeLabel(gratitude)}
+              </div>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="10"
+              value={gratitude}
+              onChange={(e) => setGratitude(parseInt(e.target.value) as GratitudeLevel)}
+              className="mental-health-slider"
+              style={{
+                background: `linear-gradient(to right, #9ca3af 0%, ${getGratitudeColor(gratitude)} ${gratitude * 10}%, #e5e7eb ${gratitude * 10}%, #e5e7eb 100%)`
+              }}
+            />
+            <div className="slider-labels">
+              <span>0 - Žádná</span>
+              <span>10 - Hluboká</span>
             </div>
           </div>
         </div>

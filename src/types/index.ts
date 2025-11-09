@@ -12,11 +12,12 @@ export const MOODS = {
   very_good: { emoji: '😊', label: 'Velmi dobrá', color: '#10b981' },
 } as const;
 
-// Škála úzkosti (0-10, kde 0 = žádná úzkost, 10 = extrémní úzkost)
+// Škály emocí a duševního stavu (0-10)
 export type AnxietyLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-
-// Škála deprese (0-10, kde 0 = žádná deprese, 10 = extrémní deprese)
 export type DepressionLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+export type JoyLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+export type AngerLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+export type GratitudeLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
 export const getAnxietyLabel = (level: AnxietyLevel): string => {
   if (level === 0) return 'Žádná úzkost';
@@ -48,6 +49,54 @@ export const getDepressionColor = (level: DepressionLevel): string => {
   if (level <= 6) return '#eab308'; // žlutá
   if (level <= 8) return '#f97316'; // oranžová
   return '#ef4444'; // červená
+};
+
+export const getJoyLabel = (level: JoyLevel): string => {
+  if (level === 0) return 'Žádná radost';
+  if (level <= 3) return 'Mírná radost';
+  if (level <= 6) return 'Střední radost';
+  if (level <= 8) return 'Silná radost';
+  return 'Extrémní radost';
+};
+
+export const getJoyColor = (level: JoyLevel): string => {
+  if (level === 0) return '#9ca3af'; // šedá
+  if (level <= 3) return '#84cc16'; // světle zelená
+  if (level <= 6) return '#10b981'; // zelená
+  if (level <= 8) return '#06b6d4'; // tyrkysová
+  return '#8b5cf6'; // fialová
+};
+
+export const getAngerLabel = (level: AngerLevel): string => {
+  if (level === 0) return 'Žádný vztek';
+  if (level <= 3) return 'Mírný vztek';
+  if (level <= 6) return 'Střední vztek';
+  if (level <= 8) return 'Silný vztek';
+  return 'Extrémní vztek';
+};
+
+export const getAngerColor = (level: AngerLevel): string => {
+  if (level === 0) return '#10b981'; // zelená
+  if (level <= 3) return '#84cc16'; // světle zelená
+  if (level <= 6) return '#eab308'; // žlutá
+  if (level <= 8) return '#f97316'; // oranžová
+  return '#ef4444'; // červená
+};
+
+export const getGratitudeLabel = (level: GratitudeLevel): string => {
+  if (level === 0) return 'Žádná vděčnost';
+  if (level <= 3) return 'Mírná vděčnost';
+  if (level <= 6) return 'Střední vděčnost';
+  if (level <= 8) return 'Silná vděčnost';
+  return 'Hluboká vděčnost';
+};
+
+export const getGratitudeColor = (level: GratitudeLevel): string => {
+  if (level === 0) return '#9ca3af'; // šedá
+  if (level <= 3) return '#84cc16'; // světle zelená
+  if (level <= 6) return '#10b981'; // zelená
+  if (level <= 8) return '#0891b2'; // modrá
+  return '#6366f1'; // indigo
 };
 
 // Oblasti podle psychologických modelů
@@ -92,6 +141,9 @@ export interface DailyScore {
   mood?: MoodValue; // Nálada v daný den
   anxiety?: AnxietyLevel; // Míra úzkosti (0-10)
   depression?: DepressionLevel; // Míra deprese (0-10)
+  joy?: JoyLevel; // Míra radosti (0-10)
+  anger?: AngerLevel; // Míra vzteku (0-10)
+  gratitude?: GratitudeLevel; // Míra vděčnosti (0-10)
   notes?: string;
   aiSummary?: string; // AI shrnutí od Claude
   microActions?: MicroAction[]; // Doporučené mikro-akce pro zítřek
