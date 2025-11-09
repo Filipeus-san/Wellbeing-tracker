@@ -94,7 +94,7 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
       }
     } catch (error) {
       console.error('Error saving daily score:', error);
-      alert('Chyba při ukládání dat. Zkontrolujte připojení k serveru.');
+      alert('Chyba při ukládání dat.');
     }
   };
 

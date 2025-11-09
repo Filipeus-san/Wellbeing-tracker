@@ -37,7 +37,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
       if (onUpdate) onUpdate();
     } catch (error) {
       console.error('Error saving settings:', error);
-      alert('Chyba při ukládání nastavení. Zkontrolujte připojení k serveru.');
+      alert('Chyba při ukládání nastavení.');
     }
   };
 
@@ -69,7 +69,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error exporting data:', error);
-      alert('Chyba při exportu dat. Zkontrolujte připojení k serveru.');
+      alert('Chyba při exportu dat.');
     }
   };
 
@@ -90,7 +90,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
         }
       } catch (error) {
         console.error('Error importing data:', error);
-        alert('Chyba při importu dat. Zkontrolujte připojení k serveru.');
+        alert('Chyba při importu dat. Zkontrolujte formát souboru.');
       }
     };
     reader.readAsText(file);
@@ -108,7 +108,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
         if (onUpdate) onUpdate();
       } catch (error) {
         console.error('Error clearing data:', error);
-        alert('Chyba při mazání dat. Zkontrolujte připojení k serveru.');
+        alert('Chyba při mazání dat.');
       }
     }
   };
@@ -122,7 +122,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
         <h3>🤖 Claude AI Integrace</h3>
         <p className="section-description">
           Zapněte integraci s lokálně nainstalovaným Claude CLI pro personalizovaná shrnutí a
-          doporučení. Vyžaduje běžící backend server.
+          doporučení.
         </p>
 
         <div className="setting-item">
@@ -141,8 +141,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
         {settings.enableClaudeIntegration && (
           <div className="api-key-section">
             <p className="help-text">
-              Aplikace používá lokálně nainstalovaný <strong>Claude CLI</strong> přes backend
-              proxy server (port 3001).
+              Aplikace používá lokálně nainstalovaný <strong>Claude CLI</strong> volaný přímo z Electronu.
             </p>
 
             <div className="api-key-actions">
@@ -159,14 +158,14 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
               )}
               {cliTestResult === 'error' && (
                 <span className="test-result error">
-                  ✗ Claude CLI není dostupné (zkontrolujte server)
+                  ✗ Claude CLI není dostupné (nainstalujte Claude CLI)
                 </span>
               )}
             </div>
 
             <p className="help-text">
-              Ujistěte se, že backend server běží:{' '}
-              <code>cd server && npm install && npm start</code>
+              Pokud Claude CLI není nainstalované, nainstalujte ho pomocí:{' '}
+              <code>npm install -g @anthropic-ai/claude-cli</code>
             </p>
           </div>
         )}
@@ -214,13 +213,13 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
       <div className="info-section">
         <h3>ℹ️ O aplikaci</h3>
         <p>
-          <strong>React Wellbeing Tracker</strong>
+          <strong>Wellbeing Tracker - Desktop Aplikace</strong>
         </p>
         <p>
           Aplikace pro sledování duševní pohody založená na psychologických modelech Maslow,
           SDT a PERMA.
         </p>
-        <p>Data jsou ukládána na serveru (http://localhost:3001).</p>
+        <p>Data jsou ukládána lokálně na vašem počítači v uživatelské složce.</p>
       </div>
     </div>
   );
