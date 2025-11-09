@@ -30,7 +30,8 @@ app.post('/api/claude/summary', async (req, res) => {
     console.log('📝 Generating summary, prompt length:', prompt.length);
 
     // Použít stdin místo parametru - bezpečnější a spolehlivější
-    const claude = spawn('claude', ['--no-stream'], {
+    // --print = print response and exit (non-interactive)
+    const claude = spawn('claude', ['--print'], {
       stdio: ['pipe', 'pipe', 'pipe'],
       timeout: 60000,
     });
