@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { DailyQuestionnaire } from './components/DailyQuestionnaire';
 import { WeeklySummary } from './components/WeeklySummary';
 import { Settings } from './components/Settings';
-import { LanguageProvider } from './i18n/LanguageContext';
+import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import './App.css';
 
 type View = 'daily' | 'weekly' | 'settings';
 
-function App() {
+function AppContent() {
+  const { t } = useLanguage();
   const [currentView, setCurrentView] = useState<View>('daily');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -28,15 +29,14 @@ function App() {
   };
 
   return (
-    <LanguageProvider>
-      <div className="app">
-        {/* Header */}
-        <header className="app-header">
-          <div className="header-content">
-            <h1 className="app-title">🌟 Wellbeing Tracker</h1>
-            <p className="app-subtitle">Sleduj svoji duševní pohodu pomocí Maslow, SDT a PERMA</p>
-          </div>
-        </header>
+    <div className="app">
+      {/* Header */}
+      <header className="app-header">
+        <div className="header-content">
+          <h1 className="app-title">🌟 Wellbeing Tracker</h1>
+          <p className="app-subtitle">Track your mental wellbeing with Maslow, SDT and PERMA</p>
+        </div>
+      </header>
 
       {/* Navigation */}
       <nav className="app-nav">
@@ -45,21 +45,21 @@ function App() {
           onClick={() => handleViewChange('daily')}
           disabled={isAiGenerating}
         >
-          📝 Denní dotazník
+          📝 {t.nav.dailyQuestionnaire}
         </button>
         <button
           className={`nav-button ${currentView === 'weekly' ? 'active' : ''} ${isAiGenerating ? 'disabled' : ''}`}
           onClick={handleViewWeeklySummary}
           disabled={isAiGenerating}
         >
-          📊 Týdenní shrnutí
+          📊 {t.nav.weeklySummary}
         </button>
         <button
           className={`nav-button ${currentView === 'settings' ? 'active' : ''} ${isAiGenerating ? 'disabled' : ''}`}
           onClick={() => handleViewChange('settings')}
           disabled={isAiGenerating}
         >
-          ⚙️ Nastavení
+          ⚙️ {t.nav.settings}
         </button>
       </nav>
 
@@ -68,7 +68,7 @@ function App() {
         {currentView === 'daily' && (
           <div className="view-container">
             <div className="date-selector">
-              <label htmlFor="date-input">Vyberte datum:</label>
+              <label htmlFor="date-input">{t.daily.selectDate}:</label>
               <input
                 id="date-input"
                 type="date"
@@ -104,13 +104,20 @@ function App() {
         )}
       </main>
 
-        {/* Footer */}
-        <footer className="app-footer">
-          <p>
-            Vytvořeno s ❤️ pro podporu duševní pohody | Data ukládána lokálně
-          </p>
-        </footer>
-      </div>
+      {/* Footer */}
+      <footer className="app-footer">
+        <p>
+          Created with ❤️ for mental wellbeing support | Data stored locally
+        </p>
+      </footer>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
     </LanguageProvider>
   );
 }

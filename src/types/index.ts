@@ -12,6 +12,14 @@ export const MOODS = {
   very_good: { emoji: '😊', label: 'Velmi dobrá', color: '#10b981' },
 } as const;
 
+export const getMoodLabel = (mood: MoodValue, lang: Language = 'cs'): string => {
+  const labels = {
+    cs: { very_bad: 'Velmi špatná', bad: 'Špatná', neutral: 'Neutrální', good: 'Dobrá', very_good: 'Velmi dobrá' },
+    en: { very_bad: 'Terrible', bad: 'Bad', neutral: 'Okay', good: 'Good', very_good: 'Amazing' }
+  };
+  return labels[lang][mood];
+};
+
 // Škály emocí a duševního stavu (0-10)
 export type AnxietyLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 export type DepressionLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
@@ -19,20 +27,26 @@ export type JoyLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 export type AngerLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 export type GratitudeLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
-export const getAnxietyLabel = (level: AnxietyLevel): string => {
-  if (level === 0) return 'Žádná úzkost';
-  if (level <= 3) return 'Mírná úzkost';
-  if (level <= 6) return 'Střední úzkost';
-  if (level <= 8) return 'Silná úzkost';
-  return 'Extrémní úzkost';
+export const getAnxietyLabel = (level: AnxietyLevel, lang: Language = 'cs'): string => {
+  const labels = lang === 'en'
+    ? { 0: 'None', 3: 'Mild', 6: 'Moderate', 8: 'Severe', 10: 'Extreme' }
+    : { 0: 'Žádná úzkost', 3: 'Mírná úzkost', 6: 'Střední úzkost', 8: 'Silná úzkost', 10: 'Extrémní úzkost' };
+  if (level === 0) return labels[0];
+  if (level <= 3) return labels[3];
+  if (level <= 6) return labels[6];
+  if (level <= 8) return labels[8];
+  return labels[10];
 };
 
-export const getDepressionLabel = (level: DepressionLevel): string => {
-  if (level === 0) return 'Žádná deprese';
-  if (level <= 3) return 'Mírná deprese';
-  if (level <= 6) return 'Střední deprese';
-  if (level <= 8) return 'Silná deprese';
-  return 'Extrémní deprese';
+export const getDepressionLabel = (level: DepressionLevel, lang: Language = 'cs'): string => {
+  const labels = lang === 'en'
+    ? { 0: 'None', 3: 'Mild', 6: 'Moderate', 8: 'Severe', 10: 'Extreme' }
+    : { 0: 'Žádná deprese', 3: 'Mírná deprese', 6: 'Střední deprese', 8: 'Silná deprese', 10: 'Extrémní deprese' };
+  if (level === 0) return labels[0];
+  if (level <= 3) return labels[3];
+  if (level <= 6) return labels[6];
+  if (level <= 8) return labels[8];
+  return labels[10];
 };
 
 export const getAnxietyColor = (level: AnxietyLevel): string => {
@@ -51,12 +65,15 @@ export const getDepressionColor = (level: DepressionLevel): string => {
   return '#ef4444'; // červená
 };
 
-export const getJoyLabel = (level: JoyLevel): string => {
-  if (level === 0) return 'Žádná radost';
-  if (level <= 3) return 'Mírná radost';
-  if (level <= 6) return 'Střední radost';
-  if (level <= 8) return 'Silná radost';
-  return 'Extrémní radost';
+export const getJoyLabel = (level: JoyLevel, lang: Language = 'cs'): string => {
+  const labels = lang === 'en'
+    ? { 0: 'None', 3: 'Mild', 6: 'Moderate', 8: 'High', 10: 'Extreme' }
+    : { 0: 'Žádná radost', 3: 'Mírná radost', 6: 'Střední radost', 8: 'Silná radost', 10: 'Extrémní radost' };
+  if (level === 0) return labels[0];
+  if (level <= 3) return labels[3];
+  if (level <= 6) return labels[6];
+  if (level <= 8) return labels[8];
+  return labels[10];
 };
 
 export const getJoyColor = (level: JoyLevel): string => {
@@ -67,12 +84,15 @@ export const getJoyColor = (level: JoyLevel): string => {
   return '#8b5cf6'; // fialová
 };
 
-export const getAngerLabel = (level: AngerLevel): string => {
-  if (level === 0) return 'Žádný vztek';
-  if (level <= 3) return 'Mírný vztek';
-  if (level <= 6) return 'Střední vztek';
-  if (level <= 8) return 'Silný vztek';
-  return 'Extrémní vztek';
+export const getAngerLabel = (level: AngerLevel, lang: Language = 'cs'): string => {
+  const labels = lang === 'en'
+    ? { 0: 'None', 3: 'Mild', 6: 'Moderate', 8: 'High', 10: 'Extreme' }
+    : { 0: 'Žádný vztek', 3: 'Mírný vztek', 6: 'Střední vztek', 8: 'Silný vztek', 10: 'Extrémní vztek' };
+  if (level === 0) return labels[0];
+  if (level <= 3) return labels[3];
+  if (level <= 6) return labels[6];
+  if (level <= 8) return labels[8];
+  return labels[10];
 };
 
 export const getAngerColor = (level: AngerLevel): string => {
@@ -83,12 +103,15 @@ export const getAngerColor = (level: AngerLevel): string => {
   return '#ef4444'; // červená
 };
 
-export const getGratitudeLabel = (level: GratitudeLevel): string => {
-  if (level === 0) return 'Žádná vděčnost';
-  if (level <= 3) return 'Mírná vděčnost';
-  if (level <= 6) return 'Střední vděčnost';
-  if (level <= 8) return 'Silná vděčnost';
-  return 'Hluboká vděčnost';
+export const getGratitudeLabel = (level: GratitudeLevel, lang: Language = 'cs'): string => {
+  const labels = lang === 'en'
+    ? { 0: 'None', 3: 'Mild', 6: 'Moderate', 8: 'High', 10: 'Deep' }
+    : { 0: 'Žádná vděčnost', 3: 'Mírná vděčnost', 6: 'Střední vděčnost', 8: 'Silná vděčnost', 10: 'Hluboká vděčnost' };
+  if (level === 0) return labels[0];
+  if (level <= 3) return labels[3];
+  if (level <= 6) return labels[6];
+  if (level <= 8) return labels[8];
+  return labels[10];
 };
 
 export const getGratitudeColor = (level: GratitudeLevel): string => {

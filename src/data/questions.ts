@@ -1,5 +1,6 @@
-import type { Question } from '../types';
+import type { Question, Language } from '../types';
 import { WellbeingCategory } from '../types';
+import { translations } from '../i18n/translations';
 
 export const questions: Question[] = [
   // MASLOW - Hierarchie potřeb
@@ -119,35 +120,62 @@ export const questions: Question[] = [
   },
 ];
 
-export const getCategoryLabel = (category: WellbeingCategory): string => {
-  const labels: Record<WellbeingCategory, string> = {
-    [WellbeingCategory.PHYSIOLOGICAL]: 'Fyziologické potřeby',
-    [WellbeingCategory.SAFETY]: 'Bezpečí',
-    [WellbeingCategory.BELONGING_MASLOW]: 'Sounáležitost (Maslow)',
-    [WellbeingCategory.ESTEEM]: 'Sebeúcta',
-    [WellbeingCategory.SELF_ACTUALIZATION]: 'Seberealizace',
-    [WellbeingCategory.AUTONOMY]: 'Autonomie',
-    [WellbeingCategory.COMPETENCE]: 'Kompetence',
-    [WellbeingCategory.BELONGING_SDT]: 'Sounáležitost (SDT)',
-    [WellbeingCategory.POSITIVE_EMOTIONS]: 'Pozitivní emoce',
-    [WellbeingCategory.ENGAGEMENT]: 'Engagement',
-    [WellbeingCategory.RELATIONSHIPS]: 'Vztahy',
-    [WellbeingCategory.MEANING]: 'Smysl',
-    [WellbeingCategory.ACCOMPLISHMENT]: 'Úspěchy',
-    [WellbeingCategory.CLEANING]: 'Úklid',
-    [WellbeingCategory.HYGIENE]: 'Hygiena',
-    [WellbeingCategory.EXERCISE]: 'Pohyb/Sport',
-    [WellbeingCategory.ADDICTION]: 'Závislosti',
-    [WellbeingCategory.ILLNESS]: 'Zdraví/Nemoc',
+export const getCategoryLabel = (category: WellbeingCategory, lang: Language = 'cs'): string => {
+  const t = translations[lang];
+  const mapping: Record<WellbeingCategory, string> = {
+    [WellbeingCategory.PHYSIOLOGICAL]: t.categories.physiological,
+    [WellbeingCategory.SAFETY]: t.categories.safety,
+    [WellbeingCategory.BELONGING_MASLOW]: t.categories.belongingMaslow,
+    [WellbeingCategory.ESTEEM]: t.categories.esteem,
+    [WellbeingCategory.SELF_ACTUALIZATION]: t.categories.selfActualization,
+    [WellbeingCategory.AUTONOMY]: t.categories.autonomy,
+    [WellbeingCategory.COMPETENCE]: t.categories.competence,
+    [WellbeingCategory.BELONGING_SDT]: t.categories.belongingSdt,
+    [WellbeingCategory.POSITIVE_EMOTIONS]: t.categories.positiveEmotions,
+    [WellbeingCategory.ENGAGEMENT]: t.categories.engagement,
+    [WellbeingCategory.RELATIONSHIPS]: t.categories.relationships,
+    [WellbeingCategory.MEANING]: t.categories.meaning,
+    [WellbeingCategory.ACCOMPLISHMENT]: t.categories.accomplishment,
+    [WellbeingCategory.CLEANING]: t.categories.cleaning,
+    [WellbeingCategory.HYGIENE]: t.categories.hygiene,
+    [WellbeingCategory.EXERCISE]: t.categories.exercise,
+    [WellbeingCategory.ADDICTION]: t.categories.addiction,
+    [WellbeingCategory.ILLNESS]: t.categories.illness,
   };
-  return labels[category];
+  return mapping[category];
 };
 
-export const getModelLabel = (model: 'maslow' | 'sdt' | 'perma'): string => {
+export const getModelLabel = (model: 'maslow' | 'sdt' | 'perma', lang: Language = 'cs'): string => {
+  const t = translations[lang];
   const labels = {
-    maslow: 'Maslow - Hierarchie potřeb',
-    sdt: 'SDT - Teorie sebedeterminace',
-    perma: 'PERMA - Model wellbeingu',
+    maslow: t.models.maslow,
+    sdt: t.models.sdt,
+    perma: t.models.perma,
   };
   return labels[model];
+};
+
+export const getQuestionText = (questionId: string, lang: Language = 'cs'): string => {
+  const t = translations[lang];
+  const mapping: Record<string, string> = {
+    'maslow_physiological': t.questions.maslowPhysiological,
+    'maslow_safety': t.questions.maslowSafety,
+    'maslow_belonging': t.questions.maslowBelonging,
+    'maslow_esteem': t.questions.maslowEsteem,
+    'maslow_self_actualization': t.questions.maslowSelfActualization,
+    'sdt_autonomy': t.questions.sdtAutonomy,
+    'sdt_competence': t.questions.sdtCompetence,
+    'sdt_belonging': t.questions.sdtBelonging,
+    'perma_positive_emotions': t.questions.permaPositiveEmotions,
+    'perma_engagement': t.questions.permaEngagement,
+    'perma_relationships': t.questions.permaRelationships,
+    'perma_meaning': t.questions.permaMeaning,
+    'perma_accomplishment': t.questions.permaAccomplishment,
+    'perma_exercise': t.questions.permaExercise,
+    'maslow_hygiene': t.questions.maslowHygiene,
+    'maslow_cleaning': t.questions.maslowCleaning,
+    'maslow_addiction': t.questions.maslowAddiction,
+    'maslow_illness': t.questions.maslowIllness,
+  };
+  return mapping[questionId] || questions.find(q => q.id === questionId)?.text || questionId;
 };
