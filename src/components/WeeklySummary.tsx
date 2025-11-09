@@ -16,12 +16,12 @@ import {
 import type { WeeklySummary as WeeklySummaryType, DailyScore } from '../types';
 import { MOODS, getAnxietyColor, getDepressionColor, getJoyColor, getAngerColor, getGratitudeColor, getMoodLabel } from '../types';
 import { questions, getCategoryLabel, getQuestionText } from '../data/questions';
-import { getScoreColor, getScoreLabel, calculateCategoryAverages, generateWeeklySummary } from '../utils/analytics';
+import { getScoreColor, getScoreLabel, calculateCategoryAverages, generateWeeklySummary, identifyCriticalAreas } from '../utils/analytics';
 import { generateClaudeSummary } from '../utils/claudeApi';
 import { getDailyScoresInRange, getSettings, saveWeeklySummary, getWeeklySummary } from '../utils/storage';
 import { startOfWeek, addWeeks, subWeeks } from 'date-fns';
 import { useLanguage } from '../i18n/LanguageContext';
-import { getMicroActionText } from '../utils/microActions';
+import { getMicroActionText, generateMicroActions } from '../utils/microActions';
 import './WeeklySummary.css';
 
 interface WeeklySummaryProps {
@@ -68,6 +68,17 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         await saveWeeklySummary(weeklySummary);
       }
 
+      // Zajistit, že microActions jsou vždy definované (pro starší data bez microActions)
+      if (!weeklySummary.microActions || weeklySummary.microActions.length === 0) {
+        // Vygenerovat mikro-akce ze stávajících dat
+        const criticalAreas = identifyCriticalAreas(weeklySummary.averages);
+        weeklySummary.microActions = generateMicroActions(weeklySummary.averages, criticalAreas);
+
+        // Uložit aktualizované shrnutí s mikro-akcemi
+        await saveWeeklySummary(weeklySummary);
+        console.log('✨ Vygenerovány mikro-akce pro starší týdenní shrnutí:', weeklySummary.microActions.length);
+      }
+
       setSummary(weeklySummary);
       setClaudeSummary(weeklySummary.claudeSummary || null);
 
@@ -83,6 +94,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         dailyScoresCount: scores.length,
         criticalAreas: weeklySummary.criticalAreas.length,
         microActions: weeklySummary.microActions.length,
+        microActionsArray: weeklySummary.microActions,
       });
     };
 
@@ -608,7 +620,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       )}
 
       {/* Mikro-akce - zobrazit pouze pokud jsou nějaká data */}
-      {dailyScores.length > 0 && summary.microActions.length > 0 && (
+      {dailyScores.length > 0 && summary.microActions && summary.microActions.length > 0 && (
         <div className="micro-actions-section">
           <h3>💡 {t.weekly.recommendedMicroActions}</h3>
           <div className="micro-actions-grid">
