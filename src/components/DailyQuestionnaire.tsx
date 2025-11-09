@@ -28,6 +28,12 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
     if (existingScore) {
       setScores(existingScore.scores);
       setNotes(existingScore.notes || '');
+      setAiSummary(existingScore.aiSummary || null);
+    } else {
+      // Reset state při změně data
+      setScores({});
+      setNotes('');
+      setAiSummary(null);
     }
   }, [date]);
 
@@ -55,20 +61,27 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
   };
 
   const handleGenerateSummary = async () => {
-    // Uložit před generováním
-    const dailyScore: DailyScore = {
-      date,
-      scores,
-      notes: notes.trim() || undefined,
-    };
-
-    saveDailyScore(dailyScore);
-
     setIsGeneratingSummary(true);
     setSummaryError(null);
 
     try {
+      // Vytvořit DailyScore objekt
+      const dailyScore: DailyScore = {
+        date,
+        scores,
+        notes: notes.trim() || undefined,
+      };
+
+      // Vygenerovat shrnutí
       const summary = await generateDailySummary(dailyScore);
+
+      // Uložit s AI shrnutím
+      const dailyScoreWithAI: DailyScore = {
+        ...dailyScore,
+        aiSummary: summary,
+      };
+
+      saveDailyScore(dailyScoreWithAI);
       setAiSummary(summary);
     } catch (error) {
       setSummaryError(
@@ -169,7 +182,11 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
               onClick={handleGenerateSummary}
               disabled={isGeneratingSummary}
             >
-              {isGeneratingSummary ? '🤖 Generuji...' : '🤖 Vygenerovat AI shrnutí'}
+              {isGeneratingSummary
+                ? '🤖 Generuji...'
+                : aiSummary
+                ? '🔄 Vygenerovat znovu'
+                : '🤖 Vygenerovat AI shrnutí'}
             </button>
           )}
         </div>
@@ -190,7 +207,12 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
       {/* AI Shrnutí */}
       {aiSummary && (
         <div className="ai-summary-section">
-          <h3>🤖 AI Wellbeing Kouč - Denní shrnutí</h3>
+          <div className="ai-summary-header">
+            <h3>🤖 AI Wellbeing Kouč - Denní shrnutí</h3>
+            {getDailyScore(date)?.aiSummary && (
+              <span className="saved-indicator">💾 Uloženo</span>
+            )}
+          </div>
           <div className="ai-summary-content">{aiSummary}</div>
           <button className="close-summary-button" onClick={() => setAiSummary(null)}>
             Zavřít

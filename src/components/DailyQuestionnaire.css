@@ -237,9 +237,27 @@
   animation: slideIn 0.3s ease;
 }
 
+.ai-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .ai-summary-section h3 {
-  margin: 0 0 15px 0;
+  margin: 0;
   font-size: 22px;
+}
+
+.saved-indicator {
+  background: rgba(255, 255, 255, 0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .ai-summary-content {

@@ -37,6 +37,7 @@ export interface DailyScore {
   date: string; // ISO date string
   scores: Record<string, ScoreValue>; // questionId -> score
   notes?: string;
+  aiSummary?: string; // AI shrnutí od Claude
 }
 
 export interface WeeklySummary {
