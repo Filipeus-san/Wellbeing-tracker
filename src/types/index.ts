@@ -32,6 +32,11 @@ export const WellbeingCategory = {
   RELATIONSHIPS: 'relationships',
   MEANING: 'meaning',
   ACCOMPLISHMENT: 'accomplishment',
+
+  // Praktické oblasti
+  CLEANING: 'cleaning',
+  HYGIENE: 'hygiene',
+  EXERCISE: 'exercise',
 } as const;
 
 export type WellbeingCategory = typeof WellbeingCategory[keyof typeof WellbeingCategory];

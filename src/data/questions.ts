@@ -85,6 +85,26 @@ export const questions: Question[] = [
     text: 'Kolik úspěchů a pokroku jsi dnes dosáhl/a?',
     model: 'perma',
   },
+  {
+    id: 'perma_exercise',
+    category: WellbeingCategory.EXERCISE,
+    text: 'Kolik pohybu a sportovních aktivit jsi dnes absolvoval/a?',
+    model: 'perma',
+  },
+
+  // Praktické návyky v rámci Maslow
+  {
+    id: 'maslow_hygiene',
+    category: WellbeingCategory.HYGIENE,
+    text: 'Jak dobře ses dnes postaral/a o svou osobní hygienu?',
+    model: 'maslow',
+  },
+  {
+    id: 'maslow_cleaning',
+    category: WellbeingCategory.CLEANING,
+    text: 'Jak moc ses dnes postaral/a o úklid a pořádek ve svém prostředí?',
+    model: 'maslow',
+  },
 ];
 
 export const getCategoryLabel = (category: WellbeingCategory): string => {
@@ -102,6 +122,9 @@ export const getCategoryLabel = (category: WellbeingCategory): string => {
     [WellbeingCategory.RELATIONSHIPS]: 'Vztahy',
     [WellbeingCategory.MEANING]: 'Smysl',
     [WellbeingCategory.ACCOMPLISHMENT]: 'Úspěchy',
+    [WellbeingCategory.CLEANING]: 'Úklid',
+    [WellbeingCategory.HYGIENE]: 'Hygiena',
+    [WellbeingCategory.EXERCISE]: 'Pohyb/Sport',
   };
   return labels[category];
 };

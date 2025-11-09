@@ -312,6 +312,75 @@ const microActionsDatabase: Record<WellbeingCategory, MicroAction[]> = {
       priority: 'low',
     },
   ],
+  [WellbeingCategory.CLEANING]: [
+    {
+      id: 'cleaning_1',
+      title: 'Denní úklid',
+      description: 'Věnuj 15 minut úklidu - ukliď pracovní prostor nebo jednu místnost.',
+      category: WellbeingCategory.CLEANING,
+      priority: 'high',
+    },
+    {
+      id: 'cleaning_2',
+      title: 'Uspořádání věcí',
+      description: 'Roztřiď a uspořádej věci na jednom místě (stůl, šuplík, police).',
+      category: WellbeingCategory.CLEANING,
+      priority: 'medium',
+    },
+    {
+      id: 'cleaning_3',
+      title: 'Vyhození nepotřebných věcí',
+      description: 'Projdi jednu oblast a zbav se 5 věcí, které už nepotřebuješ.',
+      category: WellbeingCategory.CLEANING,
+      priority: 'low',
+    },
+  ],
+  [WellbeingCategory.HYGIENE]: [
+    {
+      id: 'hygiene_1',
+      title: 'Ranní rutina',
+      description: 'Začni den sprchováním a kompletní ranní hygienou.',
+      category: WellbeingCategory.HYGIENE,
+      priority: 'high',
+    },
+    {
+      id: 'hygiene_2',
+      title: 'Péče o zuby',
+      description: 'Vyčisti si zuby alespoň 2x denně a použ zubní nit.',
+      category: WellbeingCategory.HYGIENE,
+      priority: 'high',
+    },
+    {
+      id: 'hygiene_3',
+      title: 'Péče o tělo',
+      description: 'Věnuj čas péči o kůži, vlasy nebo nehty.',
+      category: WellbeingCategory.HYGIENE,
+      priority: 'medium',
+    },
+  ],
+  [WellbeingCategory.EXERCISE]: [
+    {
+      id: 'exercise_1',
+      title: 'Denní procházka',
+      description: 'Jdi na 20-30 minutovou procházku na čerstvém vzduchu.',
+      category: WellbeingCategory.EXERCISE,
+      priority: 'high',
+    },
+    {
+      id: 'exercise_2',
+      title: 'Protažení',
+      description: 'Věnuj 10 minut protahování nebo lehké józe.',
+      category: WellbeingCategory.EXERCISE,
+      priority: 'medium',
+    },
+    {
+      id: 'exercise_3',
+      title: 'Aktivní cvičení',
+      description: 'Zacvič si alespoň 20 minut - běh, posilovna, sport.',
+      category: WellbeingCategory.EXERCISE,
+      priority: 'medium',
+    },
+  ],
 };
 
 /**
