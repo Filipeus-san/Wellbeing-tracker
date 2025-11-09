@@ -69,7 +69,9 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       }
 
       // Zajistit, že microActions jsou vždy definované (pro starší data bez microActions)
-      if (!weeklySummary.microActions || weeklySummary.microActions.length === 0) {
+      // Ale pouze pokud máme nějaká data (averages nejsou prázdné)
+      const hasData = Object.keys(weeklySummary.averages).length > 0;
+      if (hasData && (!weeklySummary.microActions || weeklySummary.microActions.length === 0)) {
         // Vygenerovat mikro-akce ze stávajících dat
         const criticalAreas = identifyCriticalAreas(weeklySummary.averages);
         weeklySummary.microActions = generateMicroActions(weeklySummary.averages, criticalAreas);
@@ -77,6 +79,9 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         // Uložit aktualizované shrnutí s mikro-akcemi
         await saveWeeklySummary(weeklySummary);
         console.log('✨ Vygenerovány mikro-akce pro starší týdenní shrnutí:', weeklySummary.microActions.length);
+      } else if (!hasData) {
+        // Pro týdny bez dat nastavit prázdné pole
+        weeklySummary.microActions = [];
       }
 
       setSummary(weeklySummary);
@@ -85,6 +90,13 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       // Načíst denní skóre
       const scores = await getDailyScoresInRange(weeklySummary.weekStart, weeklySummary.weekEnd);
       setDailyScores(scores);
+
+      // Pokud není žádné vyplněné dny, vyčisti mikro-akce
+      if (scores.length === 0 && weeklySummary.microActions.length > 0) {
+        weeklySummary.microActions = [];
+        await saveWeeklySummary(weeklySummary);
+        console.log('🗑️ Smazány mikro-akce pro týden bez dat');
+      }
 
       setIsLoading(false);
 
