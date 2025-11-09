@@ -1,0 +1,16 @@
+{
+  "dailyScores": [
+    {
+      "date": "2025-11-09",
+      "scores": {
+        "q1": 5,
+        "q2": 4
+      },
+      "notes": "Test"
+    }
+  ],
+  "weeklySummaries": [],
+  "settings": {
+    "enableClaudeIntegration": false
+  }
+}

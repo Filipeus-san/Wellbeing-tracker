@@ -18,23 +18,38 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [canUseAI, setCanUseAI] = useState(false);
+  const [currentDailyScore, setCurrentDailyScore] = useState<DailyScore | undefined>(undefined);
 
-  const settings = getSettings();
-  const canUseAI = settings.enableClaudeIntegration;
+  // Načíst nastavení
+  useEffect(() => {
+    const loadSettings = async () => {
+      const settings = await getSettings();
+      setCanUseAI(settings.enableClaudeIntegration);
+    };
+    loadSettings();
+  }, []);
 
   // Načíst existující data
   useEffect(() => {
-    const existingScore = getDailyScore(date);
-    if (existingScore) {
-      setScores(existingScore.scores);
-      setNotes(existingScore.notes || '');
-      setAiSummary(existingScore.aiSummary || null);
-    } else {
-      // Reset state při změně data
-      setScores({});
-      setNotes('');
-      setAiSummary(null);
-    }
+    const loadDailyScore = async () => {
+      setIsLoading(true);
+      const existingScore = await getDailyScore(date);
+      setCurrentDailyScore(existingScore);
+      if (existingScore) {
+        setScores(existingScore.scores);
+        setNotes(existingScore.notes || '');
+        setAiSummary(existingScore.aiSummary || null);
+      } else {
+        // Reset state při změně data
+        setScores({});
+        setNotes('');
+        setAiSummary(null);
+      }
+      setIsLoading(false);
+    };
+    loadDailyScore();
   }, [date]);
 
   const handleScoreChange = (questionId: string, score: ScoreValue) => {
@@ -44,19 +59,25 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
     }));
   };
 
-  const handleSave = () => {
-    const dailyScore: DailyScore = {
-      date,
-      scores,
-      notes: notes.trim() || undefined,
-    };
+  const handleSave = async () => {
+    try {
+      const dailyScore: DailyScore = {
+        date,
+        scores,
+        notes: notes.trim() || undefined,
+      };
 
-    saveDailyScore(dailyScore);
-    setSavedMessage(true);
-    setTimeout(() => setSavedMessage(false), 3000);
+      await saveDailyScore(dailyScore);
+      setCurrentDailyScore(dailyScore);
+      setSavedMessage(true);
+      setTimeout(() => setSavedMessage(false), 3000);
 
-    if (onComplete) {
-      onComplete();
+      if (onComplete) {
+        onComplete();
+      }
+    } catch (error) {
+      console.error('Error saving daily score:', error);
+      alert('Chyba při ukládání dat. Zkontrolujte připojení k serveru.');
     }
   };
 
@@ -90,7 +111,8 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
         aiSummary: summary,
       };
 
-      saveDailyScore(completeDailyScore);
+      await saveDailyScore(completeDailyScore);
+      setCurrentDailyScore(completeDailyScore);
       setAiSummary(summary);
     } catch (error) {
       setSummaryError(
@@ -114,6 +136,14 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
     acc[question.model].push(question);
     return acc;
   }, {} as Record<string, typeof questions>);
+
+  if (isLoading) {
+    return (
+      <div className="daily-questionnaire">
+        <div className="loading-message">Načítám data...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="daily-questionnaire">
@@ -218,18 +248,18 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
         <div className="ai-summary-section">
           <div className="ai-summary-header">
             <h3>🤖 AI Wellbeing Kouč - Denní shrnutí</h3>
-            {getDailyScore(date)?.aiSummary && (
+            {currentDailyScore?.aiSummary && (
               <span className="saved-indicator">💾 Uloženo</span>
             )}
           </div>
           <div className="ai-summary-content">{aiSummary}</div>
 
           {/* Mikro-akce na zítřek */}
-          {getDailyScore(date)?.microActions && (
+          {currentDailyScore?.microActions && (
             <div className="daily-micro-actions">
               <h4>💡 Doporučené akce na zítřek</h4>
               <div className="micro-actions-list">
-                {getDailyScore(date)!.microActions!.map((action) => (
+                {currentDailyScore.microActions.map((action) => (
                   <div key={action.id} className={`micro-action-item priority-${action.priority}`}>
                     <div className="action-icon">
                       {action.priority === 'high' && '🔥'}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   BarChart,
   Bar,
@@ -13,30 +13,96 @@ import {
   PolarRadiusAxis,
   Radar,
 } from 'recharts';
-import type { WeeklySummary as WeeklySummaryType } from '../types';
+import type { WeeklySummary as WeeklySummaryType, DailyScore } from '../types';
 import { questions, getCategoryLabel } from '../data/questions';
-import { getScoreColor, getScoreLabel, calculateCategoryAverages } from '../utils/analytics';
+import { getScoreColor, getScoreLabel, calculateCategoryAverages, generateWeeklySummary } from '../utils/analytics';
 import { generateClaudeSummary } from '../utils/claudeApi';
-import { getDailyScoresInRange, getSettings, saveWeeklySummary } from '../utils/storage';
+import { getDailyScoresInRange, getSettings, saveWeeklySummary, getWeeklySummary } from '../utils/storage';
+import { startOfWeek } from 'date-fns';
 import './WeeklySummary.css';
 
 interface WeeklySummaryProps {
-  summary: WeeklySummaryType;
   onRefresh?: () => void;
 }
 
-export const WeeklySummary = ({ summary, onRefresh }: WeeklySummaryProps) => {
-  const [claudeSummary, setClaudeSummary] = useState<string | null>(
-    summary.claudeSummary || null
-  );
+export const WeeklySummary = ({ onRefresh }: WeeklySummaryProps) => {
+  const [summary, setSummary] = useState<WeeklySummaryType | null>(null);
+  const [dailyScores, setDailyScores] = useState<DailyScore[]>([]);
+  const [claudeSummary, setClaudeSummary] = useState<string | null>(null);
   const [isLoadingClaude, setIsLoadingClaude] = useState(false);
   const [claudeError, setClaudeError] = useState<string | null>(null);
+  const [canUseClaude, setCanUseClaude] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const settings = getSettings();
-  const canUseClaude = settings.enableClaudeIntegration && settings.claudeApiKey;
+  // Načíst data při načtení komponenty
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
 
-  // Získat denní skóre pro detail
-  const dailyScores = getDailyScoresInRange(summary.weekStart, summary.weekEnd);
+      // Získat nastavení
+      const settings = await getSettings();
+      setCanUseClaude(settings.enableClaudeIntegration);
+
+      // Získat aktuální týden
+      const today = new Date();
+      const weekStart = startOfWeek(today, { weekStartsOn: 1 });
+      const weekStartStr = weekStart.toISOString().split('T')[0];
+
+      // Zkusit načíst existující, jinak vygenerovat nové
+      let weeklySummary = await getWeeklySummary(weekStartStr);
+      if (!weeklySummary) {
+        weeklySummary = generateWeeklySummary(today);
+        await saveWeeklySummary(weeklySummary);
+      }
+
+      setSummary(weeklySummary);
+      setClaudeSummary(weeklySummary.claudeSummary || null);
+
+      // Načíst denní skóre
+      const scores = await getDailyScoresInRange(weeklySummary.weekStart, weeklySummary.weekEnd);
+      setDailyScores(scores);
+
+      setIsLoading(false);
+    };
+
+    loadData();
+  }, []);
+
+  const handleGenerateClaude = async () => {
+    if (!summary) return;
+
+    setIsLoadingClaude(true);
+    setClaudeError(null);
+
+    try {
+      const aiSummary = await generateClaudeSummary(summary, dailyScores);
+      setClaudeSummary(aiSummary);
+
+      // Uložit do summary
+      const updatedSummary = {
+        ...summary,
+        claudeSummary: aiSummary,
+      };
+      await saveWeeklySummary(updatedSummary);
+      setSummary(updatedSummary);
+
+      if (onRefresh) onRefresh();
+    } catch (error) {
+      setClaudeError(
+        error instanceof Error ? error.message : 'Chyba při generování shrnutí'
+      );
+    } finally {
+      setIsLoadingClaude(false);
+    }
+  };
+
+  if (isLoading || !summary) {
+    return (
+      <div className="weekly-summary">
+        <div className="loading-message">Načítám týdenní data...</div>
+      </div>
+    );
+  }
 
   // Připravit data pro grafy
   const categoryAverages = calculateCategoryAverages(summary.averages);
@@ -53,31 +119,6 @@ export const WeeklySummary = ({ summary, onRefresh }: WeeklySummaryProps) => {
       score: parseFloat(area.score.toFixed(2)),
     };
   });
-
-  const handleGenerateClaude = async () => {
-    setIsLoadingClaude(true);
-    setClaudeError(null);
-
-    try {
-      const aiSummary = await generateClaudeSummary(summary, dailyScores);
-      setClaudeSummary(aiSummary);
-
-      // Uložit do summary
-      const updatedSummary = {
-        ...summary,
-        claudeSummary: aiSummary,
-      };
-      saveWeeklySummary(updatedSummary);
-
-      if (onRefresh) onRefresh();
-    } catch (error) {
-      setClaudeError(
-        error instanceof Error ? error.message : 'Chyba při generování shrnutí'
-      );
-    } finally {
-      setIsLoadingClaude(false);
-    }
-  };
 
   const weekStartDate = new Date(summary.weekStart).toLocaleDateString('cs-CZ');
   const weekEndDate = new Date(summary.weekEnd).toLocaleDateString('cs-CZ');

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getSettings, saveSettings, exportData, importData, clearAllData } from '../utils/storage';
 import { testClaudeApiKey } from '../utils/claudeApi';
 import type { AppSettings } from '../types';
@@ -9,22 +9,39 @@ interface SettingsProps {
 }
 
 export const Settings = ({ onUpdate }: SettingsProps) => {
-  const [settings, setSettings] = useState<AppSettings>(getSettings());
+  const [settings, setSettings] = useState<AppSettings>({ enableClaudeIntegration: false });
   const [isTestingCLI, setIsTestingCLI] = useState(false);
   const [cliTestResult, setCliTestResult] = useState<'success' | 'error' | null>(null);
   const [saveMessage, setSaveMessage] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Načíst nastavení při načtení komponenty
+  useEffect(() => {
+    const loadSettings = async () => {
+      setIsLoading(true);
+      const loadedSettings = await getSettings();
+      setSettings(loadedSettings);
+      setIsLoading(false);
+    };
+    loadSettings();
+  }, []);
 
   const handleSaveSettings = async () => {
-    const newSettings: AppSettings = {
-      enableClaudeIntegration: settings.enableClaudeIntegration,
-    };
+    try {
+      const newSettings: AppSettings = {
+        enableClaudeIntegration: settings.enableClaudeIntegration,
+      };
 
-    saveSettings(newSettings);
-    setSettings(newSettings);
-    setSaveMessage(true);
-    setTimeout(() => setSaveMessage(false), 3000);
+      await saveSettings(newSettings);
+      setSettings(newSettings);
+      setSaveMessage(true);
+      setTimeout(() => setSaveMessage(false), 3000);
 
-    if (onUpdate) onUpdate();
+      if (onUpdate) onUpdate();
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      alert('Chyba při ukládání nastavení. Zkontrolujte připojení k serveru.');
+    }
   };
 
   const handleTestCLI = async () => {
@@ -41,17 +58,22 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
     }
   };
 
-  const handleExport = () => {
-    const data = exportData();
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `wellbeing-data-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handleExport = async () => {
+    try {
+      const data = await exportData();
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `wellbeing-data-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error exporting data:', error);
+      alert('Chyba při exportu dat. Zkontrolujte připojení k serveru.');
+    }
   };
 
   const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,28 +81,38 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const content = e.target?.result as string;
-      const success = importData(content);
-      if (success) {
-        alert('Data byla úspěšně importována!');
-        if (onUpdate) onUpdate();
-      } else {
-        alert('Chyba při importu dat. Zkontrolujte formát souboru.');
+      try {
+        const success = await importData(content);
+        if (success) {
+          alert('Data byla úspěšně importována!');
+          if (onUpdate) onUpdate();
+        } else {
+          alert('Chyba při importu dat. Zkontrolujte formát souboru.');
+        }
+      } catch (error) {
+        console.error('Error importing data:', error);
+        alert('Chyba při importu dat. Zkontrolujte připojení k serveru.');
       }
     };
     reader.readAsText(file);
   };
 
-  const handleClearData = () => {
+  const handleClearData = async () => {
     if (
       window.confirm(
-        'Opravdu chcete smazat všechna data? Tato akce je nevratná!\n\n(API klíč zůstane zachován)'
+        'Opravdu chcete smazat všechna data? Tato akce je nevratná!\n\n(Nastavení zůstane zachováno)'
       )
     ) {
-      clearAllData();
-      alert('Data byla smazána.');
-      if (onUpdate) onUpdate();
+      try {
+        await clearAllData();
+        alert('Data byla smazána.');
+        if (onUpdate) onUpdate();
+      } catch (error) {
+        console.error('Error clearing data:', error);
+        alert('Chyba při mazání dat. Zkontrolujte připojení k serveru.');
+      }
     }
   };
 
@@ -191,7 +223,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
           Aplikace pro sledování duševní pohody založená na psychologických modelech Maslow,
           SDT a PERMA.
         </p>
-        <p>Data jsou ukládána lokálně ve vašem prohlížeči (LocalStorage).</p>
+        <p>Data jsou ukládána na serveru (http://localhost:3001).</p>
       </div>
     </div>
   );

@@ -1,40 +1,68 @@
 import type { DailyScore, WeeklySummary, AppSettings } from '../types';
 
-const STORAGE_KEYS = {
-  DAILY_SCORES: 'wellbeing_daily_scores',
-  WEEKLY_SUMMARIES: 'wellbeing_weekly_summaries',
-  SETTINGS: 'wellbeing_settings',
-} as const;
+const API_BASE_URL = 'http://localhost:3001/api';
+
+// Helper function for API calls
+async function apiCall<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API call failed: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || 'Unknown error');
+    }
+
+    return result.data;
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
+  }
+}
 
 // Daily Scores
-export const saveDailyScore = (score: DailyScore): void => {
-  const scores = getDailyScores();
-  const existingIndex = scores.findIndex((s) => s.date === score.date);
+export const saveDailyScore = async (score: DailyScore): Promise<void> => {
+  await apiCall<DailyScore>('/data/daily-scores', {
+    method: 'POST',
+    body: JSON.stringify(score),
+  });
+};
 
-  if (existingIndex >= 0) {
-    scores[existingIndex] = score;
-  } else {
-    scores.push(score);
+export const getDailyScores = async (): Promise<DailyScore[]> => {
+  try {
+    return await apiCall<DailyScore[]>('/data/daily-scores');
+  } catch (error) {
+    console.error('Error fetching daily scores:', error);
+    return [];
   }
-
-  // Seřadit podle data
-  scores.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-  localStorage.setItem(STORAGE_KEYS.DAILY_SCORES, JSON.stringify(scores));
 };
 
-export const getDailyScores = (): DailyScore[] => {
-  const data = localStorage.getItem(STORAGE_KEYS.DAILY_SCORES);
-  return data ? JSON.parse(data) : [];
+export const getDailyScore = async (date: string): Promise<DailyScore | undefined> => {
+  try {
+    return await apiCall<DailyScore | null>(`/data/daily-scores/${date}`).then((data) =>
+      data === null ? undefined : data
+    );
+  } catch (error) {
+    console.error('Error fetching daily score:', error);
+    return undefined;
+  }
 };
 
-export const getDailyScore = (date: string): DailyScore | undefined => {
-  const scores = getDailyScores();
-  return scores.find((s) => s.date === date);
-};
-
-export const getDailyScoresInRange = (startDate: string, endDate: string): DailyScore[] => {
-  const scores = getDailyScores();
+export const getDailyScoresInRange = async (
+  startDate: string,
+  endDate: string
+): Promise<DailyScore[]> => {
+  const scores = await getDailyScores();
   const start = new Date(startDate).getTime();
   const end = new Date(endDate).getTime();
 
@@ -45,73 +73,70 @@ export const getDailyScoresInRange = (startDate: string, endDate: string): Daily
 };
 
 // Weekly Summaries
-export const saveWeeklySummary = (summary: WeeklySummary): void => {
-  const summaries = getWeeklySummaries();
-  const existingIndex = summaries.findIndex(
-    (s) => s.weekStart === summary.weekStart && s.weekEnd === summary.weekEnd
-  );
+export const saveWeeklySummary = async (summary: WeeklySummary): Promise<void> => {
+  await apiCall<WeeklySummary>('/data/weekly-summaries', {
+    method: 'POST',
+    body: JSON.stringify(summary),
+  });
+};
 
-  if (existingIndex >= 0) {
-    summaries[existingIndex] = summary;
-  } else {
-    summaries.push(summary);
+export const getWeeklySummaries = async (): Promise<WeeklySummary[]> => {
+  try {
+    return await apiCall<WeeklySummary[]>('/data/weekly-summaries');
+  } catch (error) {
+    console.error('Error fetching weekly summaries:', error);
+    return [];
   }
-
-  // Seřadit podle data
-  summaries.sort((a, b) => new Date(a.weekStart).getTime() - new Date(b.weekStart).getTime());
-
-  localStorage.setItem(STORAGE_KEYS.WEEKLY_SUMMARIES, JSON.stringify(summaries));
 };
 
-export const getWeeklySummaries = (): WeeklySummary[] => {
-  const data = localStorage.getItem(STORAGE_KEYS.WEEKLY_SUMMARIES);
-  return data ? JSON.parse(data) : [];
-};
-
-export const getWeeklySummary = (weekStart: string): WeeklySummary | undefined => {
-  const summaries = getWeeklySummaries();
-  return summaries.find((s) => s.weekStart === weekStart);
+export const getWeeklySummary = async (weekStart: string): Promise<WeeklySummary | undefined> => {
+  try {
+    return await apiCall<WeeklySummary | null>(`/data/weekly-summaries/${weekStart}`).then((data) =>
+      data === null ? undefined : data
+    );
+  } catch (error) {
+    console.error('Error fetching weekly summary:', error);
+    return undefined;
+  }
 };
 
 // Settings
-export const saveSettings = (settings: AppSettings): void => {
-  localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
+export const saveSettings = async (settings: AppSettings): Promise<void> => {
+  await apiCall<AppSettings>('/data/settings', {
+    method: 'POST',
+    body: JSON.stringify(settings),
+  });
 };
 
-export const getSettings = (): AppSettings => {
-  const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
-  return data
-    ? JSON.parse(data)
-    : {
-        enableClaudeIntegration: false,
-      };
+export const getSettings = async (): Promise<AppSettings> => {
+  try {
+    return await apiCall<AppSettings>('/data/settings');
+  } catch (error) {
+    console.error('Error fetching settings:', error);
+    return {
+      enableClaudeIntegration: false,
+    };
+  }
 };
 
 // Export/Import
-export const exportData = (): string => {
-  const data = {
-    dailyScores: getDailyScores(),
-    weeklySummaries: getWeeklySummaries(),
-    settings: getSettings(),
-    exportDate: new Date().toISOString(),
-  };
+export const exportData = async (): Promise<string> => {
+  const data = await apiCall<{
+    dailyScores: DailyScore[];
+    weeklySummaries: WeeklySummary[];
+    settings: AppSettings;
+    exportDate: string;
+  }>('/data/export');
   return JSON.stringify(data, null, 2);
 };
 
-export const importData = (jsonData: string): boolean => {
+export const importData = async (jsonData: string): Promise<boolean> => {
   try {
     const data = JSON.parse(jsonData);
-
-    if (data.dailyScores) {
-      localStorage.setItem(STORAGE_KEYS.DAILY_SCORES, JSON.stringify(data.dailyScores));
-    }
-    if (data.weeklySummaries) {
-      localStorage.setItem(STORAGE_KEYS.WEEKLY_SUMMARIES, JSON.stringify(data.weeklySummaries));
-    }
-    if (data.settings) {
-      localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(data.settings));
-    }
-
+    await apiCall('/data/import', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
     return true;
   } catch (error) {
     console.error('Error importing data:', error);
@@ -119,8 +144,13 @@ export const importData = (jsonData: string): boolean => {
   }
 };
 
-export const clearAllData = (): void => {
-  localStorage.removeItem(STORAGE_KEYS.DAILY_SCORES);
-  localStorage.removeItem(STORAGE_KEYS.WEEKLY_SUMMARIES);
-  // Nemazat settings, aby uživatel neztratil API klíč
+export const clearAllData = async (): Promise<void> => {
+  try {
+    await apiCall('/data/clear', {
+      method: 'DELETE',
+    });
+  } catch (error) {
+    console.error('Error clearing data:', error);
+    throw error;
+  }
 };

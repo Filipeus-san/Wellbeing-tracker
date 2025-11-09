@@ -18,35 +18,8 @@ function App() {
     setRefreshKey((prev) => prev + 1);
   };
 
-  const handleViewWeeklySummary = () => {
-    // Vygenerovat a uložit týdenní shrnutí
-    const today = new Date();
-    const weekStart = startOfWeek(today, { weekStartsOn: 1 });
-    const weekStartStr = weekStart.toISOString().split('T')[0];
-
-    // Zkusit načíst existující, jinak vygenerovat nové
-    let summary = getWeeklySummary(weekStartStr);
-    if (!summary) {
-      summary = generateWeeklySummary(today);
-      saveWeeklySummary(summary);
-    }
-
+  const handleViewWeeklySummary = async () => {
     setCurrentView('weekly');
-  };
-
-  // Získat aktuální týdenní shrnutí
-  const getCurrentWeeklySummary = () => {
-    const today = new Date();
-    const weekStart = startOfWeek(today, { weekStartsOn: 1 });
-    const weekStartStr = weekStart.toISOString().split('T')[0];
-
-    let summary = getWeeklySummary(weekStartStr);
-    if (!summary) {
-      summary = generateWeeklySummary(today);
-      saveWeeklySummary(summary);
-    }
-
-    return summary;
   };
 
   return (
@@ -102,11 +75,7 @@ function App() {
 
         {currentView === 'weekly' && (
           <div className="view-container">
-            <WeeklySummary
-              key={refreshKey}
-              summary={getCurrentWeeklySummary()}
-              onRefresh={handleRefresh}
-            />
+            <WeeklySummary key={refreshKey} onRefresh={handleRefresh} />
           </div>
         )}
 
@@ -120,7 +89,7 @@ function App() {
       {/* Footer */}
       <footer className="app-footer">
         <p>
-          Vytvořeno s ❤️ pro podporu duševní pohody | Data ukládána lokálně ve vašem prohlížeči
+          Vytvořeno s ❤️ pro podporu duševní pohody | Data ukládána na serveru
         </p>
       </footer>
     </div>
