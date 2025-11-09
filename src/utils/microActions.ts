@@ -6,35 +6,65 @@ import { questions } from '../data/questions';
  * Překlady pro mikro-akce
  */
 const microActionTranslations: Record<string, { title: { cs: string; en: string }; description: { cs: string; en: string } }> = {
-  // Již existující české texty zůstanou jako fallback
-  physio_1: {
-    title: { cs: 'Kvalitní spánek', en: 'Quality Sleep' },
-    description: { cs: 'Spi alespoň 7-8 hodin. Jdi spát ve stejnou dobu každý den.', en: 'Sleep at least 7-8 hours. Go to bed at the same time every day.' }
-  },
-  physio_2: {
-    title: { cs: 'Pravidelné jídlo', en: 'Regular Meals' },
-    description: { cs: 'Sněz 3 vyvážená jídla denně. Nezapomeň na snídani.', en: 'Eat 3 balanced meals daily. Don\'t skip breakfast.' }
-  },
-  physio_3: {
-    title: { cs: 'Hydratace', en: 'Hydration' },
-    description: { cs: 'Vypij alespoň 2 litry vody denně.', en: 'Drink at least 2 liters of water daily.' }
-  },
-  physio_4: {
-    title: { cs: '10 minut pohybu', en: '10 Minutes Movement' },
-    description: { cs: 'Krátká procházka, protažení nebo lehké cvičení.', en: 'Short walk, stretching, or light exercise.' }
-  },
-  safety_1: {
-    title: { cs: 'Finanční plán', en: 'Financial Plan' },
-    description: { cs: 'Udělej si přehled příjmů a výdajů na tento týden.', en: 'Review your income and expenses for this week.' }
-  },
-  safety_2: {
-    title: { cs: 'Úklid prostoru', en: 'Space Cleaning' },
-    description: { cs: 'Uklid si svůj pracovní nebo osobní prostor.', en: 'Clean your work or personal space.' }
-  },
-  safety_3: {
-    title: { cs: 'Zdravotní check', en: 'Health Check' },
-    description: { cs: 'Naplánuj nebo absolvuj preventivní lékařskou prohlídku.', en: 'Schedule or attend a preventive medical checkup.' }
-  },
+  physio_1: { title: { cs: 'Kvalitní spánek', en: 'Quality Sleep' }, description: { cs: 'Spi alespoň 7-8 hodin. Jdi spát ve stejnou dobu každý den.', en: 'Sleep at least 7-8 hours. Go to bed at the same time every day.' } },
+  physio_2: { title: { cs: 'Pravidelné jídlo', en: 'Regular Meals' }, description: { cs: 'Sněz 3 vyvážená jídla denně. Nezapomeň na snídani.', en: 'Eat 3 balanced meals daily. Don\'t skip breakfast.' } },
+  physio_3: { title: { cs: 'Hydratace', en: 'Hydration' }, description: { cs: 'Vypij alespoň 2 litry vody denně.', en: 'Drink at least 2 liters of water daily.' } },
+  physio_4: { title: { cs: '10 minut pohybu', en: '10 Minutes Movement' }, description: { cs: 'Krátká procházka, protažení nebo lehké cvičení.', en: 'Short walk, stretching, or light exercise.' } },
+  safety_1: { title: { cs: 'Finanční plán', en: 'Financial Plan' }, description: { cs: 'Udělej si přehled příjmů a výdajů na tento týden.', en: 'Review your income and expenses for this week.' } },
+  safety_2: { title: { cs: 'Úklid prostoru', en: 'Space Cleaning' }, description: { cs: 'Uklid si svůj pracovní nebo osobní prostor.', en: 'Clean your work or personal space.' } },
+  safety_3: { title: { cs: 'Zdravotní check', en: 'Health Check' }, description: { cs: 'Naplánuj nebo absolvuj preventivní lékařskou prohlídku.', en: 'Schedule or attend a preventive medical checkup.' } },
+  belong_m_1: { title: { cs: 'Kontakt s blízkými', en: 'Contact Loved Ones' }, description: { cs: 'Zavolej nebo napiš člověku, na kterém ti záleží.', en: 'Call or text someone you care about.' } },
+  belong_m_2: { title: { cs: 'Společenská aktivita', en: 'Social Activity' }, description: { cs: 'Zúčastni se skupinové aktivity nebo srazu s přáteli.', en: 'Join a group activity or meet with friends.' } },
+  belong_m_3: { title: { cs: 'Pomoc druhým', en: 'Help Others' }, description: { cs: 'Udělej něco milého pro někoho z tvého okolí.', en: 'Do something nice for someone around you.' } },
+  esteem_1: { title: { cs: 'Seznam úspěchů', en: 'Success List' }, description: { cs: 'Zapiš si 3 věci, které se ti dnes/tento týden povedly.', en: 'Write down 3 things that went well today/this week.' } },
+  esteem_2: { title: { cs: 'Pozitivní afirmace', en: 'Positive Affirmations' }, description: { cs: 'Řekni si 3 pozitivní věci o sobě, třeba před zrcadlem.', en: 'Tell yourself 3 positive things, perhaps in the mirror.' } },
+  esteem_3: { title: { cs: 'Dokončení úkolu', en: 'Complete a Task' }, description: { cs: 'Dokončí jeden malý úkol, který odkládáš.', en: 'Finish one small task you\'ve been postponing.' } },
+  selfact_1: { title: { cs: 'Učení se nové dovednosti', en: 'Learn New Skill' }, description: { cs: 'Věnuj 20 minut učení něčeho nového, co tě zajímá.', en: 'Spend 20 minutes learning something new that interests you.' } },
+  selfact_2: { title: { cs: 'Kreativní aktivita', en: 'Creative Activity' }, description: { cs: 'Věnuj se tvorbě - kreslení, psaní, hudba, cokoliv tě baví.', en: 'Engage in creation - drawing, writing, music, whatever you enjoy.' } },
+  selfact_3: { title: { cs: 'Reflexe hodnot', en: 'Reflect on Values' }, description: { cs: 'Zamysli se, jestli tvoje aktivity odpovídají tvým hodnotám.', en: 'Reflect on whether your activities align with your values.' } },
+  autonomy_1: { title: { cs: 'Vlastní rozhodnutí', en: 'Own Decision' }, description: { cs: 'Udělej dnes alespoň jedno rozhodnutí nezávisle na ostatních.', en: 'Make at least one decision independently today.' } },
+  autonomy_2: { title: { cs: 'Volný čas', en: 'Free Time' }, description: { cs: 'Naplánuj si 30 minut, kdy budeš dělat přesně to, co chceš.', en: 'Schedule 30 minutes to do exactly what you want.' } },
+  autonomy_3: { title: { cs: 'Stanovení hranic', en: 'Set Boundaries' }, description: { cs: 'Řekni "ne" něčemu, co nechceš dělat.', en: 'Say "no" to something you don\'t want to do.' } },
+  competence_1: { title: { cs: 'Procvičení dovednosti', en: 'Practice a Skill' }, description: { cs: 'Věnuj se aktivitě, ve které jsi dobrý/á.', en: 'Engage in an activity you\'re good at.' } },
+  competence_2: { title: { cs: 'Malý výzva', en: 'Small Challenge' }, description: { cs: 'Zkus něco trochu náročnějšího, ale dosažitelného.', en: 'Try something slightly challenging but achievable.' } },
+  competence_3: { title: { cs: 'Zpětná vazba', en: 'Feedback' }, description: { cs: 'Požádej někoho o konstruktivní zpětnou vazbu.', en: 'Ask someone for constructive feedback.' } },
+  belong_s_1: { title: { cs: 'Kvalitní konverzace', en: 'Quality Conversation' }, description: { cs: 'Pokecej si s někým o něčem smysluplném alespoň 15 minut.', en: 'Have a meaningful conversation with someone for at least 15 minutes.' } },
+  belong_s_2: { title: { cs: 'Sdílení zážitku', en: 'Share Experience' }, description: { cs: 'Sdílej s někým svůj zážitek nebo emoci.', en: 'Share your experience or emotion with someone.' } },
+  belong_s_3: { title: { cs: 'Poděkování', en: 'Give Thanks' }, description: { cs: 'Poděkuj někomu za podporu nebo pomoc.', en: 'Thank someone for their support or help.' } },
+  posemo_1: { title: { cs: 'Gratitude journal', en: 'Gratitude Journal' }, description: { cs: 'Zapiš si 3 věci, za které jsi dnes vděčný/á.', en: 'Write down 3 things you\'re grateful for today.' } },
+  posemo_2: { title: { cs: 'Příjemná aktivita', en: 'Pleasant Activity' }, description: { cs: 'Udělej něco, co tě spolehlivě rozveselí (hudba, komiks, pořad).', en: 'Do something that reliably cheers you up (music, comics, show).' } },
+  posemo_3: { title: { cs: 'Smích', en: 'Laughter' }, description: { cs: 'Podívej se na něco vtipného nebo si s někým zasmějte.', en: 'Watch something funny or laugh with someone.' } },
+  engage_1: { title: { cs: 'Flow aktivita', en: 'Flow Activity' }, description: { cs: 'Věnuj se 30 minut aktivitě, která tě pohltí (hobby, práce).', en: 'Spend 30 minutes on an activity that absorbs you (hobby, work).' } },
+  engage_2: { title: { cs: 'Zaměření', en: 'Focus' }, description: { cs: 'Vypni rušivé elementy a soustřeď se na jednu věc.', en: 'Turn off distractions and focus on one thing.' } },
+  engage_3: { title: { cs: 'Tvůrčí projekt', en: 'Creative Project' }, description: { cs: 'Začni nebo pokračuj v nějakém projektu, který tě baví.', en: 'Start or continue a project you enjoy.' } },
+  relation_1: { title: { cs: 'Aktivní naslouchání', en: 'Active Listening' }, description: { cs: 'Při příštím rozhovoru aktivně naslouchej bez přerušování.', en: 'Actively listen in your next conversation without interrupting.' } },
+  relation_2: { title: { cs: 'Společný čas', en: 'Quality Time' }, description: { cs: 'Naplánuj aktivitu s někým blízkým.', en: 'Plan an activity with someone close to you.' } },
+  relation_3: { title: { cs: 'Komplement', en: 'Compliment' }, description: { cs: 'Dej upřímný komplement někomu ve svém okolí.', en: 'Give a sincere compliment to someone around you.' } },
+  meaning_1: { title: { cs: 'Smysluplný projekt', en: 'Meaningful Project' }, description: { cs: 'Věnuj čas projektu nebo aktivitě, která má pro tebe hluboký význam.', en: 'Dedicate time to a project or activity that has deep meaning for you.' } },
+  meaning_2: { title: { cs: 'Hodnoty', en: 'Values' }, description: { cs: 'Zapiš si 3 své hlavní životní hodnoty a zkontroluj, jestli podle nich žiješ.', en: 'Write down your 3 main life values and check if you\'re living by them.' } },
+  meaning_3: { title: { cs: 'Pomoc komunitě', en: 'Help Community' }, description: { cs: 'Udělej něco pro širší komunitu nebo dobrou věc.', en: 'Do something for the broader community or a good cause.' } },
+  accomp_1: { title: { cs: 'Denní cíl', en: 'Daily Goal' }, description: { cs: 'Nastav si jeden jasný, dosažitelný cíl na dnes a splň ho.', en: 'Set one clear, achievable goal for today and accomplish it.' } },
+  accomp_2: { title: { cs: 'Oslavení úspěchu', en: 'Celebrate Success' }, description: { cs: 'Oslaví něco, co se ti nedávno povedlo, i kdyby to bylo malé.', en: 'Celebrate something you recently accomplished, even if small.' } },
+  accomp_3: { title: { cs: 'Pokrok tracking', en: 'Track Progress' }, description: { cs: 'Zaznamenej si pokrok v nějakém dlouhodobém cíli.', en: 'Record progress on a long-term goal.' } },
+  cleaning_1: { title: { cs: 'Denní úklid', en: 'Daily Cleaning' }, description: { cs: 'Věnuj 15 minut úklidu - ukliď pracovní prostor nebo jednu místnost.', en: 'Spend 15 minutes cleaning - tidy workspace or one room.' } },
+  cleaning_2: { title: { cs: 'Uspořádání věcí', en: 'Organize Items' }, description: { cs: 'Roztřiď a uspořádej věci na jednom místě (stůl, šuplík, police).', en: 'Sort and organize items in one place (desk, drawer, shelf).' } },
+  cleaning_3: { title: { cs: 'Vyhození nepotřebných věcí', en: 'Discard Unneeded Items' }, description: { cs: 'Projdi jednu oblast a zbav se 5 věcí, které už nepotřebuješ.', en: 'Go through one area and get rid of 5 things you no longer need.' } },
+  hygiene_1: { title: { cs: 'Ranní rutina', en: 'Morning Routine' }, description: { cs: 'Začni den sprchováním a kompletní ranní hygienou.', en: 'Start the day with a shower and complete morning hygiene.' } },
+  hygiene_2: { title: { cs: 'Péče o zuby', en: 'Dental Care' }, description: { cs: 'Vyčisti si zuby alespoň 2x denně a použ zubní nit.', en: 'Brush your teeth at least 2x daily and use dental floss.' } },
+  hygiene_3: { title: { cs: 'Péče o tělo', en: 'Body Care' }, description: { cs: 'Věnuj čas péči o kůži, vlasy nebo nehty.', en: 'Spend time on skin, hair, or nail care.' } },
+  exercise_1: { title: { cs: 'Denní procházka', en: 'Daily Walk' }, description: { cs: 'Jdi na 20-30 minutovou procházku na čerstvém vzduchu.', en: 'Go for a 20-30 minute walk in fresh air.' } },
+  exercise_2: { title: { cs: 'Protažení', en: 'Stretching' }, description: { cs: 'Věnuj 10 minut protahování nebo lehké józe.', en: 'Spend 10 minutes stretching or doing light yoga.' } },
+  exercise_3: { title: { cs: 'Aktivní cvičení', en: 'Active Exercise' }, description: { cs: 'Zacvič si alespoň 20 minut - běh, posilovna, sport.', en: 'Exercise for at least 20 minutes - running, gym, sports.' } },
+  addiction_1: { title: { cs: 'Monitoring spouštěčů', en: 'Monitor Triggers' }, description: { cs: 'Zaznamenej si situace, které vyvolávají touhu po závislosti.', en: 'Record situations that trigger addiction cravings.' } },
+  addiction_2: { title: { cs: 'Náhradní aktivita', en: 'Alternative Activity' }, description: { cs: 'Když cítíš touhu, udělej něco jiného - procházka, cvičení, volání příteli.', en: 'When you feel a craving, do something else - walk, exercise, call a friend.' } },
+  addiction_3: { title: { cs: 'Podpora skupiny', en: 'Support Group' }, description: { cs: 'Kontaktuj podporující osobu nebo skupinu, když se cítíš slabý/á.', en: 'Contact a supportive person or group when feeling weak.' } },
+  addiction_4: { title: { cs: 'Odstranění spouštěčů', en: 'Remove Triggers' }, description: { cs: 'Identifikuj a odstraň věci/situace, které podporují závislost.', en: 'Identify and remove things/situations that support addiction.' } },
+  addiction_5: { title: { cs: 'Denní úspěch', en: 'Daily Success' }, description: { cs: 'Oslavuj každý den bez závislosti - zapiš si to a pochval se.', en: 'Celebrate each day without addiction - write it down and praise yourself.' } },
+  illness_1: { title: { cs: 'Odpočinek', en: 'Rest' }, description: { cs: 'Dopřej si dostatek odpočinku a spánku pro regeneraci těla.', en: 'Get enough rest and sleep for body recovery.' } },
+  illness_2: { title: { cs: 'Hydratace', en: 'Hydration' }, description: { cs: 'Pij dostatek tekutin - voda, čaj, polévky.', en: 'Drink plenty of fluids - water, tea, soups.' } },
+  illness_3: { title: { cs: 'Lékařská pomoc', en: 'Medical Help' }, description: { cs: 'Pokud se cítíš velmi špatně, kontaktuj lékaře nebo zdravotní poradnu.', en: 'If feeling very unwell, contact a doctor or health center.' } },
+  illness_4: { title: { cs: 'Lehká strava', en: 'Light Diet' }, description: { cs: 'Jez lehká, výživná jídla, která ti dodají energii a podpoří imunitu.', en: 'Eat light, nutritious foods that provide energy and support immunity.' } },
+  illness_5: { title: { cs: 'Prevence', en: 'Prevention' }, description: { cs: 'Mysli na prevenci - vitamíny, odpočinek, mytí rukou, čerstvý vzduch.', en: 'Think about prevention - vitamins, rest, hand washing, fresh air.' } },
 };
 
 export const getMicroActionText = (actionId: string, field: 'title' | 'description', lang: Language = 'cs'): string => {
