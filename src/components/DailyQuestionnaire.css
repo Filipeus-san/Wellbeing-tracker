@@ -44,6 +44,52 @@
   margin-bottom: 30px;
 }
 
+/* Mood selection */
+.mood-section {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.mood-title {
+  margin: 0 0 15px 0;
+  color: #1f2937;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.mood-selector {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.mood-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  font-weight: 600;
+}
+
+.mood-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.mood-button.selected {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
 .model-section {
   background: #f9fafb;
   border-radius: 12px;

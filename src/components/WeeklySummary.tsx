@@ -14,6 +14,7 @@ import {
   Radar,
 } from 'recharts';
 import type { WeeklySummary as WeeklySummaryType, DailyScore } from '../types';
+import { MOODS } from '../types';
 import { questions, getCategoryLabel } from '../data/questions';
 import { getScoreColor, getScoreLabel, calculateCategoryAverages, generateWeeklySummary } from '../utils/analytics';
 import { generateClaudeSummary } from '../utils/claudeApi';
@@ -278,6 +279,43 @@ export const WeeklySummary = ({ onRefresh }: WeeklySummaryProps) => {
               {claudeError && <div className="claude-error">{claudeError}</div>}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Týdenní nálady - zobrazit pouze pokud jsou data s náladou */}
+      {dailyScores.some(score => score.mood) && (
+        <div className="mood-overview-section">
+          <h3>💭 Nálada v průběhu týdne</h3>
+          <div className="daily-moods">
+            {dailyScores.map((score) => {
+              const moodData = score.mood ? MOODS[score.mood] : null;
+              const date = new Date(score.date);
+              const dayName = date.toLocaleDateString('cs-CZ', { weekday: 'short' });
+              const dayDate = date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' });
+
+              return (
+                <div key={score.date} className="day-mood-item">
+                  <div className="day-info">
+                    <div className="day-name">{dayName}</div>
+                    <div className="day-date">{dayDate}</div>
+                  </div>
+                  {moodData ? (
+                    <div
+                      className="mood-display"
+                      style={{ backgroundColor: moodData.color + '20', borderColor: moodData.color }}
+                    >
+                      <span className="mood-emoji">{moodData.emoji}</span>
+                      <span className="mood-label" style={{ color: moodData.color }}>{moodData.label}</span>
+                    </div>
+                  ) : (
+                    <div className="mood-display no-mood">
+                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>Nezadáno</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import type { DailyScore, ScoreValue } from '../types';
+import type { DailyScore, ScoreValue, MoodValue } from '../types';
+import { MOODS } from '../types';
 import { questions, getModelLabel } from '../data/questions';
 import { saveDailyScore, getDailyScore, getSettings, saveWeeklySummary, getWeeklySummary } from '../utils/storage';
 import { getScoreColor, generateDailyMicroActions, generateWeeklySummary } from '../utils/analytics';
@@ -14,6 +15,7 @@ interface DailyQuestionnaireProps {
 
 export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps) => {
   const [scores, setScores] = useState<Record<string, ScoreValue>>({});
+  const [mood, setMood] = useState<MoodValue | undefined>(undefined);
   const [notes, setNotes] = useState('');
   const [savedMessage, setSavedMessage] = useState(false);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
@@ -48,11 +50,13 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
           }
         });
         setScores(cleanedScores);
+        setMood(existingScore.mood);
         setNotes(existingScore.notes || '');
         setAiSummary(existingScore.aiSummary || null);
       } else {
         // Reset state při změně data
         setScores({});
+        setMood(undefined);
         setNotes('');
         setAiSummary(null);
       }
@@ -73,6 +77,7 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
       const dailyScore: DailyScore = {
         date,
         scores,
+        mood,
         notes: notes.trim() || undefined,
       };
 
@@ -129,6 +134,7 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
       const dailyScore: DailyScore = {
         date,
         scores,
+        mood,
         notes: notes.trim() || undefined,
       };
 
@@ -206,6 +212,32 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
       </div>
 
       <div className="questionnaire-content">
+        {/* Měření nálady */}
+        <div className="mood-section">
+          <h3 className="mood-title">Jak se dnes cítíš? 💭</h3>
+          <div className="mood-selector">
+            {Object.entries(MOODS).map(([value, moodData]) => {
+              const isSelected = mood === value;
+              return (
+                <button
+                  key={value}
+                  className={`mood-button ${isSelected ? 'selected' : ''}`}
+                  style={{
+                    backgroundColor: isSelected ? moodData.color : '#f3f4f6',
+                    color: isSelected ? 'white' : '#4b5563',
+                    border: isSelected ? `2px solid ${moodData.color}` : '2px solid #e5e7eb',
+                  }}
+                  onClick={() => setMood(value as MoodValue)}
+                  title={moodData.label}
+                >
+                  <span style={{ fontSize: '32px' }}>{moodData.emoji}</span>
+                  <span style={{ fontSize: '14px', marginTop: '4px' }}>{moodData.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {Object.entries(groupedQuestions).map(([model, modelQuestions]) => (
           <div key={model} className="model-section">
             <h3 className="model-title">{getModelLabel(model as any)}</h3>

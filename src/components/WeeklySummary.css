@@ -125,6 +125,80 @@
   font-size: 14px;
 }
 
+/* Mood overview section */
+.mood-overview-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mood-overview-section h3 {
+  margin: 0 0 20px 0;
+  color: #1f2937;
+  font-size: 20px;
+}
+
+.daily-moods {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.day-mood-item {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.day-info {
+  text-align: center;
+}
+
+.day-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  text-transform: capitalize;
+}
+
+.day-date {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.mood-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 2px solid;
+  min-height: 70px;
+  justify-content: center;
+}
+
+.mood-display.no-mood {
+  border-color: #e5e7eb;
+  background-color: #f3f4f6;
+}
+
+.mood-emoji {
+  font-size: 28px;
+}
+
+.mood-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+}
+
 .chart-section {
   background: white;
   border-radius: 12px;
