@@ -148,7 +148,14 @@ const buildDailySummaryPrompt = (dailyScore: DailyScore): string => {
     })
     .join('\n');
 
-  return `Jsi wellbeing kouč. Na základě denních dat uživatele vytvoř krátký, motivující komentář (max 150 slov).
+  // Přidat mikro-akce, pokud existují
+  const microActionsDetails = dailyScore.microActions
+    ? dailyScore.microActions
+        .map((action) => `- ${action.title}: ${action.description}`)
+        .join('\n')
+    : '';
+
+  return `Jsi wellbeing kouč. Na základě denních dat uživatele vytvoř krátký, motivující komentář (max 200 slov).
 
 DENNÍ SKÓRE (1-5):
 ${scoreDetails}
@@ -156,11 +163,13 @@ ${scoreDetails}
 POZNÁMKY:
 ${dailyScore.notes || 'Žádné poznámky'}
 
+${microActionsDetails ? `DOPORUČENÉ MIKRO-AKCE NA ZÍTŘEK:\n${microActionsDetails}\n` : ''}
 Vytvoř stručný komentář, který:
-1. Oceň to, co šlo dobře
-2. Jemně upozorni na oblasti pro zlepšení
-3. Dej jedno konkrétní doporučení na zítřek
-4. Buď povzbuzující a empatický`;
+1. Oceň to, co šlo dobře (konkrétní oblasti s vysokým skóre)
+2. Jemně upozorni na oblasti pro zlepšení (nízké skóre)
+3. Vyber 2-3 nejdůležitější mikro-akce a zdůrazni je jako konkrétní kroky na zítřek
+4. Měj empatický, povzbuzující a motivační tón
+5. Buď stručný ale inspirující`;
 };
 
 /**

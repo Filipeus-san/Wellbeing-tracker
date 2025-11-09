@@ -145,3 +145,18 @@ export const calculateTrend = (
   if (diff < -0.3) return 'down';
   return 'stable';
 };
+
+/**
+ * Vygeneruje mikro-akce pro denní skóre
+ * Používá stejný algoritmus jako týdenní, ale s denními daty
+ */
+export const generateDailyMicroActions = (dailyScore: DailyScore) => {
+  // Převést denní skóre na formát pro generateMicroActions
+  const scores = dailyScore.scores;
+
+  // Identifikovat kritické oblasti (nízké skóre)
+  const criticalAreas = identifyCriticalAreas(scores);
+
+  // Vygenerovat mikro-akce
+  return generateMicroActions(scores, criticalAreas);
+};

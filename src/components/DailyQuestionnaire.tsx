@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import type { DailyScore, ScoreValue } from '../types';
 import { questions, getModelLabel } from '../data/questions';
 import { saveDailyScore, getDailyScore, getSettings } from '../utils/storage';
-import { getScoreColor } from '../utils/analytics';
+import { getScoreColor, generateDailyMicroActions } from '../utils/analytics';
 import { generateDailySummary } from '../utils/claudeApi';
 import './DailyQuestionnaire.css';
 
@@ -72,16 +72,25 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
         notes: notes.trim() || undefined,
       };
 
-      // Vygenerovat shrnutí
-      const summary = await generateDailySummary(dailyScore);
+      // Vygenerovat mikro-akce
+      const microActions = generateDailyMicroActions(dailyScore);
 
-      // Uložit s AI shrnutím
-      const dailyScoreWithAI: DailyScore = {
+      // Přidat mikro-akce do DailyScore pro prompt
+      const dailyScoreWithActions: DailyScore = {
         ...dailyScore,
+        microActions,
+      };
+
+      // Vygenerovat shrnutí (prompt bude obsahovat mikro-akce)
+      const summary = await generateDailySummary(dailyScoreWithActions);
+
+      // Uložit kompletní záznam s AI shrnutím a mikro-akcemi
+      const completeDailyScore: DailyScore = {
+        ...dailyScoreWithActions,
         aiSummary: summary,
       };
 
-      saveDailyScore(dailyScoreWithAI);
+      saveDailyScore(completeDailyScore);
       setAiSummary(summary);
     } catch (error) {
       setSummaryError(
@@ -214,6 +223,29 @@ export const DailyQuestionnaire = ({ date, onComplete }: DailyQuestionnaireProps
             )}
           </div>
           <div className="ai-summary-content">{aiSummary}</div>
+
+          {/* Mikro-akce na zítřek */}
+          {getDailyScore(date)?.microActions && (
+            <div className="daily-micro-actions">
+              <h4>💡 Doporučené akce na zítřek</h4>
+              <div className="micro-actions-list">
+                {getDailyScore(date)!.microActions!.map((action) => (
+                  <div key={action.id} className={`micro-action-item priority-${action.priority}`}>
+                    <div className="action-icon">
+                      {action.priority === 'high' && '🔥'}
+                      {action.priority === 'medium' && '⭐'}
+                      {action.priority === 'low' && '💫'}
+                    </div>
+                    <div className="action-content">
+                      <div className="action-title">{action.title}</div>
+                      <div className="action-description">{action.description}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <button className="close-summary-button" onClick={() => setAiSummary(null)}>
             Zavřít
           </button>

@@ -38,6 +38,7 @@ export interface DailyScore {
   scores: Record<string, ScoreValue>; // questionId -> score
   notes?: string;
   aiSummary?: string; // AI shrnutí od Claude
+  microActions?: MicroAction[]; // Doporučené mikro-akce pro zítřek
 }
 
 export interface WeeklySummary {

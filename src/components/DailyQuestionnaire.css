@@ -264,10 +264,74 @@
   background: rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   padding: 20px;
-  margin-bottom: 15px;
   line-height: 1.7;
   white-space: pre-wrap;
   backdrop-filter: blur(10px);
+}
+
+/* Denní mikro-akce */
+.daily-micro-actions {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.daily-micro-actions h4 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: white;
+}
+
+.micro-actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.micro-action-item {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: start;
+  backdrop-filter: blur(10px);
+  border-left: 3px solid;
+}
+
+.micro-action-item.priority-high {
+  border-left-color: #fbbf24;
+}
+
+.micro-action-item.priority-medium {
+  border-left-color: #60a5fa;
+}
+
+.micro-action-item.priority-low {
+  border-left-color: #a78bfa;
+}
+
+.action-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.action-content {
+  flex: 1;
+}
+
+.action-title {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 4px;
+  color: white;
+}
+
+.action-description {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
 }
 
 .close-summary-button {
