@@ -91,19 +91,35 @@ export interface Translations {
     czech: string;
     english: string;
     aiIntegration: string;
+    aiIntegrationDescription: string;
     enableAi: string;
     aiProvider: string;
+    selectAiProvider: string;
     claude: string;
     codex: string;
     testConnection: string;
     testing: string;
     connectionSuccessful: string;
     connectionFailed: string;
+    cliNotAvailable: string;
+    cliUsesLocal: string;
+    installClaude: string;
+    installCodex: string;
     dataManagement: string;
     exportData: string;
     importData: string;
     clearAllData: string;
     confirmClearData: string;
+    dataExported: string;
+    dataImported: string;
+    dataCleared: string;
+    exportDescription: string;
+    saveSettings: string;
+    settingsSaved: string;
+    aboutApp: string;
+    appName: string;
+    appDescription: string;
+    dataStoredLocally: string;
   };
 
   // Moods
@@ -307,19 +323,35 @@ export const translations: Record<Language, Translations> = {
       czech: 'Čeština',
       english: 'Angličtina',
       aiIntegration: 'AI Integrace',
+      aiIntegrationDescription: 'Zapněte integraci s AI pro personalizovaná shrnutí a doporučení.',
       enableAi: 'Povolit AI integraci',
       aiProvider: 'AI Poskytovatel',
-      claude: 'Claude CLI',
-      codex: 'Codex CLI',
+      selectAiProvider: 'Vyberte AI poskytovatele',
+      claude: 'Claude CLI (Anthropic)',
+      codex: 'Codex CLI (OpenAI)',
       testConnection: 'Otestovat připojení',
       testing: 'Testuji...',
-      connectionSuccessful: 'Připojení úspěšné',
-      connectionFailed: 'Připojení selhalo',
+      connectionSuccessful: 'CLI je dostupné',
+      connectionFailed: 'CLI není dostupné',
+      cliNotAvailable: 'není dostupné (nainstalujte',
+      cliUsesLocal: 'Aplikace používá lokálně nainstalovaný',
+      installClaude: 'Pokud Claude CLI není nainstalované, nainstalujte ho pomocí',
+      installCodex: 'Pokud Codex CLI není nainstalované, nainstalujte ho pomocí',
       dataManagement: 'Správa dat',
-      exportData: 'Exportovat data',
+      exportData: 'Exportovat data (JSON)',
       importData: 'Importovat data',
       clearAllData: 'Smazat všechna data',
-      confirmClearData: 'Opravdu chcete smazat všechna data? Tato akce je nevratná.',
+      confirmClearData: 'Opravdu chcete smazat všechna data? Tato akce je nevratná!\n\n(Nastavení zůstane zachováno)',
+      dataExported: 'Data byla exportována',
+      dataImported: 'Data byla úspěšně importována!',
+      dataCleared: 'Data byla smazána.',
+      exportDescription: 'Exportujte svá data jako zálohu nebo je importujte z předchozího exportu.',
+      saveSettings: 'Uložit nastavení',
+      settingsSaved: 'Nastavení bylo uloženo',
+      aboutApp: 'O aplikaci',
+      appName: 'Wellbeing Tracker - Desktop Aplikace',
+      appDescription: 'Aplikace pro sledování duševní pohody založená na psychologických modelech Maslow, SDT a PERMA.',
+      dataStoredLocally: 'Data jsou ukládána lokálně na vašem počítači v uživatelské složce.',
     },
     moods: {
       amazing: 'Úžasná',
@@ -501,19 +533,35 @@ export const translations: Record<Language, Translations> = {
       czech: 'Czech',
       english: 'English',
       aiIntegration: 'AI Integration',
+      aiIntegrationDescription: 'Enable AI integration for personalized summaries and recommendations.',
       enableAi: 'Enable AI Integration',
       aiProvider: 'AI Provider',
-      claude: 'Claude CLI',
-      codex: 'Codex CLI',
+      selectAiProvider: 'Select AI Provider',
+      claude: 'Claude CLI (Anthropic)',
+      codex: 'Codex CLI (OpenAI)',
       testConnection: 'Test Connection',
       testing: 'Testing...',
-      connectionSuccessful: 'Connection Successful',
-      connectionFailed: 'Connection Failed',
+      connectionSuccessful: 'CLI is available',
+      connectionFailed: 'CLI is not available',
+      cliNotAvailable: 'is not available (install',
+      cliUsesLocal: 'The application uses locally installed',
+      installClaude: 'If Claude CLI is not installed, install it using',
+      installCodex: 'If Codex CLI is not installed, install it using',
       dataManagement: 'Data Management',
-      exportData: 'Export Data',
+      exportData: 'Export Data (JSON)',
       importData: 'Import Data',
       clearAllData: 'Clear All Data',
-      confirmClearData: 'Are you sure you want to delete all data? This action is irreversible.',
+      confirmClearData: 'Are you sure you want to delete all data? This action is irreversible!\n\n(Settings will remain preserved)',
+      dataExported: 'Data has been exported',
+      dataImported: 'Data was successfully imported!',
+      dataCleared: 'Data has been cleared.',
+      exportDescription: 'Export your data as a backup or import it from a previous export.',
+      saveSettings: 'Save Settings',
+      settingsSaved: 'Settings have been saved',
+      aboutApp: 'About the App',
+      appName: 'Wellbeing Tracker - Desktop Application',
+      appDescription: 'An application for tracking mental wellbeing based on the psychological models of Maslow, SDT, and PERMA.',
+      dataStoredLocally: 'Data is stored locally on your computer in the user folder.',
     },
     moods: {
       amazing: 'Amazing',

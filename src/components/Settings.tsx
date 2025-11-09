@@ -50,7 +50,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
       if (onUpdate) onUpdate();
     } catch (error) {
       console.error('Error saving settings:', error);
-      alert('Error saving settings');
+      alert(language === 'cs' ? 'Chyba při ukládání nastavení' : 'Error saving settings');
     }
   };
 
@@ -84,7 +84,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error exporting data:', error);
-      alert('Chyba při exportu dat.');
+      alert(language === 'cs' ? 'Chyba při exportu dat.' : 'Error exporting data.');
     }
   };
 
@@ -98,32 +98,28 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
       try {
         const success = await importData(content);
         if (success) {
-          alert('Data byla úspěšně importována!');
+          alert(t.settings.dataImported);
           if (onUpdate) onUpdate();
         } else {
-          alert('Chyba při importu dat. Zkontrolujte formát souboru.');
+          alert(language === 'cs' ? 'Chyba při importu dat. Zkontrolujte formát souboru.' : 'Error importing data. Check the file format.');
         }
       } catch (error) {
         console.error('Error importing data:', error);
-        alert('Chyba při importu dat. Zkontrolujte formát souboru.');
+        alert(language === 'cs' ? 'Chyba při importu dat. Zkontrolujte formát souboru.' : 'Error importing data. Check the file format.');
       }
     };
     reader.readAsText(file);
   };
 
   const handleClearData = async () => {
-    if (
-      window.confirm(
-        'Opravdu chcete smazat všechna data? Tato akce je nevratná!\n\n(Nastavení zůstane zachováno)'
-      )
-    ) {
+    if (window.confirm(t.settings.confirmClearData)) {
       try {
         await clearAllData();
-        alert('Data byla smazána.');
+        alert(t.settings.dataCleared);
         if (onUpdate) onUpdate();
       } catch (error) {
         console.error('Error clearing data:', error);
-        alert('Chyba při mazání dat.');
+        alert(language === 'cs' ? 'Chyba při mazání dat.' : 'Error clearing data.');
       }
     }
   };
@@ -164,7 +160,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
       <div className="settings-section">
         <h3>🤖 {t.settings.aiIntegration}</h3>
         <p className="section-description">
-          Zapněte integraci s AI pro personalizovaná shrnutí a doporučení.
+          {t.settings.aiIntegrationDescription}
         </p>
 
         <div className="setting-item">
@@ -176,14 +172,14 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
                 setSettings({ ...settings, enableClaudeIntegration: e.target.checked })
               }
             />
-            Povolit AI integraci
+            {t.settings.enableAi}
           </label>
         </div>
 
         {settings.enableClaudeIntegration && (
           <div className="api-key-section">
             <div className="setting-item">
-              <label htmlFor="ai-provider">Vyberte AI poskytovatele:</label>
+              <label htmlFor="ai-provider">{t.settings.selectAiProvider}:</label>
               <select
                 id="ai-provider"
                 value={settings.aiProvider || 'claude'}
@@ -199,14 +195,14 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
                   backgroundColor: 'white',
                 }}
               >
-                <option value="claude">Claude CLI (Anthropic)</option>
-                <option value="codex">Codex CLI (OpenAI)</option>
+                <option value="claude">{t.settings.claude}</option>
+                <option value="codex">{t.settings.codex}</option>
               </select>
             </div>
 
             <p className="help-text">
-              Aplikace používá lokálně nainstalovaný{' '}
-              <strong>{settings.aiProvider === 'codex' ? 'Codex CLI' : 'Claude CLI'}</strong> volaný přímo z Electronu.
+              {t.settings.cliUsesLocal}{' '}
+              <strong>{settings.aiProvider === 'codex' ? t.settings.codex : t.settings.claude}</strong> {language === 'cs' ? 'volaný přímo z Electronu' : 'called directly from Electron'}.
             </p>
 
             <div className="api-key-actions">
@@ -215,17 +211,17 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
                 onClick={handleTestCLI}
                 disabled={isTestingCLI}
               >
-                {isTestingCLI ? 'Testuji...' : `Test ${settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI`}
+                {isTestingCLI ? t.settings.testing : `${language === 'cs' ? 'Test' : 'Test'} ${settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI`}
               </button>
 
               {cliTestResult === 'success' && (
                 <span className="test-result success">
-                  ✓ {settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI je dostupné
+                  ✓ {settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} {t.settings.connectionSuccessful}
                 </span>
               )}
               {cliTestResult === 'error' && (
                 <span className="test-result error">
-                  ✗ {settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI není dostupné (nainstalujte {settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI)
+                  ✗ {settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} {t.settings.connectionFailed} ({t.settings.cliNotAvailable} {settings.aiProvider === 'codex' ? 'Codex' : 'Claude'} CLI)
                 </span>
               )}
             </div>
@@ -233,12 +229,12 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
             <p className="help-text">
               {settings.aiProvider === 'codex' ? (
                 <>
-                  Pokud Codex CLI není nainstalované, nainstalujte ho pomocí:{' '}
+                  {t.settings.installCodex}:{' '}
                   <code>npm install -g @openai/codex-cli</code>
                 </>
               ) : (
                 <>
-                  Pokud Claude CLI není nainstalované, nainstalujte ho pomocí:{' '}
+                  {t.settings.installClaude}:{' '}
                   <code>npm install -g @anthropic-ai/claude-cli</code>
                 </>
               )}
@@ -249,15 +245,15 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
 
       {/* Data Management */}
       <div className="settings-section">
-        <h3>💾 Správa dat</h3>
+        <h3>💾 {t.settings.dataManagement}</h3>
 
         <div className="data-actions">
           <button className="action-btn export-btn" onClick={handleExport}>
-            📤 Exportovat data (JSON)
+            📤 {t.settings.exportData}
           </button>
 
           <label className="action-btn import-btn">
-            📥 Importovat data
+            📥 {t.settings.importData}
             <input
               type="file"
               accept=".json"
@@ -267,35 +263,34 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
           </label>
 
           <button className="action-btn danger-btn" onClick={handleClearData}>
-            🗑️ Smazat všechna data
+            🗑️ {t.settings.clearAllData}
           </button>
         </div>
 
         <p className="help-text">
-          Exportujte svá data jako zálohu nebo je importujte z předchozího exportu.
+          {t.settings.exportDescription}
         </p>
       </div>
 
       {/* Save Button */}
       <div className="settings-footer">
         <button className="save-settings-btn" onClick={handleSaveSettings}>
-          Uložit nastavení
+          {t.settings.saveSettings}
         </button>
 
-        {saveMessage && <div className="save-message">✓ Nastavení bylo uloženo</div>}
+        {saveMessage && <div className="save-message">✓ {t.settings.settingsSaved}</div>}
       </div>
 
       {/* Info Section */}
       <div className="info-section">
-        <h3>ℹ️ O aplikaci</h3>
+        <h3>ℹ️ {t.settings.aboutApp}</h3>
         <p>
-          <strong>Wellbeing Tracker - Desktop Aplikace</strong>
+          <strong>{t.settings.appName}</strong>
         </p>
         <p>
-          Aplikace pro sledování duševní pohody založená na psychologických modelech Maslow,
-          SDT a PERMA.
+          {t.settings.appDescription}
         </p>
-        <p>Data jsou ukládána lokálně na vašem počítači v uživatelské složce.</p>
+        <p>{t.settings.dataStoredLocally}</p>
       </div>
     </div>
   );
