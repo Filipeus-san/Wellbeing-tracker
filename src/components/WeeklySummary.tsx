@@ -40,6 +40,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
   const [isLoading, setIsLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
+  const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
 
   // Propagovat loading stav nahoru
   useEffect(() => {
@@ -138,9 +139,14 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
     return currentWeekStart.getTime() === thisWeekStart.getTime();
   };
 
+  const handleGenerateClaudeClick = () => {
+    setShowPrivacyDialog(true);
+  };
+
   const handleGenerateClaude = async () => {
     if (!summary) return;
 
+    setShowPrivacyDialog(false);
     setIsLoadingClaude(true);
     setClaudeError(null);
 
@@ -319,7 +325,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
               <div className="claude-content">{claudeSummary}</div>
               <button
                 className="regenerate-button"
-                onClick={handleGenerateClaude}
+                onClick={handleGenerateClaudeClick}
                 disabled={isLoadingClaude}
               >
                 {isLoadingClaude ? (
@@ -337,7 +343,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
               <p>{language === 'cs' ? 'Nechej si vygenerovat personalizované shrnutí a doporučení od AI kouče.' : 'Get a personalized summary and recommendations from your AI coach.'}</p>
               <button
                 className="generate-button"
-                onClick={handleGenerateClaude}
+                onClick={handleGenerateClaudeClick}
                 disabled={isLoadingClaude}
               >
                 {isLoadingClaude ? (
@@ -697,6 +703,30 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
           <p>
             {t.weekly.fillDailyToSeeStats}
           </p>
+        </div>
+      )}
+
+      {/* Potvrzovací dialog pro AI Privacy */}
+      {showPrivacyDialog && (
+        <div className="privacy-dialog-overlay" onClick={() => setShowPrivacyDialog(false)}>
+          <div className="privacy-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3>{t.common.aiPrivacyWarningTitle}</h3>
+            <p style={{ whiteSpace: 'pre-line' }}>{t.common.aiPrivacyWarningMessage}</p>
+            <div className="privacy-dialog-buttons">
+              <button
+                className="privacy-cancel-button"
+                onClick={() => setShowPrivacyDialog(false)}
+              >
+                {t.common.aiPrivacyWarningCancel}
+              </button>
+              <button
+                className="privacy-confirm-button"
+                onClick={handleGenerateClaude}
+              >
+                {t.common.aiPrivacyWarningConfirm}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

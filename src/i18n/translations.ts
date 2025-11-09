@@ -16,6 +16,10 @@ export interface Translations {
     week: string;
     month: string;
     year: string;
+    aiPrivacyWarningTitle: string;
+    aiPrivacyWarningMessage: string;
+    aiPrivacyWarningConfirm: string;
+    aiPrivacyWarningCancel: string;
   };
 
   // App
@@ -260,6 +264,10 @@ export const translations: Record<Language, Translations> = {
       week: 'Týden',
       month: 'Měsíc',
       year: 'Rok',
+      aiPrivacyWarningTitle: '⚠️ Upozornění o soukromí',
+      aiPrivacyWarningMessage: 'Používáte jazykový model v cloudu. Jsem si vědom/a, že odesílám svá soukromá a citlivá data na vzdálený server třetí strany.\n\nVaše wellbeing data (odpovědi na dotazník, nálady, poznámky) budou odeslána k AI poskytovateli pro vytvoření personalizovaného shrnutí.\n\nChcete pokračovat?',
+      aiPrivacyWarningConfirm: 'Rozumím, pokračovat',
+      aiPrivacyWarningCancel: 'Zrušit',
     },
     app: {
       subtitle: 'Sleduj svoji duševní pohodu pomocí Maslow, SDT a PERMA',
@@ -472,6 +480,10 @@ export const translations: Record<Language, Translations> = {
       week: 'Week',
       month: 'Month',
       year: 'Year',
+      aiPrivacyWarningTitle: '⚠️ Privacy Warning',
+      aiPrivacyWarningMessage: 'You are using a cloud-based language model. I am aware that I am sending my private and sensitive data to a third-party remote server.\n\nYour wellbeing data (questionnaire responses, moods, notes) will be sent to the AI provider to generate a personalized summary.\n\nDo you want to continue?',
+      aiPrivacyWarningConfirm: 'I understand, continue',
+      aiPrivacyWarningCancel: 'Cancel',
     },
     app: {
       subtitle: 'Track your mental wellbeing with Maslow, SDT and PERMA',

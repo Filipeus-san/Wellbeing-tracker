@@ -33,6 +33,7 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
   const [isLoading, setIsLoading] = useState(true);
   const [canUseAI, setCanUseAI] = useState(false);
   const [currentDailyScore, setCurrentDailyScore] = useState<DailyScore | undefined>(undefined);
+  const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
 
   // Načíst nastavení
   useEffect(() => {
@@ -166,7 +167,12 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
     }
   };
 
+  const handleGenerateSummaryClick = () => {
+    setShowPrivacyDialog(true);
+  };
+
   const handleGenerateSummary = async () => {
+    setShowPrivacyDialog(false);
     setIsGeneratingSummary(true);
     setSummaryError(null);
 
@@ -493,7 +499,7 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
           {canUseAI && isComplete && (
             <button
               className="ai-summary-button"
-              onClick={handleGenerateSummary}
+              onClick={handleGenerateSummaryClick}
               disabled={isGeneratingSummary}
             >
               {isGeneratingSummary ? (
@@ -555,6 +561,30 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
             )}
           </div>
           <div className="ai-summary-content">{aiSummary}</div>
+        </div>
+      )}
+
+      {/* Potvrzovací dialog pro AI Privacy */}
+      {showPrivacyDialog && (
+        <div className="privacy-dialog-overlay" onClick={() => setShowPrivacyDialog(false)}>
+          <div className="privacy-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3>{t.common.aiPrivacyWarningTitle}</h3>
+            <p style={{ whiteSpace: 'pre-line' }}>{t.common.aiPrivacyWarningMessage}</p>
+            <div className="privacy-dialog-buttons">
+              <button
+                className="privacy-cancel-button"
+                onClick={() => setShowPrivacyDialog(false)}
+              >
+                {t.common.aiPrivacyWarningCancel}
+              </button>
+              <button
+                className="privacy-confirm-button"
+                onClick={handleGenerateSummary}
+              >
+                {t.common.aiPrivacyWarningConfirm}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
