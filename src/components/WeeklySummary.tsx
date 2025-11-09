@@ -14,12 +14,14 @@ import {
   Radar,
 } from 'recharts';
 import type { WeeklySummary as WeeklySummaryType, DailyScore } from '../types';
-import { MOODS, getAnxietyColor, getDepressionColor, getJoyColor, getAngerColor, getGratitudeColor } from '../types';
-import { questions, getCategoryLabel } from '../data/questions';
+import { MOODS, getAnxietyColor, getDepressionColor, getJoyColor, getAngerColor, getGratitudeColor, getMoodLabel } from '../types';
+import { questions, getCategoryLabel, getQuestionText } from '../data/questions';
 import { getScoreColor, getScoreLabel, calculateCategoryAverages, generateWeeklySummary } from '../utils/analytics';
 import { generateClaudeSummary } from '../utils/claudeApi';
 import { getDailyScoresInRange, getSettings, saveWeeklySummary, getWeeklySummary } from '../utils/storage';
 import { startOfWeek, addWeeks, subWeeks } from 'date-fns';
+import { useLanguage } from '../i18n/LanguageContext';
+import { getMicroActionText } from '../utils/microActions';
 import './WeeklySummary.css';
 
 interface WeeklySummaryProps {
@@ -28,6 +30,7 @@ interface WeeklySummaryProps {
 }
 
 export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummaryProps) => {
+  const { language, t } = useLanguage();
   const [summary, setSummary] = useState<WeeklySummaryType | null>(null);
   const [dailyScores, setDailyScores] = useState<DailyScore[]>([]);
   const [claudeSummary, setClaudeSummary] = useState<string | null>(null);
@@ -142,36 +145,37 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
   if (isLoading || !summary) {
     return (
       <div className="weekly-summary">
-        <div className="loading-message">Načítám týdenní data...</div>
+        <div className="loading-message">{t.weekly.loadingWeeklyData}</div>
       </div>
     );
   }
 
   // Připravit data pro grafy
   const categoryAverages = calculateCategoryAverages(summary.averages);
+  const locale = language === 'cs' ? 'cs-CZ' : 'en-US';
 
   const radarData = categoryAverages.map((cat) => ({
-    category: getCategoryLabel(cat.category).substring(0, 15) + '...',
+    category: getCategoryLabel(cat.category, language).substring(0, 15) + '...',
     score: parseFloat(cat.average.toFixed(2)),
   }));
 
   const barData = summary.criticalAreas.slice(0, 5).map((area) => {
     const question = questions.find((q) => q.id === area.questionId);
     return {
-      name: question?.text.substring(0, 30) + '...' || area.questionId,
+      name: (getQuestionText(area.questionId, language) || question?.text || area.questionId).substring(0, 30) + '...',
       score: parseFloat(area.score.toFixed(2)),
     };
   });
 
-  const weekStartDate = new Date(summary.weekStart).toLocaleDateString('cs-CZ');
-  const weekEndDate = new Date(summary.weekEnd).toLocaleDateString('cs-CZ');
+  const weekStartDate = new Date(summary.weekStart).toLocaleDateString(locale);
+  const weekEndDate = new Date(summary.weekEnd).toLocaleDateString(locale);
 
   return (
     <div className="weekly-summary">
       <div className="summary-header">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '16px' }}>
           <div>
-            <h2>Týdenní shrnutí</h2>
+            <h2>{t.weekly.title}</h2>
             <div className="week-range">
               {weekStartDate} - {weekEndDate}
             </div>
@@ -190,7 +194,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                 fontSize: '16px',
                 fontWeight: '600',
               }}
-              title="Předchozí týden"
+              title={t.weekly.previousWeek}
             >
               ◀
             </button>
@@ -208,7 +212,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                   fontWeight: '500',
                 }}
               >
-                Aktuální týden
+                {t.weekly.currentWeek}
               </button>
             )}
             <button
@@ -225,7 +229,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                 fontWeight: '600',
                 opacity: isCurrentWeek() ? 0.5 : 1,
               }}
-              title="Následující týden"
+              title={t.weekly.nextWeek}
             >
               ▶
             </button>
@@ -243,22 +247,22 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                 marginLeft: '8px',
               }}
             >
-              🔄 Obnovit
+              🔄 {t.weekly.refresh}
             </button>
           </div>
         </div>
         <div className="stats-overview">
           <div className="stat-card">
             <div className="stat-value">{dailyScores.length}</div>
-            <div className="stat-label">Vyplněných dní</div>
+            <div className="stat-label">{t.weekly.filledDays}</div>
           </div>
           <div className="stat-card">
             <div className="stat-value">{summary.criticalAreas.length}</div>
-            <div className="stat-label">Kritické oblasti</div>
+            <div className="stat-label">{t.weekly.criticalAreas}</div>
           </div>
           <div className="stat-card">
             <div className="stat-value">{summary.microActions.length}</div>
-            <div className="stat-label">Mikro-akce</div>
+            <div className="stat-label">{t.weekly.microActions}</div>
           </div>
         </div>
       </div>
@@ -266,7 +270,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       {/* Claude AI Shrnutí - zobrazit pouze pokud jsou data */}
       {canUseClaude && dailyScores.length > 0 && (
         <div className="claude-section">
-          <h3>🤖 AI Wellbeing Kouč</h3>
+          <h3>🤖 {t.weekly.aiWellbeingCoach}</h3>
           {claudeSummary ? (
             <div className="claude-summary">
               <div className="claude-content">{claudeSummary}</div>
@@ -278,16 +282,16 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                 {isLoadingClaude ? (
                   <>
                     <span className="spinner">⏳</span>
-                    Generuji...
+                    {t.daily.generating}
                   </>
                 ) : (
-                  'Vygenerovat nové shrnutí'
+                  t.weekly.generateNewSummary
                 )}
               </button>
             </div>
           ) : (
             <div className="claude-generate">
-              <p>Nechej si vygenerovat personalizované shrnutí a doporučení od AI kouče.</p>
+              <p>{language === 'cs' ? 'Nechej si vygenerovat personalizované shrnutí a doporučení od AI kouče.' : 'Get a personalized summary and recommendations from your AI coach.'}</p>
               <button
                 className="generate-button"
                 onClick={handleGenerateClaude}
@@ -296,10 +300,10 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                 {isLoadingClaude ? (
                   <>
                     <span className="spinner">⏳</span>
-                    Generuji...
+                    {t.daily.generating}
                   </>
                 ) : (
-                  'Vygenerovat AI shrnutí'
+                  t.weekly.generateAiSummary
                 )}
               </button>
               {claudeError && <div className="claude-error">{claudeError}</div>}
@@ -311,13 +315,13 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       {/* Týdenní nálady - zobrazit pouze pokud jsou data s náladou */}
       {dailyScores.some(score => score.mood) && (
         <div className="mood-overview-section">
-          <h3>💭 Nálada v průběhu týdne</h3>
+          <h3>💭 {t.weekly.moodOverWeek}</h3>
           <div className="daily-moods">
             {dailyScores.map((score) => {
               const moodData = score.mood ? MOODS[score.mood] : null;
               const date = new Date(score.date);
-              const dayName = date.toLocaleDateString('cs-CZ', { weekday: 'short' });
-              const dayDate = date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' });
+              const dayName = date.toLocaleDateString(locale, { weekday: 'short' });
+              const dayDate = date.toLocaleDateString(locale, { day: 'numeric', month: 'numeric' });
 
               return (
                 <div key={score.date} className="day-mood-item">
@@ -325,17 +329,17 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                     <div className="day-name">{dayName}</div>
                     <div className="day-date">{dayDate}</div>
                   </div>
-                  {moodData ? (
+                  {moodData && score.mood ? (
                     <div
                       className="mood-display"
                       style={{ backgroundColor: moodData.color + '20', borderColor: moodData.color }}
                     >
                       <span className="mood-emoji">{moodData.emoji}</span>
-                      <span className="mood-label" style={{ color: moodData.color }}>{moodData.label}</span>
+                      <span className="mood-label" style={{ color: moodData.color }}>{getMoodLabel(score.mood, language)}</span>
                     </div>
                   ) : (
                     <div className="mood-display no-mood">
-                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>Nezadáno</span>
+                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>{t.weekly.notSpecified}</span>
                     </div>
                   )}
                 </div>
@@ -348,12 +352,12 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       {/* Týdenní úzkost */}
       {dailyScores.some(score => score.anxiety !== undefined) && (
         <div className="mental-health-overview-section">
-          <h3>😰 Úzkost v průběhu týdne</h3>
+          <h3>😰 {t.weekly.anxietyOverWeek}</h3>
           <div className="daily-mental-health">
             {dailyScores.map((score) => {
               const date = new Date(score.date);
-              const dayName = date.toLocaleDateString('cs-CZ', { weekday: 'short' });
-              const dayDate = date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' });
+              const dayName = date.toLocaleDateString(locale, { weekday: 'short' });
+              const dayDate = date.toLocaleDateString(locale, { day: 'numeric', month: 'numeric' });
               const anxietyLevel = score.anxiety ?? null;
 
               return (
@@ -379,7 +383,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                     </div>
                   ) : (
                     <div className="mental-health-display">
-                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>Nezadáno</span>
+                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>{t.weekly.notSpecified}</span>
                     </div>
                   )}
                 </div>
@@ -392,12 +396,12 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       {/* Týdenní deprese */}
       {dailyScores.some(score => score.depression !== undefined) && (
         <div className="mental-health-overview-section">
-          <h3>😔 Deprese v průběhu týdne</h3>
+          <h3>😔 {t.weekly.depressionOverWeek}</h3>
           <div className="daily-mental-health">
             {dailyScores.map((score) => {
               const date = new Date(score.date);
-              const dayName = date.toLocaleDateString('cs-CZ', { weekday: 'short' });
-              const dayDate = date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' });
+              const dayName = date.toLocaleDateString(locale, { weekday: 'short' });
+              const dayDate = date.toLocaleDateString(locale, { day: 'numeric', month: 'numeric' });
               const depressionLevel = score.depression ?? null;
 
               return (
@@ -423,7 +427,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                     </div>
                   ) : (
                     <div className="mental-health-display">
-                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>Nezadáno</span>
+                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>{t.weekly.notSpecified}</span>
                     </div>
                   )}
                 </div>
@@ -436,12 +440,12 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       {/* Týdenní radost */}
       {dailyScores.some(score => score.joy !== undefined) && (
         <div className="mental-health-overview-section">
-          <h3>😊 Radost v průběhu týdne</h3>
+          <h3>😊 {t.weekly.joyOverWeek}</h3>
           <div className="daily-mental-health">
             {dailyScores.map((score) => {
               const date = new Date(score.date);
-              const dayName = date.toLocaleDateString('cs-CZ', { weekday: 'short' });
-              const dayDate = date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' });
+              const dayName = date.toLocaleDateString(locale, { weekday: 'short' });
+              const dayDate = date.toLocaleDateString(locale, { day: 'numeric', month: 'numeric' });
               const joyLevel = score.joy ?? null;
 
               return (
@@ -467,7 +471,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                     </div>
                   ) : (
                     <div className="mental-health-display">
-                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>Nezadáno</span>
+                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>{t.weekly.notSpecified}</span>
                     </div>
                   )}
                 </div>
@@ -480,12 +484,12 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       {/* Týdenní vztek */}
       {dailyScores.some(score => score.anger !== undefined) && (
         <div className="mental-health-overview-section">
-          <h3>😠 Vztek v průběhu týdne</h3>
+          <h3>😠 {t.weekly.angerOverWeek}</h3>
           <div className="daily-mental-health">
             {dailyScores.map((score) => {
               const date = new Date(score.date);
-              const dayName = date.toLocaleDateString('cs-CZ', { weekday: 'short' });
-              const dayDate = date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' });
+              const dayName = date.toLocaleDateString(locale, { weekday: 'short' });
+              const dayDate = date.toLocaleDateString(locale, { day: 'numeric', month: 'numeric' });
               const angerLevel = score.anger ?? null;
 
               return (
@@ -511,7 +515,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                     </div>
                   ) : (
                     <div className="mental-health-display">
-                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>Nezadáno</span>
+                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>{t.weekly.notSpecified}</span>
                     </div>
                   )}
                 </div>
@@ -524,12 +528,12 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       {/* Týdenní vděčnost */}
       {dailyScores.some(score => score.gratitude !== undefined) && (
         <div className="mental-health-overview-section">
-          <h3>🙏 Vděčnost v průběhu týdne</h3>
+          <h3>🙏 {t.weekly.gratitudeOverWeek}</h3>
           <div className="daily-mental-health">
             {dailyScores.map((score) => {
               const date = new Date(score.date);
-              const dayName = date.toLocaleDateString('cs-CZ', { weekday: 'short' });
-              const dayDate = date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' });
+              const dayName = date.toLocaleDateString(locale, { weekday: 'short' });
+              const dayDate = date.toLocaleDateString(locale, { day: 'numeric', month: 'numeric' });
               const gratitudeLevel = score.gratitude ?? null;
 
               return (
@@ -555,7 +559,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                     </div>
                   ) : (
                     <div className="mental-health-display">
-                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>Nezadáno</span>
+                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>{t.weekly.notSpecified}</span>
                     </div>
                   )}
                 </div>
@@ -568,14 +572,14 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       {/* Radar Graf - Celkový přehled - zobrazit pouze pokud jsou data */}
       {dailyScores.length > 0 && (
         <div className="chart-section">
-          <h3>Celkový přehled kategorií</h3>
+          <h3>{t.weekly.overallCategories}</h3>
           <ResponsiveContainer width="100%" height={300}>
             <RadarChart data={radarData}>
               <PolarGrid />
               <PolarAngleAxis dataKey="category" />
               <PolarRadiusAxis angle={90} domain={[0, 5]} />
               <Radar
-                name="Průměrné skóre"
+                name={language === 'cs' ? 'Průměrné skóre' : 'Average Score'}
                 dataKey="score"
                 stroke="#8b5cf6"
                 fill="#8b5cf6"
@@ -590,7 +594,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       {/* Kritické oblasti */}
       {summary.criticalAreas.length > 0 && (
         <div className="chart-section">
-          <h3>🔴 Kritické oblasti (vyžadují pozornost)</h3>
+          <h3>🔴 {t.weekly.criticalAreasRequireAttention}</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={barData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -606,13 +610,13 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       {/* Mikro-akce - zobrazit pouze pokud jsou nějaká data */}
       {dailyScores.length > 0 && summary.microActions.length > 0 && (
         <div className="micro-actions-section">
-          <h3>💡 Doporučené mikro-akce</h3>
+          <h3>💡 {t.weekly.recommendedMicroActions}</h3>
           <div className="micro-actions-grid">
             {summary.microActions.map((action) => (
               <div key={action.id} className={`micro-action-card priority-${action.priority}`}>
                 <div className="action-priority">{action.priority}</div>
-                <h4>{action.title}</h4>
-                <p>{action.description}</p>
+                <h4>{getMicroActionText(action.id, 'title', language) || action.title}</h4>
+                <p>{getMicroActionText(action.id, 'description', language) || action.description}</p>
               </div>
             ))}
           </div>
@@ -622,7 +626,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       {/* Detailní skóre všech otázek - zobrazit pouze pokud jsou data */}
       {dailyScores.length > 0 && (
         <div className="detailed-scores">
-          <h3>Detailní přehled všech otázek</h3>
+          <h3>{t.weekly.detailedOverview}</h3>
           <div className="scores-grid">
             {questions.map((question) => {
               const score = summary.averages[question.id];
@@ -630,7 +634,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
 
               return (
                 <div key={question.id} className="score-item">
-                  <div className="score-question">{question.text}</div>
+                  <div className="score-question">{getQuestionText(question.id, language) || question.text}</div>
                   <div className="score-display">
                     <div
                       className="score-bar"
@@ -641,7 +645,7 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                     />
                     <span className="score-value">{score.toFixed(1)}</span>
                     <span className="score-label-text" style={{ color: getScoreColor(score) }}>
-                      {getScoreLabel(score)}
+                      {getScoreLabel(score, language)}
                     </span>
                   </div>
                 </div>
@@ -661,10 +665,10 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         }}>
           <p style={{ fontSize: '48px', marginBottom: '16px' }}>📝</p>
           <p style={{ marginBottom: '8px', fontSize: '18px', fontWeight: '500' }}>
-            Žádná data pro tento týden
+            {t.weekly.noDataForWeek}
           </p>
           <p>
-            Vyplňte denní dotazník pro alespoň jeden den tohoto týdne, abyste viděli týdenní statistiky.
+            {t.weekly.fillDailyToSeeStats}
           </p>
         </div>
       )}

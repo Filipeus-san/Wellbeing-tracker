@@ -1,4 +1,4 @@
-import type { DailyScore, WeeklySummary, CategoryAverage } from '../types';
+import type { DailyScore, WeeklySummary, CategoryAverage, Language } from '../types';
 import { WellbeingCategory } from '../types';
 import { questions } from '../data/questions';
 import { startOfWeek, endOfWeek } from 'date-fns';
@@ -113,12 +113,32 @@ export const getScoreColor = (score: number): string => {
 /**
  * Získá textový popisek pro skóre
  */
-export const getScoreLabel = (score: number): string => {
-  if (score < 2) return 'Kritické';
-  if (score < 2.5) return 'Nízké';
-  if (score < 3.5) return 'Střední';
-  if (score < 4.5) return 'Dobré';
-  return 'Výborné';
+export const getScoreLabel = (score: number, language: Language = 'cs'): string => {
+  const labels = {
+    cs: {
+      critical: 'Kritické',
+      veryLow: 'Velmi nízké',
+      low: 'Nízké',
+      medium: 'Střední',
+      high: 'Dobré',
+      veryHigh: 'Výborné',
+    },
+    en: {
+      critical: 'Critical',
+      veryLow: 'Very Low',
+      low: 'Low',
+      medium: 'Medium',
+      high: 'Good',
+      veryHigh: 'Excellent',
+    },
+  };
+
+  const lang = labels[language];
+  if (score < 2) return lang.critical;
+  if (score < 2.5) return lang.veryLow;
+  if (score < 3.5) return lang.medium;
+  if (score < 4.5) return lang.high;
+  return lang.veryHigh;
 };
 
 /**
