@@ -418,6 +418,43 @@ const microActionsDatabase: Record<WellbeingCategory, MicroAction[]> = {
       priority: 'medium',
     },
   ],
+  [WellbeingCategory.ILLNESS]: [
+    {
+      id: 'illness_1',
+      title: 'Odpočinek',
+      description: 'Dopřej si dostatek odpočinku a spánku pro regeneraci těla.',
+      category: WellbeingCategory.ILLNESS,
+      priority: 'high',
+    },
+    {
+      id: 'illness_2',
+      title: 'Hydratace',
+      description: 'Pij dostatek tekutin - voda, čaj, polévky.',
+      category: WellbeingCategory.ILLNESS,
+      priority: 'high',
+    },
+    {
+      id: 'illness_3',
+      title: 'Lékařská pomoc',
+      description: 'Pokud se cítíš velmi špatně, kontaktuj lékaře nebo zdravotní poradnu.',
+      category: WellbeingCategory.ILLNESS,
+      priority: 'high',
+    },
+    {
+      id: 'illness_4',
+      title: 'Lehká strava',
+      description: 'Jez lehká, výživná jídla, která ti dodají energii a podpoří imunitu.',
+      category: WellbeingCategory.ILLNESS,
+      priority: 'medium',
+    },
+    {
+      id: 'illness_5',
+      title: 'Prevence',
+      description: 'Mysli na prevenci - vitamíny, odpočinek, mytí rukou, čerstvý vzduch.',
+      category: WellbeingCategory.ILLNESS,
+      priority: 'medium',
+    },
+  ],
 };
 
 /**

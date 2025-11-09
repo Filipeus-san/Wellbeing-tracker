@@ -111,6 +111,12 @@ export const questions: Question[] = [
     text: 'Jak dobře se ti dnes dařilo zvládat/kontrolovat závislosti? (látková i nelátková)',
     model: 'maslow',
   },
+  {
+    id: 'maslow_illness',
+    category: WellbeingCategory.ILLNESS,
+    text: 'Jak se dnes fyzicky cítíš? Jsi zdravý/á nebo se cítíš nemocný/á?',
+    model: 'maslow',
+  },
 ];
 
 export const getCategoryLabel = (category: WellbeingCategory): string => {
@@ -132,6 +138,7 @@ export const getCategoryLabel = (category: WellbeingCategory): string => {
     [WellbeingCategory.HYGIENE]: 'Hygiena',
     [WellbeingCategory.EXERCISE]: 'Pohyb/Sport',
     [WellbeingCategory.ADDICTION]: 'Závislosti',
+    [WellbeingCategory.ILLNESS]: 'Zdraví/Nemoc',
   };
   return labels[category];
 };

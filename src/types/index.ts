@@ -125,6 +125,7 @@ export const WellbeingCategory = {
   HYGIENE: 'hygiene',
   EXERCISE: 'exercise',
   ADDICTION: 'addiction',
+  ILLNESS: 'illness',
 } as const;
 
 export type WellbeingCategory = typeof WellbeingCategory[keyof typeof WellbeingCategory];
