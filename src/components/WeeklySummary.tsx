@@ -18,7 +18,7 @@ import { questions, getCategoryLabel } from '../data/questions';
 import { getScoreColor, getScoreLabel, calculateCategoryAverages, generateWeeklySummary } from '../utils/analytics';
 import { generateClaudeSummary } from '../utils/claudeApi';
 import { getDailyScoresInRange, getSettings, saveWeeklySummary, getWeeklySummary } from '../utils/storage';
-import { startOfWeek } from 'date-fns';
+import { startOfWeek, addWeeks, subWeeks } from 'date-fns';
 import './WeeklySummary.css';
 
 interface WeeklySummaryProps {
@@ -33,8 +33,10 @@ export const WeeklySummary = ({ onRefresh }: WeeklySummaryProps) => {
   const [claudeError, setClaudeError] = useState<string | null>(null);
   const [canUseClaude, setCanUseClaude] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
 
-  // Načíst data při načtení komponenty
+  // Načíst data při načtení komponenty nebo když se změní týden/refresh
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
@@ -43,15 +45,14 @@ export const WeeklySummary = ({ onRefresh }: WeeklySummaryProps) => {
       const settings = await getSettings();
       setCanUseClaude(settings.enableClaudeIntegration);
 
-      // Získat aktuální týden
-      const today = new Date();
-      const weekStart = startOfWeek(today, { weekStartsOn: 1 });
+      // Použít aktuálně zvolený týden
+      const weekStart = currentWeekStart;
       const weekStartStr = weekStart.toISOString().split('T')[0];
 
-      // Zkusit načíst existující, jinak vygenerovat nové
+      // Načíst existující nebo vygenerovat nové
       let weeklySummary = await getWeeklySummary(weekStartStr);
       if (!weeklySummary) {
-        weeklySummary = await generateWeeklySummary(today);
+        weeklySummary = await generateWeeklySummary(weekStart);
         await saveWeeklySummary(weeklySummary);
       }
 
@@ -63,10 +64,43 @@ export const WeeklySummary = ({ onRefresh }: WeeklySummaryProps) => {
       setDailyScores(scores);
 
       setIsLoading(false);
+
+      console.log('📊 WeeklySummary načteno:', {
+        weekStart: weeklySummary.weekStart,
+        weekEnd: weeklySummary.weekEnd,
+        dailyScoresCount: scores.length,
+        criticalAreas: weeklySummary.criticalAreas.length,
+        microActions: weeklySummary.microActions.length,
+      });
     };
 
     loadData();
-  }, []);
+  }, [currentWeekStart, refreshTrigger]);
+
+  // Funkce pro manuální refresh
+  const handleRefresh = () => {
+    console.log('🔄 Manuální refresh týdenního shrnutí');
+    setRefreshTrigger(prev => prev + 1);
+  };
+
+  // Navigace mezi týdny
+  const handlePreviousWeek = () => {
+    setCurrentWeekStart(prev => subWeeks(prev, 1));
+  };
+
+  const handleNextWeek = () => {
+    setCurrentWeekStart(prev => addWeeks(prev, 1));
+  };
+
+  const handleCurrentWeek = () => {
+    setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }));
+  };
+
+  const isCurrentWeek = () => {
+    const today = new Date();
+    const thisWeekStart = startOfWeek(today, { weekStartsOn: 1 });
+    return currentWeekStart.getTime() === thisWeekStart.getTime();
+  };
 
   const handleGenerateClaude = async () => {
     if (!summary) return;
@@ -126,9 +160,83 @@ export const WeeklySummary = ({ onRefresh }: WeeklySummaryProps) => {
   return (
     <div className="weekly-summary">
       <div className="summary-header">
-        <h2>Týdenní shrnutí</h2>
-        <div className="week-range">
-          {weekStartDate} - {weekEndDate}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '16px' }}>
+          <div>
+            <h2>Týdenní shrnutí</h2>
+            <div className="week-range">
+              {weekStartDate} - {weekEndDate}
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            {/* Navigace mezi týdny */}
+            <button
+              onClick={handlePreviousWeek}
+              style={{
+                padding: '8px 12px',
+                backgroundColor: '#6b7280',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: '600',
+              }}
+              title="Předchozí týden"
+            >
+              ◀
+            </button>
+            {!isCurrentWeek() && (
+              <button
+                onClick={handleCurrentWeek}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#10b981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                }}
+              >
+                Aktuální týden
+              </button>
+            )}
+            <button
+              onClick={handleNextWeek}
+              disabled={isCurrentWeek()}
+              style={{
+                padding: '8px 12px',
+                backgroundColor: isCurrentWeek() ? '#d1d5db' : '#6b7280',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: isCurrentWeek() ? 'not-allowed' : 'pointer',
+                fontSize: '16px',
+                fontWeight: '600',
+                opacity: isCurrentWeek() ? 0.5 : 1,
+              }}
+              title="Následující týden"
+            >
+              ▶
+            </button>
+            <button
+              onClick={handleRefresh}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#8b5cf6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '500',
+                marginLeft: '8px',
+              }}
+            >
+              🔄 Obnovit
+            </button>
+          </div>
         </div>
         <div className="stats-overview">
           <div className="stat-card">
