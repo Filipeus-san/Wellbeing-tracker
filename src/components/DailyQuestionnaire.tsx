@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import type { DailyScore, ScoreValue, MoodValue, AnxietyLevel, DepressionLevel, JoyLevel, AngerLevel, GratitudeLevel } from '../types';
-import { MOODS, getAnxietyLabel, getDepressionLabel, getAnxietyColor, getDepressionColor, getJoyLabel, getJoyColor, getAngerLabel, getAngerColor, getGratitudeLabel, getGratitudeColor } from '../types';
-import { questions, getModelLabel } from '../data/questions';
+import { MOODS, getMoodLabel, getAnxietyLabel, getDepressionLabel, getAnxietyColor, getDepressionColor, getJoyLabel, getJoyColor, getAngerLabel, getAngerColor, getGratitudeLabel, getGratitudeColor } from '../types';
+import { questions, getModelLabel, getQuestionText } from '../data/questions';
 import { saveDailyScore, getDailyScore, getSettings, saveWeeklySummary, getWeeklySummary } from '../utils/storage';
 import { getScoreColor, generateDailyMicroActions, generateWeeklySummary } from '../utils/analytics';
 import { generateDailySummary } from '../utils/claudeApi';
 import { startOfWeek } from 'date-fns';
+import { useLanguage } from '../i18n/LanguageContext';
 import './DailyQuestionnaire.css';
 
 interface DailyQuestionnaireProps {
@@ -15,6 +16,7 @@ interface DailyQuestionnaireProps {
 }
 
 export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: DailyQuestionnaireProps) => {
+  const { language, t } = useLanguage();
   const [scores, setScores] = useState<Record<string, ScoreValue>>({});
   const [mood, setMood] = useState<MoodValue | undefined>(undefined);
   const [anxiety, setAnxiety] = useState<AnxietyLevel>(0);
@@ -122,7 +124,7 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
       }
     } catch (error) {
       console.error('Error saving daily score:', error);
-      alert('Chyba při ukládání dat.');
+      alert(t.common.error);
     }
   };
 
@@ -197,7 +199,7 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
       await regenerateWeeklySummary(date);
     } catch (error) {
       setSummaryError(
-        error instanceof Error ? error.message : 'Chyba při generování shrnutí'
+        error instanceof Error ? error.message : t.common.error
       );
     } finally {
       setIsGeneratingSummary(false);
@@ -226,7 +228,7 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
   if (isLoading) {
     return (
       <div className="daily-questionnaire">
-        <div className="loading-message">Načítám data...</div>
+        <div className="loading-message">{t.common.loading}</div>
       </div>
     );
   }
@@ -234,20 +236,20 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
   return (
     <div className="daily-questionnaire">
       <div className="questionnaire-header">
-        <h2>Denní dotazník</h2>
-        <div className="date-display">{new Date(date).toLocaleDateString('cs-CZ')}</div>
+        <h2>{t.daily.title}</h2>
+        <div className="date-display">{new Date(date).toLocaleDateString(language === 'cs' ? 'cs-CZ' : 'en-US')}</div>
         <div className="progress-bar">
           <div className="progress-fill" style={{ width: `${completionPercentage}%` }} />
         </div>
         <div className="progress-text">
-          Vyplněno: {validScoresCount} / {questions.length} ({completionPercentage}%)
+          {language === 'cs' ? `Vyplněno: ${validScoresCount} / ${questions.length} (${completionPercentage}%)` : `Filled: ${validScoresCount} / ${questions.length} (${completionPercentage}%)`}
         </div>
       </div>
 
       <div className="questionnaire-content">
         {/* Měření nálady */}
         <div className="mood-section">
-          <h3 className="mood-title">Jak se dnes cítíš? 💭</h3>
+          <h3 className="mood-title">{t.daily.selectMood} 💭</h3>
           <div className="mood-selector">
             {Object.entries(MOODS).map(([value, moodData]) => {
               const isSelected = mood === value;
@@ -261,10 +263,10 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
                     border: isSelected ? `2px solid ${moodData.color}` : '2px solid #e5e7eb',
                   }}
                   onClick={() => setMood(value as MoodValue)}
-                  title={moodData.label}
+                  title={getMoodLabel(value as MoodValue, language)}
                 >
                   <span style={{ fontSize: '32px' }}>{moodData.emoji}</span>
-                  <span style={{ fontSize: '14px', marginTop: '4px' }}>{moodData.label}</span>
+                  <span style={{ fontSize: '14px', marginTop: '4px' }}>{getMoodLabel(value as MoodValue, language)}</span>
                 </button>
               );
             })}
@@ -275,12 +277,12 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         <div className="mental-health-section">
           <div className="slider-container">
             <div className="slider-header">
-              <h3 className="slider-title">😰 Míra úzkosti</h3>
+              <h3 className="slider-title">😰 {t.daily.anxietyLevel}</h3>
               <div
                 className="slider-value"
                 style={{ color: getAnxietyColor(anxiety) }}
               >
-                {anxiety}/10 - {getAnxietyLabel(anxiety)}
+                {anxiety}/10 - {getAnxietyLabel(anxiety, language)}
               </div>
             </div>
             <input
@@ -295,8 +297,8 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
               }}
             />
             <div className="slider-labels">
-              <span>0 - Žádná</span>
-              <span>10 - Extrémní</span>
+              <span>0 - {t.daily.none}</span>
+              <span>10 - {t.daily.extreme}</span>
             </div>
           </div>
         </div>
@@ -305,12 +307,12 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         <div className="mental-health-section">
           <div className="slider-container">
             <div className="slider-header">
-              <h3 className="slider-title">😔 Míra deprese</h3>
+              <h3 className="slider-title">😔 {t.daily.depressionLevel}</h3>
               <div
                 className="slider-value"
                 style={{ color: getDepressionColor(depression) }}
               >
-                {depression}/10 - {getDepressionLabel(depression)}
+                {depression}/10 - {getDepressionLabel(depression, language)}
               </div>
             </div>
             <input
@@ -325,8 +327,8 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
               }}
             />
             <div className="slider-labels">
-              <span>0 - Žádná</span>
-              <span>10 - Extrémní</span>
+              <span>0 - {t.daily.none}</span>
+              <span>10 - {t.daily.extreme}</span>
             </div>
           </div>
         </div>
@@ -335,12 +337,12 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         <div className="mental-health-section">
           <div className="slider-container">
             <div className="slider-header">
-              <h3 className="slider-title">😊 Míra radosti</h3>
+              <h3 className="slider-title">😊 {t.daily.joyLevel}</h3>
               <div
                 className="slider-value"
                 style={{ color: getJoyColor(joy) }}
               >
-                {joy}/10 - {getJoyLabel(joy)}
+                {joy}/10 - {getJoyLabel(joy, language)}
               </div>
             </div>
             <input
@@ -355,8 +357,8 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
               }}
             />
             <div className="slider-labels">
-              <span>0 - Žádná</span>
-              <span>10 - Extrémní</span>
+              <span>0 - {t.daily.none}</span>
+              <span>10 - {t.daily.extreme}</span>
             </div>
           </div>
         </div>
@@ -365,12 +367,12 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         <div className="mental-health-section">
           <div className="slider-container">
             <div className="slider-header">
-              <h3 className="slider-title">😠 Míra vzteku</h3>
+              <h3 className="slider-title">😠 {t.daily.angerLevel}</h3>
               <div
                 className="slider-value"
                 style={{ color: getAngerColor(anger) }}
               >
-                {anger}/10 - {getAngerLabel(anger)}
+                {anger}/10 - {getAngerLabel(anger, language)}
               </div>
             </div>
             <input
@@ -385,8 +387,8 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
               }}
             />
             <div className="slider-labels">
-              <span>0 - Žádný</span>
-              <span>10 - Extrémní</span>
+              <span>0 - {t.daily.none}</span>
+              <span>10 - {t.daily.extreme}</span>
             </div>
           </div>
         </div>
@@ -395,12 +397,12 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         <div className="mental-health-section">
           <div className="slider-container">
             <div className="slider-header">
-              <h3 className="slider-title">🙏 Míra vděčnosti</h3>
+              <h3 className="slider-title">🙏 {t.daily.gratitudeLevel}</h3>
               <div
                 className="slider-value"
                 style={{ color: getGratitudeColor(gratitude) }}
               >
-                {gratitude}/10 - {getGratitudeLabel(gratitude)}
+                {gratitude}/10 - {getGratitudeLabel(gratitude, language)}
               </div>
             </div>
             <input
@@ -415,19 +417,19 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
               }}
             />
             <div className="slider-labels">
-              <span>0 - Žádná</span>
-              <span>10 - Hluboká</span>
+              <span>0 - {t.daily.none}</span>
+              <span>10 - {t.daily.extreme}</span>
             </div>
           </div>
         </div>
 
         {Object.entries(groupedQuestions).map(([model, modelQuestions]) => (
           <div key={model} className="model-section">
-            <h3 className="model-title">{getModelLabel(model as any)}</h3>
+            <h3 className="model-title">{getModelLabel(model as any, language)}</h3>
 
             {modelQuestions.map((question) => (
               <div key={question.id} className="question-item">
-                <div className="question-text">{question.text}</div>
+                <div className="question-text">{getQuestionText(question.id, language)}</div>
                 <div className="score-buttons">
                   {[1, 2, 3, 4, 5].map((value) => {
                     const isSelected = scores[question.id] === value;
@@ -454,14 +456,14 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
 
         <div className="notes-section">
           <label htmlFor="notes" className="notes-label">
-            Poznámky k dnešnímu dni (volitelné)
+            {t.daily.notes}
           </label>
           <textarea
             id="notes"
             className="notes-textarea"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Jak ses dnes cítil/a? Co ovlivnilo tvoje skóre? Nějaké důležité události?"
+            placeholder={t.daily.notesPlaceholder}
             rows={4}
           />
         </div>
@@ -474,7 +476,7 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
             onClick={handleSave}
             disabled={validScoresCount === 0}
           >
-            {isComplete ? 'Uložit denní záznam' : 'Uložit rozpracované'}
+            {t.daily.saveButton}
           </button>
 
           {canUseAI && isComplete && (
@@ -486,24 +488,24 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
               {isGeneratingSummary ? (
                 <>
                   <span className="spinner">⏳</span>
-                  Generuji...
+                  {t.daily.generating}
                 </>
               ) : aiSummary ? (
-                '🔄 Vygenerovat znovu'
+                `🔄 ${t.daily.generateAiSummary}`
               ) : (
-                '🤖 Vygenerovat AI shrnutí'
+                `🤖 ${t.daily.generateAiSummary}`
               )}
             </button>
           )}
         </div>
 
         {savedMessage && (
-          <div className="saved-message">✓ Denní záznam byl úspěšně uložen</div>
+          <div className="saved-message">✓ {t.common.success}</div>
         )}
 
         {!isComplete && validScoresCount > 0 && (
           <div className="incomplete-warning">
-            Ještě zbývá vyplnit {questions.length - validScoresCount} otázek
+            {language === 'cs' ? `Ještě zbývá vyplnit ${questions.length - validScoresCount} otázek` : `${questions.length - validScoresCount} questions remaining`}
           </div>
         )}
 
@@ -514,9 +516,9 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
       {aiSummary && (
         <div className="ai-summary-section">
           <div className="ai-summary-header">
-            <h3>🤖 AI Wellbeing Kouč - Denní shrnutí</h3>
+            <h3>🤖 {t.daily.aiCoach}</h3>
             {currentDailyScore?.aiSummary && (
-              <span className="saved-indicator">💾 Uloženo</span>
+              <span className="saved-indicator">💾 {language === 'cs' ? 'Uloženo' : 'Saved'}</span>
             )}
           </div>
           <div className="ai-summary-content">{aiSummary}</div>
@@ -524,7 +526,7 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
           {/* Mikro-akce na zítřek */}
           {currentDailyScore?.microActions && (
             <div className="daily-micro-actions">
-              <h4>💡 Doporučené akce na zítřek</h4>
+              <h4>💡 {t.daily.recommendedActions}</h4>
               <div className="micro-actions-list">
                 {currentDailyScore.microActions.map((action) => (
                   <div key={action.id} className={`micro-action-item priority-${action.priority}`}>
