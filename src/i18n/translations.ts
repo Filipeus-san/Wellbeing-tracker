@@ -122,6 +122,11 @@ export interface Translations {
     everyWeek: string;
   };
 
+  // Guide
+  guide: {
+    title: string;
+  };
+
   // Settings
   settings: {
     title: string;
@@ -420,6 +425,9 @@ export const translations: Record<Language, Translations> = {
       week5: '5.',
       everyWeek: 'Každý týden',
     },
+    guide: {
+      title: 'Návod na propojení s Google Diskem',
+    },
     settings: {
       title: 'Nastavení',
       language: 'Jazyk',
@@ -694,6 +702,9 @@ export const translations: Record<Language, Translations> = {
       week4: '4th',
       week5: '5th',
       everyWeek: 'Every week',
+    },
+    guide: {
+      title: 'Google Drive Setup Guide',
     },
     settings: {
       title: 'Settings',

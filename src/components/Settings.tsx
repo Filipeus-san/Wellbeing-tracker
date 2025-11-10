@@ -3,6 +3,7 @@ import { getSettings, saveSettings, exportData, importData, clearAllData } from 
 import { testAiCLI } from '../utils/claudeApi';
 import type { AppSettings, Language } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
+import { GoogleDriveGuide } from './GoogleDriveGuide';
 import './Settings.css';
 
 interface SettingsProps {
@@ -29,6 +30,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
   const [gdriveAuthenticating, setGdriveAuthenticating] = useState(false);
   const [gdriveSyncing, setGdriveSyncing] = useState(false);
   const [gdriveSyncMessage, setGdriveSyncMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [showGuide, setShowGuide] = useState(false);
 
   // Načíst nastavení při načtení komponenty
   useEffect(() => {
@@ -272,8 +274,11 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
   };
 
   return (
-    <div className="settings">
-      <h2>{t.settings.title}</h2>
+    <>
+      {showGuide && <GoogleDriveGuide onClose={() => setShowGuide(false)} />}
+
+      <div className="settings">
+        <h2>{t.settings.title}</h2>
 
       {/* Language Settings */}
       <div className="settings-section">
@@ -406,6 +411,19 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
         <p className="section-description">
           {t.settings.googleDriveSyncDescription}
         </p>
+
+        <button
+          className="action-btn"
+          onClick={() => setShowGuide(true)}
+          style={{
+            marginBottom: '20px',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            border: 'none',
+          }}
+        >
+          📖 {language === 'cs' ? 'Zobrazit podrobný návod na nastavení' : 'Show detailed setup guide'}
+        </button>
 
         {!gdriveConnected ? (
           <>
@@ -596,5 +614,6 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
         <p>{t.settings.dataStoredLocally}</p>
       </div>
     </div>
+    </>
   );
 };
