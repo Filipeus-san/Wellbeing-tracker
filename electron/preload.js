@@ -59,7 +59,9 @@ contextBridge.exposeInMainWorld('electron', {
   checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
   onUpdateAvailable: (callback) => {
-    ipcRenderer.on('update-available', callback);
+    const listener = (_event, ...args) => callback(...args);
+    ipcRenderer.on('update-available', listener);
+    return () => ipcRenderer.removeListener('update-available', listener);
   },
 });
 

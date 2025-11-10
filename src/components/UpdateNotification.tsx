@@ -13,23 +13,46 @@ export default function UpdateNotification() {
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
+    console.log('UpdateNotification mounted');
+
+    // @ts-ignore - window.electron is defined in preload
+    if (!window.electron) {
+      console.error('❌ window.electron is not available');
+      return;
+    }
+
+    console.log('✅ window.electron is available:', Object.keys(window.electron));
+
     // Listen for update notifications from main process
-    const handleUpdateAvailable = (_event: any, info: UpdateInfo) => {
-      console.log('Update available:', info);
-      setUpdateInfo(info);
-      setDismissed(false);
+    const handleUpdateAvailable = (info: UpdateInfo) => {
+      console.log('📢 Update notification received:', info);
+      if (info && info.available) {
+        setUpdateInfo(info);
+        setDismissed(false);
+      }
     };
 
     // @ts-ignore - window.electron is defined in preload
-    window.electron?.onUpdateAvailable(handleUpdateAvailable);
+    const removeListener = window.electron.onUpdateAvailable(handleUpdateAvailable);
 
     // Check for updates on mount
+    console.log('🔍 Checking for updates manually...');
     // @ts-ignore
-    window.electron?.checkForUpdates?.().then((info: UpdateInfo) => {
-      if (info.available) {
+    window.electron.checkForUpdates().then((info: UpdateInfo) => {
+      console.log('✅ Update check result:', info);
+      if (info && info.available) {
+        console.log('📢 Setting update info:', info);
         setUpdateInfo(info);
       }
+    }).catch((err: any) => {
+      console.error('❌ Error checking for updates:', err);
     });
+
+    return () => {
+      if (removeListener) {
+        removeListener();
+      }
+    };
   }, []);
 
   const handleDownload = () => {
@@ -43,9 +66,13 @@ export default function UpdateNotification() {
     setDismissed(true);
   };
 
+  console.log('UpdateNotification render - updateInfo:', updateInfo, 'dismissed:', dismissed);
+
   if (!updateInfo?.available || dismissed) {
     return null;
   }
+
+  console.log('🎉 Rendering update notification!');
 
   return (
     <div className="update-notification">
