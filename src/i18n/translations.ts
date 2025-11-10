@@ -102,6 +102,16 @@ export interface Translations {
     archive: string;
     confirmArchive: string;
     dailyHabits: string;
+    activeDays: string;
+    selectDays: string;
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
+    everyDay: string;
   };
 
   // Settings
@@ -357,6 +367,16 @@ export const translations: Record<Language, Translations> = {
       archive: 'Archivovat',
       confirmArchive: 'Opravdu chcete archivovat tento návyk?',
       dailyHabits: 'Denní návyky',
+      activeDays: 'Aktivní dny',
+      selectDays: 'Vyberte dny v týdnu',
+      monday: 'Po',
+      tuesday: 'Út',
+      wednesday: 'St',
+      thursday: 'Čt',
+      friday: 'Pá',
+      saturday: 'So',
+      sunday: 'Ne',
+      everyDay: 'Každý den',
     },
     settings: {
       title: 'Nastavení',
@@ -588,6 +608,16 @@ export const translations: Record<Language, Translations> = {
       archive: 'Archive',
       confirmArchive: 'Are you sure you want to archive this habit?',
       dailyHabits: 'Daily Habits',
+      activeDays: 'Active Days',
+      selectDays: 'Select days of the week',
+      monday: 'Mon',
+      tuesday: 'Tue',
+      wednesday: 'Wed',
+      thursday: 'Thu',
+      friday: 'Fri',
+      saturday: 'Sat',
+      sunday: 'Sun',
+      everyDay: 'Every day',
     },
     settings: {
       title: 'Settings',

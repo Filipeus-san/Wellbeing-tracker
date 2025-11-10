@@ -195,6 +195,8 @@ export interface MicroAction {
   priority: 'high' | 'medium' | 'low';
 }
 
+export type WeekDay = 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0 = neděle, 1 = pondělí, ..., 6 = sobota
+
 export interface Habit {
   id: string;
   name: string;
@@ -202,6 +204,7 @@ export interface Habit {
   icon?: string; // emoji ikona
   createdAt: string;
   archived?: boolean;
+  weekDays?: WeekDay[]; // Dny v týdnu, kdy se návyk zobrazuje (pokud není nastaveno, zobrazuje se každý den)
 }
 
 export type AIProvider = 'claude' | 'codex' | 'copilot';

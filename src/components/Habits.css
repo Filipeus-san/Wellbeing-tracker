@@ -263,3 +263,47 @@
 .habit-edit-form .form-actions {
   margin-top: 16px;
 }
+
+/* Weekday selector */
+.weekday-selector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.weekday-button {
+  background: #f3f4f6;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6b7280;
+  min-width: 50px;
+}
+
+.weekday-button:hover {
+  background: #e5e7eb;
+  border-color: #667eea;
+}
+
+.weekday-button.active {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border-color: #667eea;
+}
+
+.weekday-hint {
+  margin: 8px 0 0 0;
+  font-size: 13px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.field-hint {
+  margin: 4px 0 8px 0;
+  font-size: 13px;
+  color: #6b7280;
+}

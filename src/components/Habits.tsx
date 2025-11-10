@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Habit } from '../types';
+import type { Habit, WeekDay } from '../types';
 import { getHabits, saveHabit } from '../utils/storage';
 import { useLanguage } from '../i18n/LanguageContext';
 import './Habits.css';
@@ -13,10 +13,12 @@ export const Habits = () => {
   const [newHabitName, setNewHabitName] = useState('');
   const [newHabitDescription, setNewHabitDescription] = useState('');
   const [newHabitIcon, setNewHabitIcon] = useState('✨');
+  const [newHabitWeekDays, setNewHabitWeekDays] = useState<WeekDay[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [editIcon, setEditIcon] = useState('');
+  const [editWeekDays, setEditWeekDays] = useState<WeekDay[]>([]);
 
   useEffect(() => {
     loadHabits();
@@ -36,6 +38,7 @@ export const Habits = () => {
       description: newHabitDescription.trim() || undefined,
       icon: newHabitIcon,
       createdAt: new Date().toISOString(),
+      weekDays: newHabitWeekDays.length > 0 ? newHabitWeekDays : undefined,
     };
 
     await saveHabit(habit);
@@ -45,6 +48,7 @@ export const Habits = () => {
     setNewHabitName('');
     setNewHabitDescription('');
     setNewHabitIcon('✨');
+    setNewHabitWeekDays([]);
     setIsAdding(false);
   };
 
@@ -53,6 +57,7 @@ export const Habits = () => {
     setEditName(habit.name);
     setEditDescription(habit.description || '');
     setEditIcon(habit.icon || '✨');
+    setEditWeekDays(habit.weekDays || []);
   };
 
   const handleSaveEdit = async (habitId: string) => {
@@ -64,6 +69,7 @@ export const Habits = () => {
       name: editName.trim(),
       description: editDescription.trim() || undefined,
       icon: editIcon,
+      weekDays: editWeekDays.length > 0 ? editWeekDays : undefined,
     };
 
     await saveHabit(updatedHabit);
@@ -91,6 +97,53 @@ export const Habits = () => {
 
     await saveHabit(archivedHabit);
     await loadHabits();
+  };
+
+  const toggleWeekDay = (day: WeekDay, weekDays: WeekDay[], setter: (days: WeekDay[]) => void) => {
+    if (weekDays.includes(day)) {
+      setter(weekDays.filter(d => d !== day));
+    } else {
+      setter([...weekDays, day].sort((a, b) => a - b));
+    }
+  };
+
+  const getWeekDayLabel = (day: WeekDay): string => {
+    const labels = [
+      t.habits.sunday,
+      t.habits.monday,
+      t.habits.tuesday,
+      t.habits.wednesday,
+      t.habits.thursday,
+      t.habits.friday,
+      t.habits.saturday,
+    ];
+    return labels[day];
+  };
+
+  const renderWeekDaySelector = (weekDays: WeekDay[], setter: (days: WeekDay[]) => void) => {
+    const days: WeekDay[] = [1, 2, 3, 4, 5, 6, 0]; // Po-Ne (pondělí první)
+
+    return (
+      <div className="form-group">
+        <label>{t.habits.activeDays}</label>
+        <p className="field-hint">{t.habits.selectDays}</p>
+        <div className="weekday-selector">
+          {days.map((day) => (
+            <button
+              key={day}
+              type="button"
+              className={`weekday-button ${weekDays.includes(day) ? 'active' : ''}`}
+              onClick={() => toggleWeekDay(day, weekDays, setter)}
+            >
+              {getWeekDayLabel(day)}
+            </button>
+          ))}
+        </div>
+        {weekDays.length === 0 && (
+          <p className="weekday-hint">{t.habits.everyDay}</p>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -160,6 +213,8 @@ export const Habits = () => {
               rows={3}
             />
           </div>
+
+          {renderWeekDaySelector(newHabitWeekDays, setNewHabitWeekDays)}
 
           <div className="form-actions">
             <button className="cancel-button" onClick={() => setIsAdding(false)}>
@@ -232,6 +287,8 @@ export const Habits = () => {
                     rows={2}
                   />
                 </div>
+
+                {renderWeekDaySelector(editWeekDays, setEditWeekDays)}
 
                 <div className="form-actions">
                   <button className="cancel-button" onClick={handleCancelEdit}>

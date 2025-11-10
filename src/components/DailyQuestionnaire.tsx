@@ -46,14 +46,24 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
     loadSettings();
   }, []);
 
-  // Načíst návyky
+  // Načíst návyky pro aktuální den
   useEffect(() => {
     const loadHabits = async () => {
       const allHabits = await getHabits();
-      setHabits(allHabits.filter(h => !h.archived));
+      const currentDate = new Date(date);
+      const currentWeekDay = currentDate.getDay(); // 0 = neděle, 1 = pondělí, ..., 6 = sobota
+
+      // Filtrovat návyky: nearchivované + (bez weekDays NEBO obsahuje aktuální den)
+      const filteredHabits = allHabits.filter(h => {
+        if (h.archived) return false;
+        if (!h.weekDays || h.weekDays.length === 0) return true; // Zobrazit každý den
+        return h.weekDays.includes(currentWeekDay as any);
+      });
+
+      setHabits(filteredHabits);
     };
     loadHabits();
-  }, []);
+  }, [date]); // Přidat date jako závislost, aby se přenačetly při změně data
 
   // Propagovat loading stav nahoru
   useEffect(() => {
