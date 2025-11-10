@@ -236,6 +236,9 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
   const weekStartDate = new Date(summary.weekStart).toLocaleDateString(locale);
   const weekEndDate = new Date(summary.weekEnd).toLocaleDateString(locale);
 
+  // Zkontrolovat, zda je alespoň jeden den kompletně vyplněný (všech 18 otázek)
+  const hasCompleteDay = dailyScores.some(score => Object.keys(score.scores).length === questions.length);
+
   return (
     <div className="weekly-summary">
       <div className="summary-header">
@@ -317,8 +320,8 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
             </button>
           </div>
         </div>
-        {/* Zobrazit statistiky pouze pokud jsou vyplněná data */}
-        {dailyScores.length > 0 && (
+        {/* Zobrazit statistiky pouze pokud je alespoň jeden den kompletně vyplněný */}
+        {hasCompleteDay && (
           <div className="stats-overview">
             <div className="stat-card">
               <div className="stat-value">{dailyScores.length}</div>
@@ -336,8 +339,8 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         )}
       </div>
 
-      {/* Mikro-akce - zobrazit pouze pokud existují data a mikro-akce */}
-      {dailyScores.length > 0 && summary.microActions && summary.microActions.length > 0 && (
+      {/* Mikro-akce - zobrazit pouze pokud je kompletní den a existují mikro-akce */}
+      {hasCompleteDay && summary.microActions && summary.microActions.length > 0 && (
         <div className="micro-actions-section">
           <h3>💡 {t.weekly.recommendedMicroActions}</h3>
           <div className="micro-actions-grid">
@@ -352,8 +355,8 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         </div>
       )}
 
-      {/* Claude AI Shrnutí - zobrazit pouze pokud jsou data */}
-      {canUseClaude && dailyScores.length > 0 && (
+      {/* Claude AI Shrnutí - zobrazit pouze pokud je kompletní den */}
+      {canUseClaude && hasCompleteDay && (
         <div className="claude-section">
           <h3>🤖 {t.weekly.aiWellbeingCoach}</h3>
           {claudeSummary ? (
@@ -654,8 +657,8 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         </div>
       )}
 
-      {/* Týdenní návyky - zobrazit pouze pokud jsou data a návyky */}
-      {habits.length > 0 && dailyScores.length > 0 && (
+      {/* Týdenní návyky - zobrazit pouze pokud je kompletní den a existují návyky */}
+      {habits.length > 0 && hasCompleteDay && (
         <div className="habits-overview-section">
           <h3>📋 {t.habits.dailyHabits}</h3>
           <div className="weekly-habits">
@@ -680,8 +683,8 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         </div>
       )}
 
-      {/* Radar Graf - Celkový přehled - zobrazit pouze pokud jsou data */}
-      {dailyScores.length > 0 && (
+      {/* Radar Graf - Celkový přehled - zobrazit pouze pokud je kompletní den */}
+      {hasCompleteDay && (
         <div className="chart-section">
           <h3>{t.weekly.overallCategories}</h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -718,8 +721,8 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         </div>
       )}
 
-      {/* Detailní skóre všech otázek - zobrazit pouze pokud jsou data */}
-      {dailyScores.length > 0 && (
+      {/* Detailní skóre všech otázek - zobrazit pouze pokud je kompletní den */}
+      {hasCompleteDay && (
         <div className="detailed-scores">
           <h3>{t.weekly.detailedOverview}</h3>
           <div className="scores-grid">
@@ -750,8 +753,8 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         </div>
       )}
 
-      {/* Zpráva když nejsou žádná data */}
-      {dailyScores.length === 0 && (
+      {/* Zpráva když není žádný kompletní den */}
+      {!hasCompleteDay && (
         <div style={{
           textAlign: 'center',
           padding: '48px 24px',
