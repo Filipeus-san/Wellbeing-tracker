@@ -70,7 +70,15 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         return matchesWeekDay && matchesWeekOfMonth;
       });
 
-      setHabits(filteredHabits);
+      // Řadit podle order (pokud je nastaveno) nebo podle createdAt - stejná logika jako v Habits komponentě
+      const sortedHabits = filteredHabits.sort((a, b) => {
+        const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+        const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
+        if (orderA !== orderB) return orderA - orderB;
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      });
+
+      setHabits(sortedHabits);
     };
     loadHabits();
   }, [date]); // Přidat date jako závislost, aby se přenačetly při změně data
