@@ -104,11 +104,20 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       // Načíst návyky a spočítat statistiky
       const allHabits = await getHabits();
       const activeHabits = allHabits.filter(h => !h.archived);
-      setHabits(activeHabits);
+
+      // Řadit podle order (pokud je nastaveno) nebo podle createdAt - stejná logika jako v Habits komponentě
+      const sortedHabits = activeHabits.sort((a, b) => {
+        const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+        const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
+        if (orderA !== orderB) return orderA - orderB;
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      });
+
+      setHabits(sortedHabits);
 
       // Spočítat statistiky návyků
       const stats: Record<string, { completed: number; total: number }> = {};
-      activeHabits.forEach(habit => {
+      sortedHabits.forEach(habit => {
         const completed = scores.filter(score =>
           score.completedHabits?.includes(habit.id)
         ).length;
