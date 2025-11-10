@@ -34,6 +34,12 @@ export interface Translations {
     weeklySummary: string;
     habits: string;
     settings: string;
+    about: string;
+  };
+
+  // About
+  about: {
+    title: string;
   };
 
   // Daily Questionnaire
@@ -353,6 +359,10 @@ export const translations: Record<Language, Translations> = {
       weeklySummary: 'Týdenní shrnutí',
       habits: 'Návyky',
       settings: 'Nastavení',
+      about: 'O aplikaci',
+    },
+    about: {
+      title: 'O aplikaci',
     },
     daily: {
       title: 'Denní dotazník wellbeingu',
@@ -638,6 +648,10 @@ export const translations: Record<Language, Translations> = {
       weeklySummary: 'Weekly Summary',
       habits: 'Habits',
       settings: 'Settings',
+      about: 'About',
+    },
+    about: {
+      title: 'About',
     },
     daily: {
       title: 'Daily Wellbeing Questionnaire',

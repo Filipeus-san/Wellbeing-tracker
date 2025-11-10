@@ -4,7 +4,6 @@ import { testAiCLI } from '../utils/claudeApi';
 import type { AppSettings, Language } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
 import { GoogleDriveGuide } from './GoogleDriveGuide';
-import donateQr from '../assets/donate-qr.png';
 import './Settings.css';
 
 interface SettingsProps {
@@ -594,35 +593,6 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
         </p>
       </div>
 
-      {/* Donate Section */}
-      <div className="settings-section donate-section">
-        <h3>💝 {t.donate.title}</h3>
-        <p className="section-description">
-          {t.donate.description}
-        </p>
-
-        <div className="donate-content">
-          <div className="donate-info">
-            <div className="donate-badge">
-              ✨ {t.donate.alwaysFree}
-            </div>
-            <p className="donate-qr-label">{t.donate.scanQr}</p>
-          </div>
-
-          <div className="donate-qr-container">
-            <img
-              src={donateQr}
-              alt="Donate QR Code"
-              className="donate-qr"
-            />
-          </div>
-
-          <div className="donate-thank-you">
-            {t.donate.thankYou}
-          </div>
-        </div>
-      </div>
-
       {/* Save Button */}
       <div className="settings-footer">
         <button className="save-settings-btn" onClick={handleSaveSettings}>
@@ -630,18 +600,6 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
         </button>
 
         {saveMessage && <div className="save-message">✓ {t.settings.settingsSaved}</div>}
-      </div>
-
-      {/* Info Section */}
-      <div className="info-section">
-        <h3>ℹ️ {t.settings.aboutApp}</h3>
-        <p>
-          <strong>{t.settings.appName}</strong>
-        </p>
-        <p>
-          {t.settings.appDescription}
-        </p>
-        <p>{t.settings.dataStoredLocally}</p>
       </div>
     </div>
     </>
