@@ -1,6 +1,6 @@
 import type { WeeklySummary, DailyScore } from '../types';
 import { questions } from '../data/questions';
-import { getSettings } from './storage';
+import { getSettings, getHabits } from './storage';
 import { MOODS, getAnxietyLabel, getDepressionLabel, getJoyLabel, getAngerLabel, getGratitudeLabel } from '../types';
 
 /**
@@ -60,7 +60,9 @@ export const generateDailySummary = async (dailyScore: DailyScore): Promise<stri
   }
 
   const userLanguage = settings.language || 'cs';
-  const prompt = buildDailySummaryPrompt(dailyScore, userLanguage);
+  const habits = await getHabits();
+  const activeHabits = habits.filter(h => !h.archived);
+  const prompt = buildDailySummaryPrompt(dailyScore, userLanguage, activeHabits);
 
   try {
     if (!window.electronAPI) {
@@ -196,7 +198,7 @@ Create a summary that:
 /**
  * Sestaví prompt pro denní shrnutí
  */
-const buildDailySummaryPrompt = (dailyScore: DailyScore, language: string = 'cs'): string => {
+const buildDailySummaryPrompt = (dailyScore: DailyScore, language: string = 'cs', habits: any[] = []): string => {
   const scoreDetails = Object.entries(dailyScore.scores)
     .map(([questionId, score]) => {
       const question = questions.find((q) => q.id === questionId);
@@ -243,6 +245,25 @@ const buildDailySummaryPrompt = (dailyScore: DailyScore, language: string = 'cs'
     ? mentalHealthParts.join('\n')
     : 'Žádná data o duševním stavu a emocích';
 
+  // Sestavit informace o denních návycích
+  let habitsDetails = '';
+  if (habits.length > 0) {
+    const completedHabits = habits.filter(h => dailyScore.completedHabits?.includes(h.id));
+    const missedHabits = habits.filter(h => !dailyScore.completedHabits?.includes(h.id));
+
+    const completedList = completedHabits.length > 0
+      ? completedHabits.map(h => `✅ ${h.icon || '✨'} ${h.name}`).join('\n')
+      : (language === 'en' ? 'None completed' : 'Žádné nesplněné');
+
+    const missedList = missedHabits.length > 0
+      ? missedHabits.map(h => `❌ ${h.icon || '✨'} ${h.name}`).join('\n')
+      : (language === 'en' ? 'All habits completed!' : 'Všechny návyky splněny!');
+
+    habitsDetails = language === 'en'
+      ? `\nDAILY HABITS:\nCompleted:\n${completedList}\n\nMissed:\n${missedList}\n`
+      : `\nDENNÍ NÁVYKY:\nSplněné:\n${completedList}\n\nNesplněné:\n${missedList}\n`;
+  }
+
   const languageInstruction = language === 'en'
     ? 'IMPORTANT: Respond in ENGLISH.'
     : 'DŮLEŽITÉ: Odpověz v ČEŠTINĚ.';
@@ -256,7 +277,7 @@ ${scoreDetails}
 
 MENTAL STATE:
 ${mentalHealthDetails}
-
+${habitsDetails}
 NOTES:
 ${dailyScore.notes || 'No notes'}
 
@@ -265,9 +286,10 @@ Create a concise comment that:
 1. Acknowledges what went well (specific areas with high scores)
 2. Gently points out areas for improvement (low scores)
 3. Pays special attention to mental state and emotions (mood, anxiety, depression, joy, anger, gratitude) - if you see high values of anxiety/depression/anger, address it kindly; if you see high values of joy/gratitude, acknowledge it
-4. Highlights 2-3 most important micro-actions as concrete steps for tomorrow
-5. Has an empathetic, encouraging, and motivational tone
-6. Is concise but inspiring`;
+4. If daily habits are tracked, acknowledge completed habits positively and gently encourage missed ones
+5. Highlights 2-3 most important micro-actions as concrete steps for tomorrow
+6. Has an empathetic, encouraging, and motivational tone
+7. Is concise but inspiring`;
 };
 
 /**
