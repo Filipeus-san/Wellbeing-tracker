@@ -17,6 +17,7 @@ const DATA_FILE = join(DATA_DIR, 'wellbeing-data.json');
 let dataStore = {
   dailyScores: [],
   weeklySummaries: [],
+  habits: [],
   settings: {
     enableClaudeIntegration: false,
   },
@@ -239,6 +240,53 @@ ipcMain.handle('clear-data', async () => {
     // Nemazat settings, aby uživatel neztratil nastavení
     await saveData();
     return { success: true, message: 'Data cleared successfully' };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Habits
+ipcMain.handle('get-habits', async () => {
+  try {
+    return { success: true, data: dataStore.habits || [] };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('save-habit', async (event, habit) => {
+  try {
+    if (!dataStore.habits) {
+      dataStore.habits = [];
+    }
+
+    const existingIndex = dataStore.habits.findIndex((h) => h.id === habit.id);
+
+    if (existingIndex >= 0) {
+      dataStore.habits[existingIndex] = habit;
+    } else {
+      dataStore.habits.push(habit);
+    }
+
+    // Seřadit podle data vytvoření
+    dataStore.habits.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+    await saveData();
+    return { success: true, data: habit };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('delete-habit', async (event, habitId) => {
+  try {
+    if (!dataStore.habits) {
+      dataStore.habits = [];
+    }
+
+    dataStore.habits = dataStore.habits.filter((h) => h.id !== habitId);
+    await saveData();
+    return { success: true, message: 'Habit deleted successfully' };
   } catch (error) {
     return { success: false, error: error.message };
   }

@@ -1,4 +1,4 @@
-import type { DailyScore, WeeklySummary, AppSettings } from '../types';
+import type { DailyScore, WeeklySummary, AppSettings, Habit } from '../types';
 
 // Definice Electron API (pro TypeScript)
 interface ElectronAPI {
@@ -10,6 +10,9 @@ interface ElectronAPI {
   saveWeeklySummary: (summary: WeeklySummary) => Promise<{ success: boolean; data: WeeklySummary; error?: string }>;
   getSettings: () => Promise<{ success: boolean; data: AppSettings; error?: string }>;
   saveSettings: (settings: AppSettings) => Promise<{ success: boolean; data: AppSettings; error?: string }>;
+  getHabits: () => Promise<{ success: boolean; data: Habit[]; error?: string }>;
+  saveHabit: (habit: Habit) => Promise<{ success: boolean; data: Habit; error?: string }>;
+  deleteHabit: (habitId: string) => Promise<{ success: boolean; message?: string; error?: string }>;
   exportData: () => Promise<{ success: boolean; data: any; error?: string }>;
   importData: (data: any) => Promise<{ success: boolean; message?: string; error?: string }>;
   clearData: () => Promise<{ success: boolean; message?: string; error?: string }>;
@@ -154,4 +157,22 @@ export const clearAllData = async (): Promise<void> => {
     console.error('Error clearing data:', error);
     throw error;
   }
+};
+
+// Habits
+export const getHabits = async (): Promise<Habit[]> => {
+  try {
+    return await ipcCall<Habit[]>('getHabits');
+  } catch (error) {
+    console.error('Error fetching habits:', error);
+    return [];
+  }
+};
+
+export const saveHabit = async (habit: Habit): Promise<void> => {
+  await ipcCall<Habit>('saveHabit', habit);
+};
+
+export const deleteHabit = async (habitId: string): Promise<void> => {
+  await ipcCall('deleteHabit', habitId);
 };

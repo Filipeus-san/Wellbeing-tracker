@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { Habit } from '../types';
-import { getHabits, saveHabit, deleteHabit } from '../utils/storage';
+import { getHabits, saveHabit } from '../utils/storage';
 import { useLanguage } from '../i18n/LanguageContext';
 import './Habits.css';
 

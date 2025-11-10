@@ -19,6 +19,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getSettings: () => ipcRenderer.invoke('get-settings'),
   saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
 
+  // Habits
+  getHabits: () => ipcRenderer.invoke('get-habits'),
+  saveHabit: (habit) => ipcRenderer.invoke('save-habit', habit),
+  deleteHabit: (habitId) => ipcRenderer.invoke('delete-habit', habitId),
+
   // Export/Import
   exportData: () => ipcRenderer.invoke('export-data'),
   importData: (data) => ipcRenderer.invoke('import-data', data),
