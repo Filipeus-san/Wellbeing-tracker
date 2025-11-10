@@ -1,7 +1,7 @@
 {
   "name": "wellbeing-tracker",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Wellbeing Tracker - Desktop aplikace pro sledování duševní pohody",
   "author": {
     "name": "Wellbeing Tracker Team",

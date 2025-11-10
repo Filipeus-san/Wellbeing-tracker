@@ -152,7 +152,11 @@ The repository includes a **GitHub Actions workflow** that automatically builds 
 
 3. **Users can download** installers directly from the GitHub release page
 
+**Version handling**: The workflow automatically updates `package.json` version from the git tag (e.g., tag `v1.0.1` → version `1.0.1`)
+
 **Workflow details**: See [`.github/workflows/README.md`](.github/workflows/README.md)
+
+**Release guide**: See [RELEASE.md](./RELEASE.md) for detailed release instructions
 
 **Estimated build time**: 10-20 minutes (all platforms in parallel)
 
