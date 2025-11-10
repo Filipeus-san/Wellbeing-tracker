@@ -84,8 +84,16 @@ export const generateWeeklySummary = async (date: Date): Promise<WeeklySummary> 
   const weekStart = startOfWeek(date, { weekStartsOn: 1 }); // Pondělí
   const weekEnd = endOfWeek(date, { weekStartsOn: 1 }); // Neděle
 
-  const weekStartStr = weekStart.toISOString().split('T')[0];
-  const weekEndStr = weekEnd.toISOString().split('T')[0];
+  // Použít lokální datum místo UTC, aby se zabránilo posunu o den
+  const formatLocalDate = (d: Date): string => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const weekStartStr = formatLocalDate(weekStart);
+  const weekEndStr = formatLocalDate(weekEnd);
 
   const scores = await getDailyScoresInRange(weekStartStr, weekEndStr);
   const averages = calculateWeeklyAverages(scores);
