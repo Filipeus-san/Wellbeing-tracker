@@ -1,122 +1,123 @@
 # 🚀 Quick Start Guide
 
-Rychlý návod k rozběhnutí React Wellbeing Tracker aplikace.
+Quick guide to getting the React Wellbeing Tracker application up and running.
 
-## 1. Instalace Frontend
+## 1. Frontend Installation
 
 ```bash
-# V kořenovém adresáři projektu
+# In the project root directory
 npm install
 ```
 
-## 2. Spuštění Frontend
+## 2. Running Frontend
 
 ```bash
 npm run dev
 ```
 
-Frontend poběží na `http://localhost:5173` (nebo jiném volném portu).
+Frontend will run on `http://localhost:5173` (or another available port).
 
-## 3. (Volitelné) Instalace a spuštění Backend serveru pro Claude CLI
+## 3. (Optional) Installing and Running Backend Server for Claude CLI
 
-Pokud chcete používat Claude AI integraci:
+If you want to use Claude AI integration:
 
-### 3a. Nainstalujte Claude CLI
+### 3a. Install Claude CLI
 
-Pokud ještě nemáte Claude CLI nainstalované, postupujte podle oficiální dokumentace:
+If you don't have Claude CLI installed yet, follow the official documentation:
 - https://github.com/anthropics/anthropic-cli
 
-Ověřte instalaci:
+Verify installation:
 ```bash
 claude --version
 ```
 
-### 3b. Nainstalujte Backend server
+### 3b. Install Backend Server
 
 ```bash
 cd server
 npm install
 ```
 
-### 3c. Spusťte Backend server
+### 3c. Run Backend Server
 
 ```bash
 npm start
 ```
 
-Server poběží na `http://localhost:3001`.
+Server will run on `http://localhost:3001`.
 
-### 3d. Aktivujte Claude integraci v aplikaci
+### 3d. Activate Claude Integration in the Application
 
-1. Otevřete aplikaci v prohlížeči
-2. Přejděte do **Nastavení**
-3. Zapněte **Claude AI integraci**
-4. Klikněte na **Test Claude CLI** pro ověření
-5. Klikněte **Uložit nastavení**
+1. Open the application in your browser
+2. Go to **Settings**
+3. Enable **Claude AI integration**
+4. Click **Test Claude CLI** to verify
+5. Click **Save Settings**
 
-## 4. První použití
+## 4. First Use
 
-1. **Denní dotazník**:
-   - Vyplňte 13 otázek (škála 1-5)
-   - Můžete přidat poznámky
-   - Klikněte **Uložit denní záznam**
-   - 🆕 **Po dokončení**: Klikněte na **🤖 Vygenerovat AI shrnutí** pro:
-     - Personalizovaný feedback k dnešnímu dni
-     - Ocenění pozitivních oblastí
-     - Konkrétní doporučení na zítřek
-     - Motivační komentář od AI kouče
+1. **Daily Questionnaire**:
+   - Fill out 13 questions (scale 1-5)
+   - You can add notes
+   - Click **Save Daily Record**
+   - 🆕 **After completion**: Click **🤖 Generate AI Summary** for:
+     - Personalized feedback on today
+     - Recognition of positive areas
+     - Specific recommendations for tomorrow
+     - Motivational comment from AI coach
 
-2. **Týdenní shrnutí**:
-   - Po vyplnění několika dní přejděte do **Týdenní shrnutí**
-   - Uvidíte grafy, kritické oblasti a mikro-akce
-   - (Volitelně) Vygenerujte AI shrnutí týdne
+2. **Weekly Summary**:
+   - After filling out several days, go to **Weekly Summary**
+   - You'll see charts, critical areas, and micro-actions
+   - (Optional) Generate AI weekly summary
 
-3. **Export dat**:
-   - V **Nastavení** můžete exportovat data jako zálohu
-   - Import dat ze zálohy
+3. **Export Data**:
+   - In **Settings** you can export data as a backup
+   - Import data from backup
 
-## 🎯 Doporučené workflow
+## 🎯 Recommended Workflow
 
 ```
 ┌─────────────────────┐
-│  Každý večer (5min) │
-│  Vyplnit dotazník   │
+│  Every evening      │
+│  (5 minutes)        │
+│  Fill questionnaire │
 └──────────┬──────────┘
            │
            v
 ┌─────────────────────┐
-│  Jednou týdně       │
-│  Zkontrolovat       │
-│  týdenní shrnutí    │
+│  Once a week        │
+│  Review weekly      │
+│  summary            │
 └──────────┬──────────┘
            │
            v
 ┌─────────────────────┐
-│  Implementovat      │
-│  mikro-akce         │
-│  během týdne        │
+│  Implement          │
+│  micro-actions      │
+│  during the week    │
 └─────────────────────┘
 ```
 
 ## 🔧 Troubleshooting
 
-### Frontend nenabootuje
-- Zkontrolujte verzi Node.js (20.19+ nebo 22.12+)
-- Smažte `node_modules` a `package-lock.json`, zkuste `npm install` znovu
+### Frontend won't start
+- Check Node.js version (20.19+ or 22.12+)
+- Delete `node_modules` and `package-lock.json`, try `npm install` again
 
-### Backend server nefunguje
-- Zkontrolujte, že Claude CLI je nainstalované: `claude --version`
-- Zkontrolujte, že server běží: `curl http://localhost:3001/api/health`
+### Backend server not working
+- Check that Claude CLI is installed: `claude --version`
+- Check that server is running: `curl http://localhost:3001/api/health`
 
-### Data se neukládají
-- Zkontrolujte, že prohlížeč má povolený LocalStorage
-- Zkuste otevřít aplikaci v incognito režimu
+### Data not saving
+- Check that browser has LocalStorage enabled
+- Try opening the application in incognito mode
 
-## 📚 Další informace
+## 📚 More Information
 
-- Kompletní dokumentace: [README.md](./README.md)
-- Server dokumentace: [server/README.md](./server/README.md)
+- Complete documentation: [README.md](./README.md)
+- Server documentation: [server/README.md](./server/README.md)
 
 ---
 
-**Užijte si sledování své pohody! 🌟**
+**Enjoy tracking your wellbeing! 🌟**

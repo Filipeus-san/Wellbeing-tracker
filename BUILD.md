@@ -1,101 +1,101 @@
-# 🌟 Wellbeing Tracker - Build Instrukce
+# 🌟 Wellbeing Tracker - Build Instructions
 
-## Ikona aplikace
-Aplikace používá ikonu zářící hvězdy 🌟 uloženou v `build/icon.svg`.
+## Application Icon
+The application uses a shining star icon 🌟 stored in `build/icon.svg`.
 
-## Build příkazy
+## Build Commands
 
-### Pro aktuální platformu (Linux)
+### For Current Platform (Linux)
 ```bash
 npm run build
 ```
-Vytvoří instalátor pro aktuální platformu (Linux). Výstup: AppImage + DEB balíček v adresáři `release/`.
+Creates an installer for the current platform (Linux). Output: AppImage + DEB package in the `release/` directory.
 
-### Pro Linux
+### For Linux
 ```bash
 npm run build:linux
 ```
-Vytvoří:
-- `Wellbeing Tracker-1.0.0.AppImage` - přenosná aplikace
-- `wellbeing-tracker_1.0.0_amd64.deb` - DEB balíček pro Debian/Ubuntu
+Creates:
+- `Wellbeing Tracker-1.0.0.AppImage` - portable application
+- `wellbeing-tracker_1.0.0_amd64.deb` - DEB package for Debian/Ubuntu
 
-### Pro Windows
+### For Windows
 ```bash
 npm run build:win
 ```
-Vytvoří:
-- `Wellbeing Tracker Setup 1.0.0.exe` - NSIS instalátor pro Windows
+Creates:
+- `Wellbeing Tracker Setup 1.0.0.exe` - NSIS installer for Windows
 
-**Poznámka:** Pro build Windows aplikace z Linuxu potřebujete wine nainstalované.
+**Note:** To build a Windows application from Linux, you need wine installed.
 
-### Pro macOS
+### For macOS
 ```bash
 npm run build:mac
 ```
-Vytvoří:
-- `Wellbeing Tracker-1.0.0.dmg` - DMG instalátor pro macOS
+Creates:
+- `Wellbeing Tracker-1.0.0.dmg` - DMG installer for macOS
 
-**Poznámka:** Pro build macOS aplikace potřebujete macOS systém nebo můžete použít cross-kompilaci (vyžaduje další nastavení).
+**Note:** To build a macOS application, you need a macOS system or can use cross-compilation (requires additional setup).
 
-### Pro všechny platformy
+### For All Platforms
 ```bash
 npm run build:all
 ```
-Vytvoří instalátory pro Linux, Windows i macOS najednou.
+Creates installers for Linux, Windows, and macOS at once.
 
-### Testovací build (bez vytváření instalátoru)
+### Test Build (without creating installer)
 ```bash
 npm run build:dir
 ```
-Vytvoří pouze unpacked aplikaci v `release/linux-unpacked/` bez vytváření instalátoru. Užitečné pro rychlé testování.
+Creates only the unpacked application in `release/linux-unpacked/` without creating an installer. Useful for quick testing.
 
-## Výstupy
+## Output Files
 
-Všechny vytvořené instalátory a aplikace se nachází v adresáři `release/`:
+All created installers and applications are located in the `release/` directory:
 
 ```
 release/
 ├── Wellbeing Tracker-1.0.0.AppImage          # Linux AppImage
 ├── wellbeing-tracker_1.0.0_amd64.deb        # Linux DEB
-├── Wellbeing Tracker Setup 1.0.0.exe        # Windows instalátor
-├── Wellbeing Tracker-1.0.0.dmg              # macOS instalátor
-└── linux-unpacked/                          # Unpacked Linux aplikace (build:dir)
+├── Wellbeing Tracker Setup 1.0.0.exe        # Windows installer
+├── Wellbeing Tracker-1.0.0.dmg              # macOS installer
+└── linux-unpacked/                          # Unpacked Linux app (build:dir)
 ```
 
-## Požadavky
+## Requirements
 
 - Node.js 18+
-- npm nebo yarn
-- Pro Windows build: wine (na Linuxu)
-- Pro macOS build: macOS systém nebo cross-kompilace setup
+- npm or yarn
+- For Windows build: wine (on Linux)
+- For macOS build: macOS system or cross-compilation setup
 
-## Vývoj
+## Development
 
-Pro spuštění aplikace ve vývojovém režimu:
+To run the application in development mode:
 
 ```bash
 npm run dev
 ```
 
-Spustí Vite dev server a Electron aplikaci s hot reload.
+Starts Vite dev server and Electron application with hot reload.
 
-## Ikona aplikace
+## Application Icon
 
-Ikona aplikace je zářící hvězda 🌟 vytvořená jako SVG soubor v `build/icon.svg`.
-Electron-builder automaticky konvertuje SVG na všechny potřebné formáty (ICO, ICNS, PNG) pro různé platformy.
+The application icon is a shining star 🌟 created as an SVG file in `build/icon.svg`.
+Electron-builder automatically converts the SVG to all necessary formats (ICO, ICNS, PNG) for different platforms.
 
-### Změna ikony
+### Changing the Icon
 
-Pokud chcete změnit ikonu:
-1. Upravte nebo nahraďte soubor `build/icon.svg`
-2. SVG soubor by měl být 512x512 px
-3. Znovu spusťte build příkaz
+If you want to change the icon:
+1. Edit or replace the `build/icon.svg` file
+2. The SVG file should be 512x512 px
+3. Run the build command again
 
-## Konfigurace
+## Configuration
 
-Build konfigurace se nachází v `package.json` v sekci `"build"`.
+Build configuration is located in `package.json` in the `"build"` section.
 
-Hlavní nastavení:
+Main settings:
 - **appId**: `com.wellbeing.tracker`
 - **productName**: `Wellbeing Tracker`
 - **icon**: `build/icon.svg`
@@ -103,15 +103,15 @@ Hlavní nastavení:
 
 ## Troubleshooting
 
-### Build selže s chybou ikony
-- Ujistěte se, že `build/icon.svg` existuje
-- Zkontrolujte, že SVG je validní
-- Zkuste znovu spustit build
+### Build fails with icon error
+- Make sure `build/icon.svg` exists
+- Check that the SVG is valid
+- Try running the build again
 
-### Windows build na Linuxu nefunguje
-- Nainstalujte wine: `sudo apt install wine64`
-- Nebo použijte GitHub Actions / CI pro cross-platform build
+### Windows build on Linux doesn't work
+- Install wine: `sudo apt install wine64`
+- Or use GitHub Actions / CI for cross-platform builds
 
-### Nedostatek místa na disku
-- Smazejte staré buildy: `rm -rf release/`
-- Smazejte node_modules a znovu nainstalujte: `rm -rf node_modules && npm install`
+### Not enough disk space
+- Delete old builds: `rm -rf release/`
+- Delete node_modules and reinstall: `rm -rf node_modules && npm install`
