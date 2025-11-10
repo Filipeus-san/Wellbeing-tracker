@@ -172,6 +172,7 @@ export interface DailyScore {
   notes?: string;
   aiSummary?: string; // AI shrnutí od Claude
   microActions?: MicroAction[]; // Doporučené mikro-akce pro zítřek
+  completedHabits?: string[]; // ID splněných návyků
 }
 
 export interface WeeklySummary {
@@ -192,6 +193,15 @@ export interface MicroAction {
   description: string;
   category: WellbeingCategory;
   priority: 'high' | 'medium' | 'low';
+}
+
+export interface Habit {
+  id: string;
+  name: string;
+  description?: string;
+  icon?: string; // emoji ikona
+  createdAt: string;
+  archived?: boolean;
 }
 
 export type AIProvider = 'claude' | 'codex' | 'copilot';

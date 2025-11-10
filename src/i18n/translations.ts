@@ -32,6 +32,7 @@ export interface Translations {
   nav: {
     dailyQuestionnaire: string;
     weeklySummary: string;
+    habits: string;
     settings: string;
   };
 
@@ -85,6 +86,22 @@ export interface Translations {
     currentWeek: string;
     refresh: string;
     loadingWeeklyData: string;
+  };
+
+  // Habits
+  habits: {
+    title: string;
+    description: string;
+    addNew: string;
+    name: string;
+    namePlaceholder: string;
+    habitDescription: string;
+    descriptionPlaceholder: string;
+    icon: string;
+    empty: string;
+    archive: string;
+    confirmArchive: string;
+    dailyHabits: string;
   };
 
   // Settings
@@ -276,6 +293,7 @@ export const translations: Record<Language, Translations> = {
     nav: {
       dailyQuestionnaire: 'Denní dotazník',
       weeklySummary: 'Týdenní shrnutí',
+      habits: 'Návyky',
       settings: 'Nastavení',
     },
     daily: {
@@ -325,6 +343,20 @@ export const translations: Record<Language, Translations> = {
       currentWeek: 'Aktuální týden',
       refresh: 'Obnovit',
       loadingWeeklyData: 'Načítám týdenní data...',
+    },
+    habits: {
+      title: 'Denní návyky',
+      description: 'Spravujte své denní návyky. Budou se zobrazovat jako checklist v denním dotazníku.',
+      addNew: 'Přidat nový návyk',
+      name: 'Název návyku',
+      namePlaceholder: 'např. Ranní meditace, Cvičení, Čtení...',
+      habitDescription: 'Popis',
+      descriptionPlaceholder: 'Volitelný popis návyku...',
+      icon: 'Ikona',
+      empty: 'Zatím nemáte žádné návyky. Přidejte první!',
+      archive: 'Archivovat',
+      confirmArchive: 'Opravdu chcete archivovat tento návyk?',
+      dailyHabits: 'Denní návyky',
     },
     settings: {
       title: 'Nastavení',
@@ -492,6 +524,7 @@ export const translations: Record<Language, Translations> = {
     nav: {
       dailyQuestionnaire: 'Daily Questionnaire',
       weeklySummary: 'Weekly Summary',
+      habits: 'Habits',
       settings: 'Settings',
     },
     daily: {
@@ -541,6 +574,20 @@ export const translations: Record<Language, Translations> = {
       currentWeek: 'Current Week',
       refresh: 'Refresh',
       loadingWeeklyData: 'Loading weekly data...',
+    },
+    habits: {
+      title: 'Daily Habits',
+      description: 'Manage your daily habits. They will appear as a checklist in the daily questionnaire.',
+      addNew: 'Add New Habit',
+      name: 'Habit Name',
+      namePlaceholder: 'e.g. Morning meditation, Exercise, Reading...',
+      habitDescription: 'Description',
+      descriptionPlaceholder: 'Optional habit description...',
+      icon: 'Icon',
+      empty: 'You don\'t have any habits yet. Add your first one!',
+      archive: 'Archive',
+      confirmArchive: 'Are you sure you want to archive this habit?',
+      dailyHabits: 'Daily Habits',
     },
     settings: {
       title: 'Settings',

@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { DailyQuestionnaire } from './components/DailyQuestionnaire';
 import { WeeklySummary } from './components/WeeklySummary';
+import { Habits } from './components/Habits';
 import { Settings } from './components/Settings';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import './App.css';
 
-type View = 'daily' | 'weekly' | 'settings';
+type View = 'daily' | 'weekly' | 'habits' | 'settings';
 
 function AppContent() {
   const { t } = useLanguage();
@@ -55,6 +56,13 @@ function AppContent() {
           📊 {t.nav.weeklySummary}
         </button>
         <button
+          className={`nav-button ${currentView === 'habits' ? 'active' : ''} ${isAiGenerating ? 'disabled' : ''}`}
+          onClick={() => handleViewChange('habits')}
+          disabled={isAiGenerating}
+        >
+          📋 {t.nav.habits}
+        </button>
+        <button
           className={`nav-button ${currentView === 'settings' ? 'active' : ''} ${isAiGenerating ? 'disabled' : ''}`}
           onClick={() => handleViewChange('settings')}
           disabled={isAiGenerating}
@@ -94,6 +102,12 @@ function AppContent() {
               onRefresh={handleRefresh}
               onAiGeneratingChange={setIsAiGenerating}
             />
+          </div>
+        )}
+
+        {currentView === 'habits' && (
+          <div className="view-container">
+            <Habits />
           </div>
         )}
 
