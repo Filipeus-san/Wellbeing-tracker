@@ -18,7 +18,7 @@ export const generateClaudeSummary = async (
 
   // Připravit kontext pro AI
   const userLanguage = settings.language || 'cs';
-  const prompt = buildWeeklySummaryPrompt(weeklySummary, dailyScores, userLanguage);
+  const prompt = await buildWeeklySummaryPrompt(weeklySummary, dailyScores, userLanguage);
 
   try {
     if (!window.electronAPI) {
@@ -96,11 +96,11 @@ export const generateDailySummary = async (dailyScore: DailyScore): Promise<stri
 /**
  * Sestaví prompt pro týdenní shrnutí
  */
-const buildWeeklySummaryPrompt = (
+const buildWeeklySummaryPrompt = async (
   weeklySummary: WeeklySummary,
   dailyScores: DailyScore[],
   language: string = 'cs'
-): string => {
+): Promise<string> => {
   const { averages, criticalAreas, microActions } = weeklySummary;
 
   // Přidat detaily o otázkách a skóre
@@ -163,6 +163,27 @@ const buildWeeklySummaryPrompt = (
     .filter(Boolean)
     .join('\n');
 
+  // Přidat statistiky návyků
+  let habitsDetails = '';
+  const allHabits = await getHabits();
+  const activeHabits = allHabits.filter(h => !h.archived);
+
+  if (activeHabits.length > 0 && dailyScores.length > 0) {
+    const habitStats = activeHabits.map(habit => {
+      const completed = dailyScores.filter(score =>
+        score.completedHabits?.includes(habit.id)
+      ).length;
+      const total = dailyScores.length;
+      const percentage = total > 0 ? ((completed / total) * 100).toFixed(0) : '0';
+
+      return `${habit.icon || '✨'} ${habit.name}: ${completed}/${total} dnů (${percentage}%)`;
+    });
+
+    habitsDetails = language === 'en'
+      ? `\nWEEKLY HABITS COMPLETION:\n${habitStats.join('\n')}\n`
+      : `\nTÝDENNÍ PLNĚNÍ NÁVYKŮ:\n${habitStats.join('\n')}\n`;
+  }
+
   const languageInstruction = language === 'en'
     ? 'IMPORTANT: Respond in ENGLISH.'
     : 'DŮLEŽITÉ: Odpověz v ČEŠTINĚ.';
@@ -179,7 +200,7 @@ ${criticalDetails || 'No critical areas'}
 
 MENTAL STATE THROUGHOUT THE WEEK:
 ${mentalHealthDetails || 'No mental state data'}
-
+${habitsDetails}
 RECOMMENDED MICRO-ACTIONS:
 ${actionsDetails}
 
@@ -190,9 +211,10 @@ Create a summary that:
 1. Acknowledges positive areas and progress
 2. Gently points out critical areas
 3. Pays special attention to mental state and emotions (mood, anxiety, depression, joy, anger, gratitude) - if you see high values of anxiety/depression/anger, address it kindly; if you see high values of joy/gratitude, acknowledge it
-4. Provides specific, motivating recommendations
-5. Has an empathetic and encouraging tone
-6. Is concise and readable`;
+4. If weekly habit statistics are provided, acknowledge consistent habits and gently encourage improvement on less completed ones
+5. Provides specific, motivating recommendations
+6. Has an empathetic and encouraging tone
+7. Is concise and readable`;
 };
 
 /**

@@ -533,3 +533,91 @@
     transform: translateY(0);
   }
 }
+
+/* Habits overview section */
+.habits-overview-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.habits-overview-section h3 {
+  margin: 0 0 20px 0;
+  color: #1f2937;
+  font-size: 20px;
+}
+
+.weekly-habits {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.habit-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.habit-stat-item:hover {
+  background: #f3f4f6;
+  border-color: #667eea;
+}
+
+.habit-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.habit-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  flex: 0 0 180px;
+}
+
+.habit-progress-bar {
+  flex: 1;
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.habit-progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.habit-stats {
+  font-size: 14px;
+  font-weight: 600;
+  color: #667eea;
+  flex-shrink: 0;
+  min-width: 60px;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .habit-stat-item {
+    flex-wrap: wrap;
+  }
+
+  .habit-name {
+    flex: 1 1 auto;
+  }
+
+  .habit-progress-bar {
+    flex: 1 1 100%;
+  }
+}

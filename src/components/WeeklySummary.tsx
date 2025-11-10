@@ -13,12 +13,12 @@ import {
   PolarRadiusAxis,
   Radar,
 } from 'recharts';
-import type { WeeklySummary as WeeklySummaryType, DailyScore } from '../types';
+import type { WeeklySummary as WeeklySummaryType, DailyScore, Habit } from '../types';
 import { MOODS, getAnxietyColor, getDepressionColor, getJoyColor, getAngerColor, getGratitudeColor, getMoodLabel } from '../types';
 import { questions, getCategoryLabel, getQuestionText } from '../data/questions';
 import { getScoreColor, getScoreLabel, calculateCategoryAverages, generateWeeklySummary, identifyCriticalAreas } from '../utils/analytics';
 import { generateClaudeSummary } from '../utils/claudeApi';
-import { getDailyScoresInRange, getSettings, saveWeeklySummary, getWeeklySummary } from '../utils/storage';
+import { getDailyScoresInRange, getSettings, saveWeeklySummary, getWeeklySummary, getHabits } from '../utils/storage';
 import { startOfWeek, addWeeks, subWeeks } from 'date-fns';
 import { useLanguage } from '../i18n/LanguageContext';
 import { getMicroActionText, generateMicroActions } from '../utils/microActions';
@@ -41,6 +41,8 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
+  const [habits, setHabits] = useState<Habit[]>([]);
+  const [habitStats, setHabitStats] = useState<Record<string, { completed: number; total: number }>>({});
 
   // Propagovat loading stav nahoru
   useEffect(() => {
@@ -91,6 +93,24 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
       // Načíst denní skóre
       const scores = await getDailyScoresInRange(weeklySummary.weekStart, weeklySummary.weekEnd);
       setDailyScores(scores);
+
+      // Načíst návyky a spočítat statistiky
+      const allHabits = await getHabits();
+      const activeHabits = allHabits.filter(h => !h.archived);
+      setHabits(activeHabits);
+
+      // Spočítat statistiky návyků
+      const stats: Record<string, { completed: number; total: number }> = {};
+      activeHabits.forEach(habit => {
+        const completed = scores.filter(score =>
+          score.completedHabits?.includes(habit.id)
+        ).length;
+        stats[habit.id] = {
+          completed,
+          total: scores.length
+        };
+      });
+      setHabitStats(stats);
 
       // Pokud není žádné vyplněné dny, vyčisti mikro-akce
       if (scores.length === 0 && weeklySummary.microActions.length > 0) {
@@ -611,6 +631,32 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
                       <span style={{ color: '#9ca3af', fontSize: '12px' }}>{t.weekly.notSpecified}</span>
                     </div>
                   )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Týdenní návyky - zobrazit pouze pokud jsou data a návyky */}
+      {habits.length > 0 && dailyScores.length > 0 && (
+        <div className="habits-overview-section">
+          <h3>📋 {t.habits.dailyHabits}</h3>
+          <div className="weekly-habits">
+            {habits.map((habit) => {
+              const stats = habitStats[habit.id] || { completed: 0, total: 0 };
+              const percentage = stats.total > 0 ? (stats.completed / stats.total) * 100 : 0;
+              return (
+                <div key={habit.id} className="habit-stat-item">
+                  <span className="habit-icon">{habit.icon || '✨'}</span>
+                  <span className="habit-name">{habit.name}</span>
+                  <div className="habit-progress-bar">
+                    <div
+                      className="habit-progress-fill"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                  <span className="habit-stats">{stats.completed}/{stats.total}</span>
                 </div>
               );
             })}
