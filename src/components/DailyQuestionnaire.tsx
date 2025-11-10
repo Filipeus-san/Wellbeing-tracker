@@ -232,6 +232,7 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         anger,
         gratitude,
         notes: notes.trim() || undefined,
+        completedHabits, // OPRAVA: Přidat completedHabits
       };
 
       // Vygenerovat mikro-akce
@@ -243,7 +244,7 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         microActions,
       };
 
-      // Vygenerovat shrnutí (prompt bude obsahovat mikro-akce)
+      // Vygenerovat shrnutí (prompt bude obsahovat mikro-akce a návyky)
       const summary = await generateDailySummary(dailyScoreWithActions);
 
       // Uložit kompletní záznam s AI shrnutím a mikro-akcemi
