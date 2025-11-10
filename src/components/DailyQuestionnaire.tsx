@@ -609,8 +609,8 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         {summaryError && <div className="summary-error">❌ {summaryError}</div>}
       </div>
 
-      {/* Mikro-akce na zítřek - zobrazit ihned po uložení */}
-      {currentDailyScore?.microActions && currentDailyScore.microActions.length > 0 && (
+      {/* Mikro-akce na zítřek - zobrazit pouze když je formulář kompletně vyplněný */}
+      {isComplete && currentDailyScore?.microActions && currentDailyScore.microActions.length > 0 && (
         <div className="daily-micro-actions">
           <h4>💡 {t.daily.recommendedActions}</h4>
           <div className="micro-actions-list">
