@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import type { DailyScore, ScoreValue, MoodValue, AnxietyLevel, DepressionLevel, JoyLevel, AngerLevel, GratitudeLevel } from '../types';
+import type { DailyScore, ScoreValue, MoodValue, AnxietyLevel, DepressionLevel, JoyLevel, AngerLevel, GratitudeLevel, Habit } from '../types';
 import { MOODS, getMoodLabel, getAnxietyLabel, getDepressionLabel, getAnxietyColor, getDepressionColor, getJoyLabel, getJoyColor, getAngerLabel, getAngerColor, getGratitudeLabel, getGratitudeColor } from '../types';
 import { questions, getModelLabel, getQuestionText } from '../data/questions';
-import { saveDailyScore, getDailyScore, getSettings, saveWeeklySummary, getWeeklySummary } from '../utils/storage';
+import { saveDailyScore, getDailyScore, getSettings, saveWeeklySummary, getWeeklySummary, getHabits } from '../utils/storage';
 import { getScoreColor, generateDailyMicroActions, generateWeeklySummary } from '../utils/analytics';
 import { generateDailySummary } from '../utils/claudeApi';
 import { getMicroActionText } from '../utils/microActions';
@@ -34,6 +34,8 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
   const [canUseAI, setCanUseAI] = useState(false);
   const [currentDailyScore, setCurrentDailyScore] = useState<DailyScore | undefined>(undefined);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
+  const [habits, setHabits] = useState<Habit[]>([]);
+  const [completedHabits, setCompletedHabits] = useState<string[]>([]);
 
   // Načíst nastavení
   useEffect(() => {
@@ -42,6 +44,15 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
       setCanUseAI(settings.enableClaudeIntegration);
     };
     loadSettings();
+  }, []);
+
+  // Načíst návyky
+  useEffect(() => {
+    const loadHabits = async () => {
+      const allHabits = await getHabits();
+      setHabits(allHabits.filter(h => !h.archived));
+    };
+    loadHabits();
   }, []);
 
   // Propagovat loading stav nahoru
@@ -75,6 +86,7 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         setGratitude(existingScore.gratitude ?? 0);
         setNotes(existingScore.notes || '');
         setAiSummary(existingScore.aiSummary || null);
+        setCompletedHabits(existingScore.completedHabits || []);
       } else {
         // Reset state při změně data
         setScores({});
@@ -86,6 +98,7 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         setGratitude(0);
         setNotes('');
         setAiSummary(null);
+        setCompletedHabits([]);
       }
       setIsLoading(false);
     };
@@ -97,6 +110,16 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
       ...prev,
       [questionId]: score,
     }));
+  };
+
+  const handleToggleHabit = (habitId: string) => {
+    setCompletedHabits((prev) => {
+      if (prev.includes(habitId)) {
+        return prev.filter((id) => id !== habitId);
+      } else {
+        return [...prev, habitId];
+      }
+    });
   };
 
   const handleSave = async () => {
@@ -117,10 +140,11 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
       // Vygenerovat mikro-akce založené na denním skóre
       const microActions = generateDailyMicroActions(baseDailyScore);
 
-      // Uložit s mikro-akcemi
+      // Uložit s mikro-akcemi a návyky
       const dailyScore: DailyScore = {
         ...baseDailyScore,
         microActions,
+        completedHabits,
       };
 
       await saveDailyScore(dailyScore);
@@ -439,6 +463,30 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
             </div>
           </div>
         </div>
+
+        {/* Denní návyky */}
+        {habits.length > 0 && (
+          <div className="habits-section">
+            <h3 className="habits-title">📋 {t.habits.dailyHabits}</h3>
+            <div className="habits-checklist">
+              {habits.map((habit) => {
+                const isCompleted = completedHabits.includes(habit.id);
+                return (
+                  <label key={habit.id} className="habit-checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={isCompleted}
+                      onChange={() => handleToggleHabit(habit.id)}
+                      className="habit-checkbox"
+                    />
+                    <span className="habit-icon">{habit.icon || '✨'}</span>
+                    <span className="habit-label">{habit.name}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {Object.entries(groupedQuestions).map(([model, modelQuestions]) => (
           <div key={model} className="model-section">
