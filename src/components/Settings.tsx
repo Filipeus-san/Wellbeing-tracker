@@ -278,7 +278,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
   return (
     <>
       {showGuide && <GoogleDriveGuide onClose={() => setShowGuide(false)} />}
-      {showAiGuide && <AiCliGuide onClose={() => setShowAiGuide(false)} />}
+      {showAiGuide && <AiCliGuide onClose={() => setShowAiGuide(false)} aiProvider={settings.aiProvider || 'claude'} />}
 
       <div className="settings">
         <h2>{t.settings.title}</h2>
