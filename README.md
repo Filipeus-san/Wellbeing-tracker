@@ -98,6 +98,8 @@ After building, you'll find the installer in the `release/` folder:
 - **macOS**: `Wellbeing Tracker-1.0.0.dmg`
 - **Windows**: `Wellbeing Tracker Setup 1.0.0.exe`
 
+For detailed build instructions, see [BUILD.md](./BUILD.md).
+
 ### Requirements
 - Node.js 20.x+
 - npm or yarn
