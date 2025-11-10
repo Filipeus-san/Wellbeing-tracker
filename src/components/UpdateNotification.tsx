@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
+import type { UpdateInfo } from '../electron';
 import './UpdateNotification.css';
-
-interface UpdateInfo {
-  available: boolean;
-  version?: string;
-  url?: string;
-  notes?: string;
-}
 
 export default function UpdateNotification() {
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
@@ -15,7 +9,6 @@ export default function UpdateNotification() {
   useEffect(() => {
     console.log('UpdateNotification mounted');
 
-    // @ts-ignore - window.electron is defined in preload
     if (!window.electron) {
       console.error('❌ window.electron is not available');
       return;
@@ -32,12 +25,10 @@ export default function UpdateNotification() {
       }
     };
 
-    // @ts-ignore - window.electron is defined in preload
     const removeListener = window.electron.onUpdateAvailable(handleUpdateAvailable);
 
     // Check for updates on mount
     console.log('🔍 Checking for updates manually...');
-    // @ts-ignore
     window.electron.checkForUpdates().then((info: UpdateInfo) => {
       console.log('✅ Update check result:', info);
       if (info && info.available) {
@@ -56,9 +47,8 @@ export default function UpdateNotification() {
   }, []);
 
   const handleDownload = () => {
-    if (updateInfo?.url) {
-      // @ts-ignore
-      window.electron?.openExternal(updateInfo.url);
+    if (updateInfo?.url && window.electron) {
+      window.electron.openExternal(updateInfo.url);
     }
   };
 
