@@ -40,6 +40,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Copilot CLI
   copilotSummary: (prompt) => ipcRenderer.invoke('copilot-summary', prompt),
   copilotTest: () => ipcRenderer.invoke('copilot-test'),
+
+  // Google Drive Sync
+  gdriveInit: (clientId, clientSecret) => ipcRenderer.invoke('gdrive-init', clientId, clientSecret),
+  gdriveGetAuthUrl: (clientId, clientSecret) => ipcRenderer.invoke('gdrive-get-auth-url', clientId, clientSecret),
+  gdriveOpenAuthUrl: (url) => ipcRenderer.invoke('gdrive-open-auth-url', url),
+  gdriveAuthenticate: (code) => ipcRenderer.invoke('gdrive-authenticate', code),
+  gdriveDisconnect: () => ipcRenderer.invoke('gdrive-disconnect'),
+  gdriveIsConnected: () => ipcRenderer.invoke('gdrive-is-connected'),
+  gdriveSetSyncEnabled: (enabled) => ipcRenderer.invoke('gdrive-set-sync-enabled', enabled),
+  gdriveUpload: () => ipcRenderer.invoke('gdrive-upload'),
+  gdriveDownload: () => ipcRenderer.invoke('gdrive-download'),
+  gdriveGetMetadata: () => ipcRenderer.invoke('gdrive-get-metadata'),
 });
 
 console.log('✅ Preload script loaded, electronAPI exposed');

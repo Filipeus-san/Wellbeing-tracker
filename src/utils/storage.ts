@@ -22,6 +22,17 @@ interface ElectronAPI {
   codexTest: () => Promise<{ success: boolean; version?: string; message?: string; error?: string; details?: string }>;
   copilotSummary: (prompt: string) => Promise<{ success: boolean; content?: string; error?: string; details?: string }>;
   copilotTest: () => Promise<{ success: boolean; version?: string; message?: string; error?: string; details?: string }>;
+  // Google Drive Sync
+  gdriveInit: (clientId: string, clientSecret: string) => Promise<{ success: boolean; connected?: boolean; error?: string }>;
+  gdriveGetAuthUrl: (clientId: string, clientSecret: string) => Promise<{ success: boolean; authUrl?: string; error?: string }>;
+  gdriveOpenAuthUrl: (url: string) => Promise<{ success: boolean; error?: string }>;
+  gdriveAuthenticate: (code: string) => Promise<{ success: boolean; connected?: boolean; error?: string }>;
+  gdriveDisconnect: () => Promise<{ success: boolean; error?: string }>;
+  gdriveIsConnected: () => Promise<{ success: boolean; connected: boolean; syncEnabled: boolean }>;
+  gdriveSetSyncEnabled: (enabled: boolean) => Promise<{ success: boolean; syncEnabled?: boolean; error?: string }>;
+  gdriveUpload: () => Promise<{ success: boolean; timestamp?: string; error?: string }>;
+  gdriveDownload: () => Promise<{ success: boolean; data?: any; error?: string }>;
+  gdriveGetMetadata: () => Promise<{ success: boolean; metadata?: any; error?: string }>;
 }
 
 declare global {

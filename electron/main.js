@@ -1,10 +1,11 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { spawn } from 'child_process';
 import { writeFile, readFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import googleDriveSync from './googleDriveSync.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -47,6 +48,17 @@ async function loadData() {
 async function saveData() {
   try {
     await writeFile(DATA_FILE, JSON.stringify(dataStore, null, 2), 'utf-8');
+
+    // Pokud je povolena synchronizace s Google Drive, nahrát data
+    if (googleDriveSync.isSyncEnabled()) {
+      try {
+        await googleDriveSync.uploadData(dataStore);
+        console.log('✅ Data synced to Google Drive');
+      } catch (error) {
+        console.error('⚠️ Failed to sync to Google Drive:', error);
+        // Nepřerušovat ukládání, pokud selže synchronizace
+      }
+    }
   } catch (error) {
     console.error('❌ Error saving data:', error);
     throw error;
@@ -616,5 +628,137 @@ ipcMain.handle('copilot-test', async () => {
       error: 'Copilot CLI is not available',
       details: error.message,
     };
+  }
+});
+
+// ==================== GOOGLE DRIVE SYNC ====================
+
+// Inicializace Google Drive OAuth
+ipcMain.handle('gdrive-init', async (event, clientId, clientSecret) => {
+  try {
+    const success = await googleDriveSync.initializeOAuth(clientId, clientSecret);
+    return { success, connected: googleDriveSync.isConnected() };
+  } catch (error) {
+    console.error('❌ Error initializing Google Drive:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Získat URL pro autorizaci
+ipcMain.handle('gdrive-get-auth-url', async (event, clientId, clientSecret) => {
+  try {
+    // Nejprve inicializovat OAuth klienta
+    await googleDriveSync.initializeOAuth(clientId, clientSecret);
+    const authUrl = googleDriveSync.getAuthUrl();
+    return { success: true, authUrl };
+  } catch (error) {
+    console.error('❌ Error getting auth URL:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Otevřít URL v browseru
+ipcMain.handle('gdrive-open-auth-url', async (event, url) => {
+  try {
+    await shell.openExternal(url);
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Error opening URL:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Autentikovat s autorizačním kódem
+ipcMain.handle('gdrive-authenticate', async (event, code) => {
+  try {
+    await googleDriveSync.authenticateWithCode(code);
+    return { success: true, connected: googleDriveSync.isConnected() };
+  } catch (error) {
+    console.error('❌ Error authenticating with Google Drive:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Odhlásit se
+ipcMain.handle('gdrive-disconnect', async () => {
+  try {
+    await googleDriveSync.disconnect();
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Error disconnecting from Google Drive:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Kontrola připojení
+ipcMain.handle('gdrive-is-connected', async () => {
+  try {
+    const connected = googleDriveSync.isConnected();
+    const syncEnabled = googleDriveSync.isSyncEnabled();
+    return { success: true, connected, syncEnabled };
+  } catch (error) {
+    return { success: false, connected: false, syncEnabled: false };
+  }
+});
+
+// Povolení/zakázání synchronizace
+ipcMain.handle('gdrive-set-sync-enabled', async (event, enabled) => {
+  try {
+    googleDriveSync.setSyncEnabled(enabled);
+    return { success: true, syncEnabled: enabled };
+  } catch (error) {
+    console.error('❌ Error setting sync enabled:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Manuální nahrání dat
+ipcMain.handle('gdrive-upload', async () => {
+  try {
+    const result = await googleDriveSync.uploadData(dataStore);
+    return { success: true, ...result };
+  } catch (error) {
+    console.error('❌ Error uploading to Google Drive:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Manuální stažení dat
+ipcMain.handle('gdrive-download', async () => {
+  try {
+    const data = await googleDriveSync.downloadData();
+
+    // Sloučit stažená data s lokálními daty
+    if (data.dailyScores) {
+      dataStore.dailyScores = data.dailyScores;
+    }
+    if (data.weeklySummaries) {
+      dataStore.weeklySummaries = data.weeklySummaries;
+    }
+    if (data.habits) {
+      dataStore.habits = data.habits;
+    }
+    if (data.settings) {
+      dataStore.settings = { ...dataStore.settings, ...data.settings };
+    }
+
+    // Uložit lokálně
+    await writeFile(DATA_FILE, JSON.stringify(dataStore, null, 2), 'utf-8');
+
+    return { success: true, data: dataStore };
+  } catch (error) {
+    console.error('❌ Error downloading from Google Drive:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Získat metadata souboru
+ipcMain.handle('gdrive-get-metadata', async () => {
+  try {
+    const metadata = await googleDriveSync.getFileMetadata();
+    return { success: true, metadata };
+  } catch (error) {
+    console.error('❌ Error getting metadata:', error);
+    return { success: false, error: error.message };
   }
 });

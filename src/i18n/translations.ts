@@ -161,6 +161,32 @@ export interface Translations {
     appName: string;
     appDescription: string;
     dataStoredLocally: string;
+    googleDriveSync: string;
+    googleDriveSyncDescription: string;
+    connectGoogleDrive: string;
+    disconnectGoogleDrive: string;
+    googleDriveConnected: string;
+    googleDriveNotConnected: string;
+    enableAutoSync: string;
+    manualSync: string;
+    uploadToGoogleDrive: string;
+    downloadFromGoogleDrive: string;
+    lastSync: string;
+    syncNow: string;
+    syncing: string;
+    syncSuccessful: string;
+    syncFailed: string;
+    googleDriveInstructions: string;
+    clientId: string;
+    clientSecret: string;
+    clientIdPlaceholder: string;
+    clientSecretPlaceholder: string;
+    enterAuthCode: string;
+    authCodePlaceholder: string;
+    authenticate: string;
+    authenticating: string;
+    authenticationSuccessful: string;
+    authenticationFailed: string;
   };
 
   // Moods
@@ -432,6 +458,32 @@ export const translations: Record<Language, Translations> = {
       appName: 'Wellbeing Tracker - Desktop Aplikace',
       appDescription: 'Aplikace pro sledování duševní pohody založená na psychologických modelech Maslow, SDT a PERMA.',
       dataStoredLocally: 'Data jsou ukládána lokálně na vašem počítači v uživatelské složce.',
+      googleDriveSync: 'Synchronizace s Google Diskem',
+      googleDriveSyncDescription: 'Propojte svůj Google účet a automaticky synchronizujte data na Google Disk. Data zůstanou také uložená lokálně.',
+      connectGoogleDrive: 'Připojit Google Drive',
+      disconnectGoogleDrive: 'Odpojit Google Drive',
+      googleDriveConnected: 'Google Drive připojen',
+      googleDriveNotConnected: 'Google Drive není připojen',
+      enableAutoSync: 'Povolit automatickou synchronizaci',
+      manualSync: 'Manuální synchronizace',
+      uploadToGoogleDrive: 'Nahrát na Google Drive',
+      downloadFromGoogleDrive: 'Stáhnout z Google Drive',
+      lastSync: 'Poslední synchronizace',
+      syncNow: 'Synchronizovat nyní',
+      syncing: 'Synchronizuji...',
+      syncSuccessful: 'Synchronizace úspěšná',
+      syncFailed: 'Synchronizace selhala',
+      googleDriveInstructions: 'Pro propojení s Google Diskem potřebujete vytvořit OAuth2 aplikaci v Google Cloud Console a zadat Client ID a Client Secret.',
+      clientId: 'Client ID',
+      clientSecret: 'Client Secret',
+      clientIdPlaceholder: 'Zadejte Google OAuth2 Client ID',
+      clientSecretPlaceholder: 'Zadejte Google OAuth2 Client Secret',
+      enterAuthCode: 'Zadejte autorizační kód',
+      authCodePlaceholder: 'Vložte sem autorizační kód z Google',
+      authenticate: 'Autentikovat',
+      authenticating: 'Autentikuji...',
+      authenticationSuccessful: 'Autentikace úspěšná',
+      authenticationFailed: 'Autentikace selhala',
     },
     moods: {
       amazing: 'Úžasná',
@@ -681,6 +733,32 @@ export const translations: Record<Language, Translations> = {
       appName: 'Wellbeing Tracker - Desktop Application',
       appDescription: 'An application for tracking mental wellbeing based on the psychological models of Maslow, SDT, and PERMA.',
       dataStoredLocally: 'Data is stored locally on your computer in the user folder.',
+      googleDriveSync: 'Google Drive Sync',
+      googleDriveSyncDescription: 'Connect your Google account and automatically sync data to Google Drive. Data will also remain stored locally.',
+      connectGoogleDrive: 'Connect Google Drive',
+      disconnectGoogleDrive: 'Disconnect Google Drive',
+      googleDriveConnected: 'Google Drive connected',
+      googleDriveNotConnected: 'Google Drive not connected',
+      enableAutoSync: 'Enable automatic sync',
+      manualSync: 'Manual sync',
+      uploadToGoogleDrive: 'Upload to Google Drive',
+      downloadFromGoogleDrive: 'Download from Google Drive',
+      lastSync: 'Last sync',
+      syncNow: 'Sync now',
+      syncing: 'Syncing...',
+      syncSuccessful: 'Sync successful',
+      syncFailed: 'Sync failed',
+      googleDriveInstructions: 'To connect to Google Drive, you need to create an OAuth2 application in Google Cloud Console and enter the Client ID and Client Secret.',
+      clientId: 'Client ID',
+      clientSecret: 'Client Secret',
+      clientIdPlaceholder: 'Enter Google OAuth2 Client ID',
+      clientSecretPlaceholder: 'Enter Google OAuth2 Client Secret',
+      enterAuthCode: 'Enter authorization code',
+      authCodePlaceholder: 'Paste the authorization code from Google',
+      authenticate: 'Authenticate',
+      authenticating: 'Authenticating...',
+      authenticationSuccessful: 'Authentication successful',
+      authenticationFailed: 'Authentication failed',
     },
     moods: {
       amazing: 'Amazing',
