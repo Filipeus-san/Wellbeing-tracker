@@ -9,12 +9,16 @@ A modern **desktop application** for tracking mental wellbeing built on **Electr
 ## ✨ Main Features
 
 ### 📝 Daily Questionnaire
-- 13 questions covering all wellbeing areas
-- Rating on a 1-5 scale with color coding
-- Space for personal notes
-- **🤖 AI daily summary and recommendations** (after completing the questionnaire)
-- Saved to LocalStorage for offline access
-- Ability to fill out for any date
+- **18 comprehensive questions** covering all wellbeing areas:
+  - 9 questions from **Maslow's Hierarchy** (including practical habits like hygiene, cleaning, addiction management, health)
+  - 3 questions from **SDT** (Self-Determination Theory)
+  - 6 questions from **PERMA** model (including physical exercise)
+- Rating on a **1-5 scale** with intuitive color coding
+- Space for **personal notes and reflections**
+- **🤖 AI-powered daily summary and recommendations** (optional, after completing the questionnaire)
+- Data stored locally for **offline access**
+- Ability to **fill out for any date** (past or present)
+- **Date picker** for easy navigation
 
 ### 📊 Weekly Summary
 - Automatic generation of weekly statistics
@@ -23,13 +27,30 @@ A modern **desktop application** for tracking mental wellbeing built on **Electr
   - Bar chart for critical areas
   - Detailed overview of all questions with color coding
 - **Identification of critical areas** (score < 2.5)
+- **🤖 AI-powered weekly analysis** (optional)
 - **Recommended micro-actions** to improve wellbeing
 
-### 🤖 Claude AI Integration (optional)
-- Personalized summaries from AI coach
-- Recommendations based on your data
-- Secure API key storage in LocalStorage
-- Ability to enable/disable integration
+### 🎯 Habits Tracker
+- **Create custom habits** with name, description, and emoji icon
+- **Flexible scheduling**:
+  - Choose specific days of week (Monday-Sunday)
+  - Select specific weeks of month (1st-5th week)
+  - Or track daily habits
+- **Drag & drop reordering** to prioritize your habits
+- **Edit or archive** habits as your routines evolve
+- **Visual organization** with emoji icons and descriptions
+- Integrates with daily questionnaire data
+
+### 🤖 AI Integration (optional)
+- **Three AI providers supported**:
+  - **Claude CLI** - Anthropic's AI assistant
+  - **OpenAI Codex** - OpenAI's coding AI
+  - **GitHub Copilot** - GitHub's AI assistant
+- **Personalized summaries** from AI coach
+- **Recommendations** based on your wellbeing data
+- **OAuth authentication** via browser (secure, no manual API keys)
+- Ability to **enable/disable** and **switch providers**
+- **In-app setup guide** for each provider
 
 ### ⚙️ Settings and Data Management
 - Export data to JSON (backup)
@@ -51,17 +72,26 @@ A modern **desktop application** for tracking mental wellbeing built on **Electr
 4. **Self-esteem** - confidence, achievements
 5. **Self-actualization** - personal growth, potential
 
+**Plus practical daily habits:**
+- **Hygiene** - personal care and cleanliness
+- **Cleaning** - environment and organization
+- **Addiction management** - controlling substance and behavioral dependencies
+- **Health/Illness** - physical wellbeing and sickness tracking
+
 ### SDT - Self-Determination Theory
-1. **Autonomy** - freedom of choice
-2. **Competence** - sense of capability
-3. **Relatedness** - support from others
+1. **Autonomy** - freedom of choice and self-direction
+2. **Competence** - sense of capability and mastery
+3. **Relatedness** - support and connection from others
 
 ### PERMA - Wellbeing Model
 1. **Positive emotions** - joy, calm, enthusiasm
-2. **Engagement** - flow states, immersion
-3. **Relationships** - quality of interactions
-4. **Meaning** - purpose of activities
-5. **Accomplishment** - progress and achievement
+2. **Engagement** - flow states, deep immersion
+3. **Relationships** - quality of social interactions
+4. **Meaning** - purpose and significance of activities
+5. **Accomplishment** - progress, achievement, and success
+
+**Extended with:**
+- **Exercise** - physical activity and movement
 
 ## 🎨 Score Color Coding
 
@@ -126,37 +156,47 @@ For detailed build instructions, see [BUILD.md](./BUILD.md).
 
 ## 🤖 AI Integration
 
-The application supports AI-powered summaries and recommendations. You can use:
-- **Claude CLI** - locally installed Claude assistant
-- **GitHub Copilot** - via VS Code or other editors
-- **OpenAI Codex** - via API integration
+The application supports **three AI providers** for personalized summaries and recommendations:
+- **Claude CLI** (Anthropic) - Recommended, excellent for wellbeing advice
+- **OpenAI Codex** - Good for structured responses
+- **GitHub Copilot CLI** - For users with Copilot subscription
 
-### Setting up Claude CLI
+### How It Works
 
-The application uses **locally installed Claude CLI** called directly from the Electron main process.
+1. **OAuth Authentication** - Modern, secure browser-based login (no manual API keys!)
+2. **Local CLI Execution** - AI runs on your computer via command-line tools
+3. **Data Privacy** - Your wellbeing data stays local, only prompts are sent to AI
+4. **Provider Selection** - Easy switching between AI providers in settings
 
-#### Installing Claude CLI
+### Setup Process
 
-```bash
-# If you don't have Claude CLI installed yet
-# Guide: https://github.com/anthropics/anthropic-cli
-```
+The application includes **detailed in-app guides** for each provider:
 
-#### Using in the Application
+**Access the guide**: Settings → AI Integration → "Show detailed AI setup guide" button
 
-1. Run the application (`npm run dev`)
-2. Go to the **Settings** section
-3. Enable **Claude AI integration**
-4. Click **Test Claude CLI** to verify
-5. Save settings
+Each guide walks you through:
+1. **Installation** - One-command CLI installation
+2. **Authentication** - Browser-based OAuth login (automatic)
+3. **Activation** - Enable in the app and test
 
-Claude CLI is used for:
-- **Daily summary** - after completing the daily questionnaire
-- **Weekly summary** - analysis of the whole week
-- **Personalized recommendations** - tailored to your scores
-- **Motivational comments** - encouragement and specific tips
+**Estimated time**: 5-10 minutes per provider
 
-**Note**: All Claude calls are made locally from the Electron main process. No data is sent via web API.
+### AI Features
+
+Once configured, AI provides:
+- **📝 Daily summary** - After completing the daily questionnaire
+- **📊 Weekly summary** - Comprehensive analysis of the whole week
+- **🎯 Personalized recommendations** - Tailored to your specific scores
+- **💭 Motivational comments** - Encouragement and actionable tips
+- **🔍 Pattern recognition** - Identifying trends in your wellbeing data
+
+### Security
+
+- ✅ **Secure OAuth** - Modern authentication via browser
+- ✅ **Local execution** - CLI runs on your computer
+- ✅ **No API keys to manage** - OAuth handles everything
+- ✅ **PKCE protection** - Advanced security for token exchange
+- ✅ **Data minimization** - Only necessary prompts sent to AI
 
 ## ☁️ Google Drive Synchronization
 
