@@ -127,6 +127,15 @@ export interface Translations {
     title: string;
   };
 
+  // Donate
+  donate: {
+    title: string;
+    description: string;
+    alwaysFree: string;
+    thankYou: string;
+    scanQr: string;
+  };
+
   // Settings
   settings: {
     title: string;
@@ -428,6 +437,13 @@ export const translations: Record<Language, Translations> = {
     guide: {
       title: 'Návod na propojení s Google Diskem',
     },
+    donate: {
+      title: 'Podpořit vývoj',
+      description: 'Wellbeing Tracker je a vždy bude zdarma. Pokud vám aplikace pomáhá, můžete podpořit další vývoj.',
+      alwaysFree: 'Aplikace je a vždy bude zcela zdarma.',
+      thankYou: 'Děkuji za vaši podporu! 🙏',
+      scanQr: 'Naskenujte QR kód pro příspěvek:',
+    },
     settings: {
       title: 'Nastavení',
       language: 'Jazyk',
@@ -705,6 +721,13 @@ export const translations: Record<Language, Translations> = {
     },
     guide: {
       title: 'Google Drive Setup Guide',
+    },
+    donate: {
+      title: 'Support Development',
+      description: 'Wellbeing Tracker is and always will be free. If the app helps you, you can support further development.',
+      alwaysFree: 'The app is and always will be completely free.',
+      thankYou: 'Thank you for your support! 🙏',
+      scanQr: 'Scan the QR code to donate:',
     },
     settings: {
       title: 'Settings',
