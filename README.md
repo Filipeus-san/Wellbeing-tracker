@@ -134,6 +134,28 @@ After building, you'll find the installer in the `release/` folder:
 
 For detailed build instructions, see [BUILD.md](./BUILD.md).
 
+### 🤖 Automated Releases (GitHub Actions)
+
+The repository includes a **GitHub Actions workflow** that automatically builds installers for all platforms when you create a new release:
+
+1. **Create a release on GitHub**:
+   - Go to repository → Releases → "Create a new release"
+   - Tag version: `v1.0.0`, `v1.0.1`, etc.
+   - Add release notes
+   - Click "Publish release"
+
+2. **GitHub Actions automatically**:
+   - Builds Linux AppImage
+   - Builds macOS DMG
+   - Builds Windows EXE
+   - Uploads all installers to the release
+
+3. **Users can download** installers directly from the GitHub release page
+
+**Workflow details**: See [`.github/workflows/README.md`](.github/workflows/README.md)
+
+**Estimated build time**: 10-20 minutes (all platforms in parallel)
+
 ### Requirements
 - Node.js 20.x+
 - npm or yarn
