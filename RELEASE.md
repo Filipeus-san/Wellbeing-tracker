@@ -40,7 +40,7 @@ The GitHub Actions workflow **automatically updates** `package.json` version fro
 3. **Wait for builds** (10-20 minutes):
    - GitHub Actions automatically:
      - Updates `package.json` to version `1.0.1`
-     - Builds Linux AppImage
+     - Builds Linux packages (.deb, .rpm, .AppImage)
      - Builds macOS DMG
      - Builds Windows EXE
      - Uploads all installers to the release
@@ -78,7 +78,7 @@ If you prefer to manually control the version in `package.json`:
 2. **Click on the running workflow** to see progress
 
 3. **Check each job**:
-   - ✅ `build-linux` - Linux AppImage
+   - ✅ `build-linux` - Linux packages (.deb, .rpm, .AppImage)
    - ✅ `build-macos` - macOS DMG
    - ✅ `build-windows` - Windows EXE
 
@@ -92,7 +92,10 @@ If you prefer to manually control the version in `package.json`:
 
 After successful build, these files are uploaded to the release:
 
-- **Linux**: `Wellbeing Tracker-1.0.1.AppImage`
+- **Linux**:
+  - `wellbeing-tracker_1.0.1_amd64.deb` (Debian/Ubuntu)
+  - `wellbeing-tracker-1.0.1.x86_64.rpm` (Fedora/RedHat)
+  - `Wellbeing Tracker-1.0.1.AppImage` (Universal)
 - **macOS**: `Wellbeing Tracker-1.0.1.dmg`
 - **Windows**: `Wellbeing Tracker Setup 1.0.1.exe`
 

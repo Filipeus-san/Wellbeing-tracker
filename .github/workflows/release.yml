@@ -43,10 +43,13 @@ jobs:
       - name: List release directory
         run: ls -la release/
 
-      - name: Upload Linux AppImage to release
+      - name: Upload Linux packages to release
         uses: softprops/action-gh-release@v1
         with:
-          files: release/*.AppImage
+          files: |
+            release/*.AppImage
+            release/*.deb
+            release/*.rpm
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

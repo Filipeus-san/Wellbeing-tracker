@@ -128,7 +128,10 @@ npm run build
 ```
 
 After building, you'll find the installer in the `release/` folder:
-- **Linux**: `Wellbeing Tracker-1.0.0.AppImage`
+- **Linux**:
+  - `wellbeing-tracker_1.0.0_amd64.deb` (Debian/Ubuntu)
+  - `wellbeing-tracker-1.0.0.x86_64.rpm` (Fedora/RedHat)
+  - `Wellbeing Tracker-1.0.0.AppImage` (Universal)
 - **macOS**: `Wellbeing Tracker-1.0.0.dmg`
 - **Windows**: `Wellbeing Tracker Setup 1.0.0.exe`
 
@@ -145,7 +148,7 @@ The repository includes a **GitHub Actions workflow** that automatically builds 
    - Click "Publish release"
 
 2. **GitHub Actions automatically**:
-   - Builds Linux AppImage
+   - Builds Linux packages (.deb, .rpm, .AppImage)
    - Builds macOS DMG
    - Builds Windows EXE
    - Uploads all installers to the release
