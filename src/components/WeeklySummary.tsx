@@ -400,8 +400,8 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         </div>
       )}
 
-      {/* Týdenní nálady - zobrazit pouze pokud jsou data s náladou */}
-      {dailyScores.some(score => score.mood) && (
+      {/* Týdenní nálady - zobrazit pouze pokud je kompletní den a existují nálady */}
+      {hasCompleteDay && dailyScores.some(score => score.mood) && (
         <div className="mood-overview-section">
           <h3>💭 {t.weekly.moodOverWeek}</h3>
           <div className="daily-moods">
@@ -437,8 +437,8 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         </div>
       )}
 
-      {/* Týdenní úzkost */}
-      {dailyScores.some(score => score.anxiety !== undefined) && (
+      {/* Týdenní úzkost - zobrazit pouze pokud je kompletní den a existuje úzkost */}
+      {hasCompleteDay && dailyScores.some(score => score.anxiety !== undefined) && (
         <div className="mental-health-overview-section">
           <h3>😰 {t.weekly.anxietyOverWeek}</h3>
           <div className="daily-mental-health">
@@ -481,8 +481,8 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         </div>
       )}
 
-      {/* Týdenní deprese */}
-      {dailyScores.some(score => score.depression !== undefined) && (
+      {/* Týdenní deprese - zobrazit pouze pokud je kompletní den a existuje deprese */}
+      {hasCompleteDay && dailyScores.some(score => score.depression !== undefined) && (
         <div className="mental-health-overview-section">
           <h3>😔 {t.weekly.depressionOverWeek}</h3>
           <div className="daily-mental-health">
@@ -525,8 +525,8 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         </div>
       )}
 
-      {/* Týdenní radost */}
-      {dailyScores.some(score => score.joy !== undefined) && (
+      {/* Týdenní radost - zobrazit pouze pokud je kompletní den a existuje radost */}
+      {hasCompleteDay && dailyScores.some(score => score.joy !== undefined) && (
         <div className="mental-health-overview-section">
           <h3>😊 {t.weekly.joyOverWeek}</h3>
           <div className="daily-mental-health">
@@ -569,8 +569,8 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         </div>
       )}
 
-      {/* Týdenní vztek */}
-      {dailyScores.some(score => score.anger !== undefined) && (
+      {/* Týdenní vztek - zobrazit pouze pokud je kompletní den a existuje vztek */}
+      {hasCompleteDay && dailyScores.some(score => score.anger !== undefined) && (
         <div className="mental-health-overview-section">
           <h3>😠 {t.weekly.angerOverWeek}</h3>
           <div className="daily-mental-health">
@@ -613,8 +613,8 @@ export const WeeklySummary = ({ onRefresh, onAiGeneratingChange }: WeeklySummary
         </div>
       )}
 
-      {/* Týdenní vděčnost */}
-      {dailyScores.some(score => score.gratitude !== undefined) && (
+      {/* Týdenní vděčnost - zobrazit pouze pokud je kompletní den a existuje vděčnost */}
+      {hasCompleteDay && dailyScores.some(score => score.gratitude !== undefined) && (
         <div className="mental-health-overview-section">
           <h3>🙏 {t.weekly.gratitudeOverWeek}</h3>
           <div className="daily-mental-health">
