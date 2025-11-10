@@ -103,36 +103,6 @@ After building, you'll find the installer in the `release/` folder:
 - npm or yarn
 - Claude CLI (optional, for AI summaries)
 
-## 📁 Project Structure
-
-```
-.
-├── electron/            # Electron backend (main process)
-│   ├── main.js         # Main Electron process
-│   └── preload.js      # Preload script for IPC
-│
-├── src/                # React frontend (renderer process)
-│   ├── components/
-│   │   ├── DailyQuestionnaire.tsx   # Daily questionnaire
-│   │   ├── WeeklySummary.tsx        # Weekly summary
-│   │   └── Settings.tsx             # Settings
-│   ├── data/
-│   │   └── questions.ts             # Question definitions
-│   ├── types/
-│   │   └── index.ts                 # TypeScript types
-│   ├── utils/
-│   │   ├── storage.ts               # IPC communication for data
-│   │   ├── analytics.ts             # Calculations and analytics
-│   │   ├── microActions.ts          # Micro-actions algorithm
-│   │   └── claudeApi.ts             # Claude CLI via IPC
-│   ├── App.tsx                      # Main component
-│   └── main.tsx                     # Entry point
-│
-├── dist/               # Vite build output
-├── release/            # Electron distribution
-└── server/             # Deprecated (original Express server)
-```
-
 ## 🔐 Security and Privacy
 
 - ✅ All data stored **locally on your computer**
