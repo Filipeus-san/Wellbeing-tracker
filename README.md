@@ -144,18 +144,25 @@ Each micro-action contains:
 - ✅ Export/import for data backup
 - ✅ Ability to delete all data
 
-## 🤖 Setting up Claude AI (Claude CLI)
+## 🤖 AI Integration
+
+The application supports AI-powered summaries and recommendations. You can use:
+- **Claude CLI** - locally installed Claude assistant
+- **GitHub Copilot** - via VS Code or other editors
+- **OpenAI Codex** - via API integration
+
+### Setting up Claude CLI
 
 The application uses **locally installed Claude CLI** called directly from the Electron main process.
 
-### Installing Claude CLI
+#### Installing Claude CLI
 
 ```bash
 # If you don't have Claude CLI installed yet
 # Guide: https://github.com/anthropics/anthropic-cli
 ```
 
-### Using in the Application
+#### Using in the Application
 
 1. Run the application (`npm run dev`)
 2. Go to the **Settings** section
@@ -188,59 +195,6 @@ Claude CLI is used for:
 - **Electron IPC** - Inter-process communication
 - **Node.js fs/promises** - File system operations
 - **Claude CLI** - AI assistant (optional)
-
-## 🎯 Recommended Usage
-
-1. **Daily** - Fill out the questionnaire at the end of the day (5-10 minutes)
-2. **Weekly** - Review the weekly summary
-3. **Actively** - Track micro-actions and implement them
-4. **Regularly** - Export data for backup
-
-## 📝 Development Notes
-
-### TypeScript Configuration
-The project uses `verbatimModuleSyntax` for proper type imports:
-
-```typescript
-// ✅ Correct
-import type { DailyScore } from '../types';
-import { WellbeingCategory } from '../types';
-
-// ❌ Wrong
-import { DailyScore, WellbeingCategory } from '../types';
-```
-
-### Adding New Questions
-
-Questions are defined in `src/data/questions.ts`:
-
-```typescript
-{
-  id: 'unique_id',
-  category: WellbeingCategory.CATEGORY_NAME,
-  text: 'Question text?',
-  model: 'maslow' | 'sdt' | 'perma',
-}
-```
-
-## 🐛 Troubleshooting
-
-### Build fails
-- Check Node.js version (20.19+ or 22.12+)
-- Try `npm install` again
-
-### Data not saving
-- Check write permissions to user folder
-- Look at logs in terminal (main process)
-
-### Claude CLI not working
-- Verify Claude CLI is installed (`claude --version`)
-- Try the test in the application (Settings → Test Claude CLI)
-- Check the main process console for any errors
-
-### Electron sandbox issues
-- The application uses `--no-sandbox` flag in package.json
-- This is a common solution for Linux environments
 
 ## 📄 License
 
