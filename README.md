@@ -59,6 +59,25 @@ A modern **desktop application** for tracking mental wellbeing built on **Electr
 4. **Meaning** - purpose of activities
 5. **Accomplishment** - progress and achievement
 
+## 🎨 Score Color Coding
+
+- 🔴 **Critical** (< 2.5): Requires immediate attention
+- 🟡 **Medium** (2.5 - 3.5): Room for improvement
+- 🟢 **Good** (> 3.5): Doing well
+
+## 💡 Micro-Actions
+
+The application automatically generates up to 5 personalized micro-actions based on:
+- Critical areas (low scores)
+- Overall wellbeing status
+- Priorities (high, medium, low)
+
+Each micro-action contains:
+- Name
+- Detailed description
+- Wellbeing category
+- Priority
+
 ## 🚀 Quick Start
 
 ### Installation and Running
@@ -113,25 +132,6 @@ After building, you'll find the installer in the `release/` folder:
 ├── release/            # Electron distribution
 └── server/             # Deprecated (original Express server)
 ```
-
-## 🎨 Score Color Coding
-
-- 🔴 **Critical** (< 2.5): Requires immediate attention
-- 🟡 **Medium** (2.5 - 3.5): Room for improvement
-- 🟢 **Good** (> 3.5): Doing well
-
-## 💡 Micro-Actions
-
-The application automatically generates up to 5 personalized micro-actions based on:
-- Critical areas (low scores)
-- Overall wellbeing status
-- Priorities (high, medium, low)
-
-Each micro-action contains:
-- Name
-- Detailed description
-- Wellbeing category
-- Priority
 
 ## 🔐 Security and Privacy
 
