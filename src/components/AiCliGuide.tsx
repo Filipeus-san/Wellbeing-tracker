@@ -16,76 +16,64 @@ export const AiCliGuide = ({ onClose, aiProvider }: AiCliGuideProps) => {
         <section className="guide-section">
           <h3>🔧 Integrace Claude CLI</h3>
 
-          <h4>Krok 1: Vytvoření účtu na Anthropic</h4>
+          <h4>Krok 1: Instalace Claude Code</h4>
           <ol className="guide-steps">
             <li>
-              <strong>Zaregistrujte se na Anthropic:</strong>
+              <strong>Vyberte instalační metodu podle vašeho systému:</strong>
+
+              <div style={{ marginTop: '12px' }}>
+                <strong>macOS/Linux (doporučeno):</strong>
+                <div className="guide-code-block">
+                  <code>brew install --cask claude-code</code>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '12px' }}>
+                <strong>macOS/Linux/WSL (alternativa):</strong>
+                <div className="guide-code-block">
+                  <code>curl -fsSL https://claude.ai/install.sh | bash</code>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '12px' }}>
+                <strong>Windows PowerShell:</strong>
+                <div className="guide-code-block">
+                  <code>irm https://claude.ai/install.ps1 | iex</code>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '12px' }}>
+                <strong>NPM (vyžaduje Node.js 18+):</strong>
+                <div className="guide-code-block">
+                  <code>npm install -g @anthropic-ai/claude-code</code>
+                </div>
+              </div>
+            </li>
+          </ol>
+
+          <h4>Krok 2: První spuštění a autentizace</h4>
+          <ol className="guide-steps">
+            <li>
+              <strong>Spusťte Claude Code:</strong>
+              <div className="guide-code-block">
+                <code>claude</code>
+              </div>
+              <p>CLI se spustí a automaticky otevře prohlížeč pro OAuth autentizaci.</p>
+            </li>
+            <li>
+              <strong>V prohlížeči:</strong>
               <ul>
-                <li>Jděte na <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer">console.anthropic.com</a></li>
-                <li>Klikněte na "Sign Up"</li>
-                <li>Vyplňte email a heslo (nebo se přihlaste přes Google)</li>
+                <li>Přihlaste se do svého Anthropic účtu (nebo se zaregistrujte)</li>
+                <li>Potvrďte přístup pro Claude Code</li>
+                <li>Autentizace proběhne automaticky přes OAuth</li>
               </ul>
               <div className="guide-note">
-                💡 Nový účet dostane $5 kreditu zdarma pro testování.
-              </div>
-            </li>
-            <li>
-              <strong>Získejte API klíč:</strong>
-              <ul>
-                <li>Po přihlášení jděte na <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer">Settings → API Keys</a></li>
-                <li>Klikněte na "Create Key"</li>
-                <li>Pojmenujte klíč (např. "Wellbeing Tracker")</li>
-                <li>Zkopírujte klíč a uložte si ho (zobrazí se pouze jednou!)</li>
-              </ul>
-              <div className="guide-warning-box">
-                ⚠️ <strong>Důležité:</strong> API klíč se zobrazí pouze jednou. Uložte si ho na bezpečné místo!
+                💡 <strong>Poznámka:</strong> Potřebujete aktivní billing na console.anthropic.com nebo Claude Pro/Max předplatné.
               </div>
             </li>
           </ol>
 
-          <h4>Krok 2: Instalace Claude CLI</h4>
-          <ol className="guide-steps">
-            <li>
-              <strong>Instalace pomocí npm:</strong>
-              <div className="guide-code-block">
-                <code>npm install -g @anthropic-ai/claude-cli</code>
-              </div>
-              <div className="guide-note">
-                💡 Vyžaduje Node.js a npm. Pokud je nemáte, nainstalujte z <a href="https://nodejs.org" target="_blank" rel="noopener noreferrer">nodejs.org</a>
-              </div>
-            </li>
-            <li>
-              <strong>Ověření instalace:</strong>
-              <div className="guide-code-block">
-                <code>claude --version</code>
-              </div>
-              <p>Mělo by zobrazit číslo verze.</p>
-            </li>
-          </ol>
-
-          <h4>Krok 3: Konfigurace API klíče</h4>
-          <ol className="guide-steps">
-            <li>
-              <strong>Nastavení API klíče:</strong>
-              <div className="guide-code-block">
-                <code>export ANTHROPIC_API_KEY="váš-api-klíč"</code>
-              </div>
-              <div className="guide-note">
-                💡 <strong>Trvalé nastavení:</strong><br/>
-                Přidejte tento řádek do <code>~/.bashrc</code> nebo <code>~/.zshrc</code>:<br/>
-                <code>export ANTHROPIC_API_KEY="váš-api-klíč"</code>
-              </div>
-            </li>
-            <li>
-              <strong>Test připojení:</strong>
-              <div className="guide-code-block">
-                <code>echo "Hello" | claude --print</code>
-              </div>
-              <p>Claude by měl odpovědět na váš pozdrav.</p>
-            </li>
-          </ol>
-
-          <h4>Krok 4: Aktivace v aplikaci</h4>
+          <h4>Krok 3: Aktivace v aplikaci</h4>
           <ol className="guide-steps">
             <li>
               <strong>V Nastavení Wellbeing Tracker:</strong>
@@ -100,81 +88,73 @@ export const AiCliGuide = ({ onClose, aiProvider }: AiCliGuideProps) => {
               <strong>Klikněte "Uložit nastavení"</strong>
             </li>
           </ol>
+
+          <div className="guide-info-box">
+            <strong>✅ Hotovo!</strong> Claude Code je připravený. Aplikace bude používat CLI pro generování shrnutí.
+          </div>
         </section>
       ) : (
         <section className="guide-section">
           <h3>🔧 Claude CLI Integration</h3>
 
-          <h4>Step 1: Create Anthropic Account</h4>
+          <h4>Step 1: Install Claude Code</h4>
           <ol className="guide-steps">
             <li>
-              <strong>Sign up on Anthropic:</strong>
+              <strong>Choose installation method for your system:</strong>
+
+              <div style={{ marginTop: '12px' }}>
+                <strong>macOS/Linux (recommended):</strong>
+                <div className="guide-code-block">
+                  <code>brew install --cask claude-code</code>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '12px' }}>
+                <strong>macOS/Linux/WSL (alternative):</strong>
+                <div className="guide-code-block">
+                  <code>curl -fsSL https://claude.ai/install.sh | bash</code>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '12px' }}>
+                <strong>Windows PowerShell:</strong>
+                <div className="guide-code-block">
+                  <code>irm https://claude.ai/install.ps1 | iex</code>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '12px' }}>
+                <strong>NPM (requires Node.js 18+):</strong>
+                <div className="guide-code-block">
+                  <code>npm install -g @anthropic-ai/claude-code</code>
+                </div>
+              </div>
+            </li>
+          </ol>
+
+          <h4>Step 2: First Launch and Authentication</h4>
+          <ol className="guide-steps">
+            <li>
+              <strong>Launch Claude Code:</strong>
+              <div className="guide-code-block">
+                <code>claude</code>
+              </div>
+              <p>The CLI will launch and automatically open your browser for OAuth authentication.</p>
+            </li>
+            <li>
+              <strong>In your browser:</strong>
               <ul>
-                <li>Go to <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer">console.anthropic.com</a></li>
-                <li>Click "Sign Up"</li>
-                <li>Fill in email and password (or sign in with Google)</li>
+                <li>Sign in to your Anthropic account (or sign up)</li>
+                <li>Confirm access for Claude Code</li>
+                <li>Authentication happens automatically via OAuth</li>
               </ul>
               <div className="guide-note">
-                💡 New accounts get $5 credit for free testing.
-              </div>
-            </li>
-            <li>
-              <strong>Get API key:</strong>
-              <ul>
-                <li>After login, go to <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer">Settings → API Keys</a></li>
-                <li>Click "Create Key"</li>
-                <li>Name the key (e.g., "Wellbeing Tracker")</li>
-                <li>Copy the key and save it (shown only once!)</li>
-              </ul>
-              <div className="guide-warning-box">
-                ⚠️ <strong>Important:</strong> API key is shown only once. Save it in a secure place!
+                💡 <strong>Note:</strong> You need active billing at console.anthropic.com or a Claude Pro/Max subscription.
               </div>
             </li>
           </ol>
 
-          <h4>Step 2: Install Claude CLI</h4>
-          <ol className="guide-steps">
-            <li>
-              <strong>Install using npm:</strong>
-              <div className="guide-code-block">
-                <code>npm install -g @anthropic-ai/claude-cli</code>
-              </div>
-              <div className="guide-note">
-                💡 Requires Node.js and npm. If you don't have them, install from <a href="https://nodejs.org" target="_blank" rel="noopener noreferrer">nodejs.org</a>
-              </div>
-            </li>
-            <li>
-              <strong>Verify installation:</strong>
-              <div className="guide-code-block">
-                <code>claude --version</code>
-              </div>
-              <p>Should display version number.</p>
-            </li>
-          </ol>
-
-          <h4>Step 3: Configure API Key</h4>
-          <ol className="guide-steps">
-            <li>
-              <strong>Set API key:</strong>
-              <div className="guide-code-block">
-                <code>export ANTHROPIC_API_KEY="your-api-key"</code>
-              </div>
-              <div className="guide-note">
-                💡 <strong>Permanent setup:</strong><br/>
-                Add this line to <code>~/.bashrc</code> or <code>~/.zshrc</code>:<br/>
-                <code>export ANTHROPIC_API_KEY="your-api-key"</code>
-              </div>
-            </li>
-            <li>
-              <strong>Test connection:</strong>
-              <div className="guide-code-block">
-                <code>echo "Hello" | claude --print</code>
-              </div>
-              <p>Claude should respond to your greeting.</p>
-            </li>
-          </ol>
-
-          <h4>Step 4: Activate in App</h4>
+          <h4>Step 3: Activate in App</h4>
           <ol className="guide-steps">
             <li>
               <strong>In Wellbeing Tracker Settings:</strong>
@@ -189,6 +169,10 @@ export const AiCliGuide = ({ onClose, aiProvider }: AiCliGuideProps) => {
               <strong>Click "Save Settings"</strong>
             </li>
           </ol>
+
+          <div className="guide-info-box">
+            <strong>✅ Done!</strong> Claude Code is ready. The app will use the CLI to generate summaries.
+          </div>
         </section>
       )}
     </>
@@ -200,54 +184,36 @@ export const AiCliGuide = ({ onClose, aiProvider }: AiCliGuideProps) => {
         <section className="guide-section">
           <h3>🔧 Integrace OpenAI Codex CLI</h3>
 
-          <h4>Krok 1: Získání OpenAI API klíče</h4>
+          <h4>Krok 1: Instalace Codex CLI</h4>
           <ol className="guide-steps">
             <li>
-              <strong>Zaregistrujte se na OpenAI:</strong>
-              <ul>
-                <li>Jděte na <a href="https://platform.openai.com" target="_blank" rel="noopener noreferrer">platform.openai.com</a></li>
-                <li>Klikněte na "Sign up"</li>
-                <li>Vyplňte registrační formulář</li>
-              </ul>
-            </li>
-            <li>
-              <strong>Vytvořte API klíč:</strong>
-              <ul>
-                <li>Jděte na <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">API Keys</a></li>
-                <li>Klikněte "Create new secret key"</li>
-                <li>Pojmenujte klíč a zkopírujte ho</li>
-              </ul>
-            </li>
-            <li>
-              <strong>Přidejte platební metodu:</strong>
-              <ul>
-                <li>Jděte na Billing → Payment methods</li>
-                <li>Přidejte kreditní kartu</li>
-              </ul>
+              <strong>Instalace pomocí npm:</strong>
+              <div className="guide-code-block">
+                <code>npm install -g @openai/codex@latest</code>
+              </div>
               <div className="guide-note">
-                💡 OpenAI nevyžaduje měsíční poplatek, platíte pouze za použití.
+                💡 Vyžaduje Node.js. Pokud ho nemáte, nainstalujte z <a href="https://nodejs.org" target="_blank" rel="noopener noreferrer">nodejs.org</a>
               </div>
             </li>
           </ol>
 
-          <h4>Krok 2: Instalace Codex CLI</h4>
+          <h4>Krok 2: První spuštění a autentizace</h4>
           <ol className="guide-steps">
             <li>
-              <strong>Instalace:</strong>
+              <strong>Spusťte Codex CLI poprvé:</strong>
               <div className="guide-code-block">
-                <code>npm install -g @openai/codex-cli</code>
+                <code>codex</code>
               </div>
+              <p>CLI automaticky spustí průvodce nastavením.</p>
             </li>
             <li>
-              <strong>Konfigurace API klíče:</strong>
-              <div className="guide-code-block">
-                <code>export OPENAI_API_KEY="váš-api-klíč"</code>
-              </div>
-            </li>
-            <li>
-              <strong>Test:</strong>
-              <div className="guide-code-block">
-                <code>codex --version</code>
+              <strong>Vyberte autentizační metodu:</strong>
+              <ul>
+                <li><strong>Varianta A - ChatGPT účet (doporučeno):</strong> Přihlaste se přes OAuth s ChatGPT Plus/Pro/Business účtem</li>
+                <li><strong>Varianta B - API klíč:</strong> Použijte OpenAI API klíč z <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">platform.openai.com/api-keys</a></li>
+              </ul>
+              <div className="guide-note">
+                💡 <strong>OAuth metoda:</strong> CLI automaticky otevře prohlížeč pro přihlášení. Stačí potvrdit přístup.
               </div>
             </li>
           </ol>
@@ -258,59 +224,45 @@ export const AiCliGuide = ({ onClose, aiProvider }: AiCliGuideProps) => {
             <li>Klikněte "Test Codex CLI"</li>
             <li>Uložte nastavení</li>
           </ol>
+
+          <div className="guide-info-box">
+            <strong>✅ Hotovo!</strong> Codex CLI je připravený k použití.
+          </div>
         </section>
       ) : (
         <section className="guide-section">
           <h3>🔧 OpenAI Codex CLI Integration</h3>
 
-          <h4>Step 1: Get OpenAI API Key</h4>
+          <h4>Step 1: Install Codex CLI</h4>
           <ol className="guide-steps">
             <li>
-              <strong>Sign up on OpenAI:</strong>
-              <ul>
-                <li>Go to <a href="https://platform.openai.com" target="_blank" rel="noopener noreferrer">platform.openai.com</a></li>
-                <li>Click "Sign up"</li>
-                <li>Fill in registration form</li>
-              </ul>
-            </li>
-            <li>
-              <strong>Create API key:</strong>
-              <ul>
-                <li>Go to <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">API Keys</a></li>
-                <li>Click "Create new secret key"</li>
-                <li>Name the key and copy it</li>
-              </ul>
-            </li>
-            <li>
-              <strong>Add payment method:</strong>
-              <ul>
-                <li>Go to Billing → Payment methods</li>
-                <li>Add credit card</li>
-              </ul>
+              <strong>Install using npm:</strong>
+              <div className="guide-code-block">
+                <code>npm install -g @openai/codex@latest</code>
+              </div>
               <div className="guide-note">
-                💡 OpenAI doesn't require monthly fee, you only pay for usage.
+                💡 Requires Node.js. If you don't have it, install from <a href="https://nodejs.org" target="_blank" rel="noopener noreferrer">nodejs.org</a>
               </div>
             </li>
           </ol>
 
-          <h4>Step 2: Install Codex CLI</h4>
+          <h4>Step 2: First Launch and Authentication</h4>
           <ol className="guide-steps">
             <li>
-              <strong>Installation:</strong>
+              <strong>Launch Codex CLI for the first time:</strong>
               <div className="guide-code-block">
-                <code>npm install -g @openai/codex-cli</code>
+                <code>codex</code>
               </div>
+              <p>The CLI automatically starts the setup wizard.</p>
             </li>
             <li>
-              <strong>Configure API key:</strong>
-              <div className="guide-code-block">
-                <code>export OPENAI_API_KEY="your-api-key"</code>
-              </div>
-            </li>
-            <li>
-              <strong>Test:</strong>
-              <div className="guide-code-block">
-                <code>codex --version</code>
+              <strong>Choose authentication method:</strong>
+              <ul>
+                <li><strong>Option A - ChatGPT account (recommended):</strong> Sign in via OAuth with ChatGPT Plus/Pro/Business account</li>
+                <li><strong>Option B - API key:</strong> Use OpenAI API key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">platform.openai.com/api-keys</a></li>
+              </ul>
+              <div className="guide-note">
+                💡 <strong>OAuth method:</strong> CLI automatically opens browser for login. Just confirm access.
               </div>
             </li>
           </ol>
@@ -321,6 +273,10 @@ export const AiCliGuide = ({ onClose, aiProvider }: AiCliGuideProps) => {
             <li>Click "Test Codex CLI"</li>
             <li>Save settings</li>
           </ol>
+
+          <div className="guide-info-box">
+            <strong>✅ Done!</strong> Codex CLI is ready to use.
+          </div>
         </section>
       )}
     </>
@@ -334,52 +290,39 @@ export const AiCliGuide = ({ onClose, aiProvider }: AiCliGuideProps) => {
 
           <h4>Předpoklady</h4>
           <div className="guide-info-box">
-            ✅ Aktivní GitHub Copilot subscription ($10/měsíc)<br/>
-            ✅ GitHub CLI nainstalované
+            ✅ Aktivní GitHub Copilot subscription (Pro, Pro+, Business nebo Enterprise)<br/>
+            ✅ Node.js 22+ a npm 10+
           </div>
 
-          <h4>Krok 1: Instalace GitHub CLI</h4>
+          <h4>Krok 1: Instalace</h4>
           <ol className="guide-steps">
             <li>
-              <strong>Linux (Ubuntu/Debian):</strong>
+              <strong>Instalace přes npm:</strong>
               <div className="guide-code-block">
-                <code>sudo apt install gh</code>
-              </div>
-            </li>
-            <li>
-              <strong>macOS:</strong>
-              <div className="guide-code-block">
-                <code>brew install gh</code>
-              </div>
-            </li>
-            <li>
-              <strong>Windows:</strong>
-              <div className="guide-code-block">
-                <code>winget install GitHub.cli</code>
+                <code>npm install -g @github/copilot</code>
               </div>
             </li>
           </ol>
 
-          <h4>Krok 2: Instalace Copilot extension</h4>
+          <h4>Krok 2: První spuštění a přihlášení</h4>
           <ol className="guide-steps">
             <li>
-              <strong>Přihlášení do GitHub:</strong>
+              <strong>Spusťte Copilot CLI:</strong>
               <div className="guide-code-block">
-                <code>gh auth login</code>
-              </div>
-              <p>Postupujte podle instrukcí v terminálu.</p>
-            </li>
-            <li>
-              <strong>Instalace Copilot extension:</strong>
-              <div className="guide-code-block">
-                <code>gh extension install github/gh-copilot</code>
+                <code>copilot</code>
               </div>
             </li>
             <li>
-              <strong>Test:</strong>
+              <strong>Přihlaste se:</strong>
+              <p>Pokud nejste přihlášeni, CLI vás vyzve k použití příkazu:</p>
               <div className="guide-code-block">
-                <code>gh copilot --version</code>
+                <code>/login</code>
               </div>
+              <ul>
+                <li>Postupujte podle instrukcí na obrazovce</li>
+                <li>Autentizace proběhne přes OAuth v prohlížeči</li>
+                <li>Přihlaste se svým GitHub účtem s aktivním Copilot předplatným</li>
+              </ul>
             </li>
           </ol>
 
@@ -389,6 +332,10 @@ export const AiCliGuide = ({ onClose, aiProvider }: AiCliGuideProps) => {
             <li>Klikněte "Test Copilot CLI"</li>
             <li>Uložte nastavení</li>
           </ol>
+
+          <div className="guide-info-box">
+            <strong>✅ Hotovo!</strong> GitHub Copilot CLI je připravený.
+          </div>
         </section>
       ) : (
         <section className="guide-section">
@@ -396,52 +343,39 @@ export const AiCliGuide = ({ onClose, aiProvider }: AiCliGuideProps) => {
 
           <h4>Prerequisites</h4>
           <div className="guide-info-box">
-            ✅ Active GitHub Copilot subscription ($10/month)<br/>
-            ✅ GitHub CLI installed
+            ✅ Active GitHub Copilot subscription (Pro, Pro+, Business, or Enterprise)<br/>
+            ✅ Node.js 22+ and npm 10+
           </div>
 
-          <h4>Step 1: Install GitHub CLI</h4>
+          <h4>Step 1: Installation</h4>
           <ol className="guide-steps">
             <li>
-              <strong>Linux (Ubuntu/Debian):</strong>
+              <strong>Install via npm:</strong>
               <div className="guide-code-block">
-                <code>sudo apt install gh</code>
-              </div>
-            </li>
-            <li>
-              <strong>macOS:</strong>
-              <div className="guide-code-block">
-                <code>brew install gh</code>
-              </div>
-            </li>
-            <li>
-              <strong>Windows:</strong>
-              <div className="guide-code-block">
-                <code>winget install GitHub.cli</code>
+                <code>npm install -g @github/copilot</code>
               </div>
             </li>
           </ol>
 
-          <h4>Step 2: Install Copilot Extension</h4>
+          <h4>Step 2: First Launch and Login</h4>
           <ol className="guide-steps">
             <li>
-              <strong>Login to GitHub:</strong>
+              <strong>Launch Copilot CLI:</strong>
               <div className="guide-code-block">
-                <code>gh auth login</code>
-              </div>
-              <p>Follow instructions in terminal.</p>
-            </li>
-            <li>
-              <strong>Install Copilot extension:</strong>
-              <div className="guide-code-block">
-                <code>gh extension install github/gh-copilot</code>
+                <code>copilot</code>
               </div>
             </li>
             <li>
-              <strong>Test:</strong>
+              <strong>Log in:</strong>
+              <p>If not logged in, CLI will prompt you to use the command:</p>
               <div className="guide-code-block">
-                <code>gh copilot --version</code>
+                <code>/login</code>
               </div>
+              <ul>
+                <li>Follow on-screen instructions</li>
+                <li>Authentication happens via OAuth in browser</li>
+                <li>Sign in with your GitHub account with active Copilot subscription</li>
+              </ul>
             </li>
           </ol>
 
@@ -451,6 +385,10 @@ export const AiCliGuide = ({ onClose, aiProvider }: AiCliGuideProps) => {
             <li>Click "Test Copilot CLI"</li>
             <li>Save settings</li>
           </ol>
+
+          <div className="guide-info-box">
+            <strong>✅ Done!</strong> GitHub Copilot CLI is ready.
+          </div>
         </section>
       )}
     </>
@@ -465,30 +403,30 @@ export const AiCliGuide = ({ onClose, aiProvider }: AiCliGuideProps) => {
             <div className="guide-problem">
               <strong>❌ "CLI is not available"</strong>
               <p>
-                <strong>Příčina:</strong> CLI není nainstalované nebo není v PATH.<br/>
                 <strong>Řešení:</strong><br/>
-                • Zkontrolujte instalaci<br/>
-                • Znovu nainstalujte s <code>-g</code> flagem<br/>
-                • Restartujte terminál a aplikaci
+                • Zkontrolujte, že je CLI nainstalované globálně s <code>-g</code> flagem<br/>
+                • Restartujte terminál<br/>
+                • Restartujte aplikaci
               </p>
             </div>
 
             <div className="guide-problem">
-              <strong>❌ "API key not found"</strong>
+              <strong>❌ "Not authenticated" nebo "Authentication failed"</strong>
               <p>
-                <strong>Příčina:</strong> API klíč není nastaven v environment variables.<br/>
-                <strong>Řešení:</strong> Nastavte správný environment variable podle vašeho poskytovatele
+                <strong>Řešení:</strong><br/>
+                • Spusťte CLI manuálně v terminálu a dokončete OAuth autentizaci<br/>
+                • Ujistěte se, že máte aktivní předplatné/billing<br/>
+                • Zkuste se odhlásit a znovu přihlásit
               </p>
             </div>
 
             <div className="guide-problem">
               <strong>❌ "Command not found"</strong>
               <p>
-                <strong>Příčina:</strong> CLI není v PATH nebo není nainstalované globálně.<br/>
                 <strong>Řešení:</strong><br/>
-                • Použijte <code>-g</code> flag při instalaci<br/>
                 • Zkontrolujte npm global path: <code>npm config get prefix</code><br/>
-                • Ujistěte se, že npm bin je v PATH
+                • Ujistěte se, že npm bin je v PATH<br/>
+                • Zkuste reinstalaci s <code>npm install -g</code>
               </p>
             </div>
 
@@ -510,30 +448,30 @@ export const AiCliGuide = ({ onClose, aiProvider }: AiCliGuideProps) => {
             <div className="guide-problem">
               <strong>❌ "CLI is not available"</strong>
               <p>
-                <strong>Cause:</strong> CLI is not installed or not in PATH.<br/>
                 <strong>Solution:</strong><br/>
-                • Check installation<br/>
-                • Reinstall with <code>-g</code> flag<br/>
-                • Restart terminal and app
+                • Check that CLI is installed globally with <code>-g</code> flag<br/>
+                • Restart terminal<br/>
+                • Restart the app
               </p>
             </div>
 
             <div className="guide-problem">
-              <strong>❌ "API key not found"</strong>
+              <strong>❌ "Not authenticated" or "Authentication failed"</strong>
               <p>
-                <strong>Cause:</strong> API key is not set in environment variables.<br/>
-                <strong>Solution:</strong> Set the correct environment variable for your provider
+                <strong>Solution:</strong><br/>
+                • Run CLI manually in terminal and complete OAuth authentication<br/>
+                • Make sure you have active subscription/billing<br/>
+                • Try logging out and logging back in
               </p>
             </div>
 
             <div className="guide-problem">
               <strong>❌ "Command not found"</strong>
               <p>
-                <strong>Cause:</strong> CLI is not in PATH or not globally installed.<br/>
                 <strong>Solution:</strong><br/>
-                • Use <code>-g</code> flag during installation<br/>
                 • Check npm global path: <code>npm config get prefix</code><br/>
-                • Make sure npm bin is in PATH
+                • Make sure npm bin is in PATH<br/>
+                • Try reinstalling with <code>npm install -g</code>
               </p>
             </div>
 
@@ -572,19 +510,19 @@ export const AiCliGuide = ({ onClose, aiProvider }: AiCliGuideProps) => {
               <h3>🔒 Bezpečnost a soukromí</h3>
               <ul className="guide-security">
                 <li>
-                  ✅ <strong>Lokální zpracování</strong> - API klíč zůstává pouze na vašem počítači
+                  ✅ <strong>Bezpečná OAuth autentizace</strong> - Moderní a bezpečný způsob přihlášení
                 </li>
                 <li>
-                  ✅ <strong>Přímá komunikace</strong> - Aplikace komunikuje přímo s AI, žádný prostředník
+                  ✅ <strong>Lokální zpracování</strong> - CLI běží na vašem počítači
+                </li>
+                <li>
+                  ✅ <strong>Přímá komunikace</strong> - Aplikace komunikuje přímo s AI přes CLI
                 </li>
                 <li>
                   ✅ <strong>HTTPS šifrování</strong> - Veškerá komunikace je šifrovaná
                 </li>
                 <li>
                   ✅ <strong>Žádné logování</strong> - Aplikace neloguje vaše dotazy ani odpovědi
-                </li>
-                <li>
-                  ⚠️ <strong>AI provider policy</strong> - Zkontrolujte privacy policy vašeho AI poskytovatele
                 </li>
               </ul>
             </section>
@@ -593,19 +531,19 @@ export const AiCliGuide = ({ onClose, aiProvider }: AiCliGuideProps) => {
               <h3>🔒 Security and Privacy</h3>
               <ul className="guide-security">
                 <li>
-                  ✅ <strong>Local processing</strong> - API key stays only on your computer
+                  ✅ <strong>Secure OAuth authentication</strong> - Modern and secure login method
                 </li>
                 <li>
-                  ✅ <strong>Direct communication</strong> - App communicates directly with AI, no middleman
+                  ✅ <strong>Local processing</strong> - CLI runs on your computer
+                </li>
+                <li>
+                  ✅ <strong>Direct communication</strong> - App communicates directly with AI via CLI
                 </li>
                 <li>
                   ✅ <strong>HTTPS encryption</strong> - All communication is encrypted
                 </li>
                 <li>
                   ✅ <strong>No logging</strong> - App doesn't log your queries or responses
-                </li>
-                <li>
-                  ⚠️ <strong>AI provider policy</strong> - Check privacy policy of your AI provider
                 </li>
               </ul>
             </section>
