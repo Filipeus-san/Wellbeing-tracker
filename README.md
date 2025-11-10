@@ -62,6 +62,10 @@ A modern **desktop application** for tracking mental wellbeing built on **Electr
   - Automatic backup to cloud
   - Data synchronization across devices
   - Secure OAuth2 authentication
+- **🔄 Automatic update notifications**
+  - Checks for new versions on GitHub Releases
+  - Notification popup when updates are available
+  - One-click download link to latest release
 
 ## 🎯 Psychological Models
 
@@ -168,6 +172,35 @@ The repository includes a **GitHub Actions workflow** that automatically builds 
 - npm or yarn
 - Claude CLI (optional, for AI summaries)
 
+## 🔄 Automatic Updates
+
+The application **automatically checks for updates** on GitHub Releases when you start the app and once per day.
+
+### How It Works
+
+1. **Automatic Check** - On startup and daily, the app checks https://github.com/Filipeus-san/Wellbeing-tracker/releases/
+2. **Notification** - If a new version is available, a stylish notification appears in the top-right corner
+3. **One-Click Download** - Click "Download Update" to open the GitHub release page
+4. **Manual Install** - Download and install the new version for your platform
+
+### Features
+
+- ✅ **Non-intrusive** - Small notification that can be dismissed
+- ✅ **Privacy-friendly** - Only checks version numbers, no tracking
+- ✅ **Manual control** - You decide when to update
+- ✅ **Release notes** - See what's new before updating
+- ✅ **Secure** - Downloads from official GitHub releases only
+
+### Update Process
+
+1. See notification: "🎉 New version available!"
+2. Click "Download Update" button
+3. Browser opens to GitHub release page
+4. Download installer for your platform (.deb, .rpm, .AppImage, .dmg, or .exe)
+5. Install and restart the app
+
+**Note**: The app does not auto-update itself - you stay in full control.
+
 ## 🔐 Security and Privacy
 
 - ✅ All data stored **locally on your computer**
@@ -182,6 +215,7 @@ The repository includes a **GitHub Actions workflow** that automatically builds 
 - ✅ Secure IPC communication via Electron contextBridge
 - ✅ Export/import for data backup
 - ✅ Ability to delete all data
+- ✅ **Update checks** - Privacy-friendly, only version comparison
 
 ## 🤖 AI Integration
 

@@ -4,6 +4,7 @@ import { WeeklySummary } from './components/WeeklySummary';
 import { Habits } from './components/Habits';
 import { Settings } from './components/Settings';
 import { About } from './components/About';
+import UpdateNotification from './components/UpdateNotification';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import './App.css';
 
@@ -32,6 +33,9 @@ function AppContent() {
 
   return (
     <div className="app">
+      {/* Update Notification */}
+      <UpdateNotification />
+
       {/* Header */}
       <header className="app-header">
         <div className="header-content">

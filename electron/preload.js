@@ -54,4 +54,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   gdriveGetMetadata: () => ipcRenderer.invoke('gdrive-get-metadata'),
 });
 
+// Expose electron API for update notifications
+contextBridge.exposeInMainWorld('electron', {
+  checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
+  openExternal: (url) => ipcRenderer.invoke('open-external', url),
+  onUpdateAvailable: (callback) => {
+    ipcRenderer.on('update-available', callback);
+  },
+});
+
 console.log('✅ Preload script loaded, electronAPI exposed');

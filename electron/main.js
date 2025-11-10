@@ -6,6 +6,7 @@ import { join } from 'path';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import googleDriveSync from './googleDriveSync.js';
+import { checkForUpdates, startPeriodicUpdateCheck } from './updateChecker.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -98,6 +99,13 @@ function createWindow() {
 app.whenReady().then(async () => {
   await loadData();
   createWindow();
+
+  // Start periodic update checks
+  startPeriodicUpdateCheck((updateInfo) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('update-available', updateInfo);
+    }
+  });
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -759,6 +767,30 @@ ipcMain.handle('gdrive-get-metadata', async () => {
     return { success: true, metadata };
   } catch (error) {
     console.error('❌ Error getting metadata:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// ==================== UPDATE CHECKER ====================
+
+// Kontrola aktualizací
+ipcMain.handle('check-for-updates', async () => {
+  try {
+    const updateInfo = await checkForUpdates();
+    return updateInfo;
+  } catch (error) {
+    console.error('❌ Error checking for updates:', error);
+    return { available: false, error: error.message };
+  }
+});
+
+// Otevřít URL v browseru (pro stažení aktualizace)
+ipcMain.handle('open-external', async (event, url) => {
+  try {
+    await shell.openExternal(url);
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Error opening URL:', error);
     return { success: false, error: error.message };
   }
 });
