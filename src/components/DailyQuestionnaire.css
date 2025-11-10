@@ -192,6 +192,22 @@
   gap: 15px;
 }
 
+.auto-save-status {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.saving-message {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .footer-buttons {
   display: flex;
   gap: 12px;

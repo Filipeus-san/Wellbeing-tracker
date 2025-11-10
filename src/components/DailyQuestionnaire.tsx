@@ -36,6 +36,7 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const [habits, setHabits] = useState<Habit[]>([]);
   const [completedHabits, setCompletedHabits] = useState<string[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Načíst nastavení
   useEffect(() => {
@@ -150,7 +151,27 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
     });
   };
 
-  const handleSave = async () => {
+  // Auto-save s debounce při změně dat
+  useEffect(() => {
+    // Neprovádět auto-save při počátečním načítání
+    if (isLoading) return;
+
+    // Debounce timer
+    const timeoutId = setTimeout(() => {
+      handleAutoSave();
+    }, 1000); // 1 sekunda debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [scores, mood, anxiety, depression, joy, anger, gratitude, notes, completedHabits]);
+
+  const handleAutoSave = async () => {
+    // Uložit pouze pokud jsou nějaká data
+    if (Object.keys(scores).length === 0 && !mood && anxiety === 0 && depression === 0 && joy === 0 && anger === 0 && gratitude === 0 && !notes && completedHabits.length === 0) {
+      return;
+    }
+
+    setIsSaving(true);
+
     try {
       // Vygenerovat mikro-akce ihned
       const baseDailyScore: DailyScore = {
@@ -173,12 +194,13 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         ...baseDailyScore,
         microActions,
         completedHabits,
+        aiSummary: currentDailyScore?.aiSummary, // Zachovat AI shrnutí
       };
 
       await saveDailyScore(dailyScore);
       setCurrentDailyScore(dailyScore);
       setSavedMessage(true);
-      setTimeout(() => setSavedMessage(false), 3000);
+      setTimeout(() => setSavedMessage(false), 2000);
 
       // Přegenerovat týdenní shrnutí
       await regenerateWeeklySummary(date);
@@ -187,8 +209,9 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
         onComplete();
       }
     } catch (error) {
-      console.error('Error saving daily score:', error);
-      alert(t.common.error);
+      console.error('Error auto-saving daily score:', error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -564,15 +587,19 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
       </div>
 
       <div className="questionnaire-footer">
-        <div className="footer-buttons">
-          <button
-            className="save-button"
-            onClick={handleSave}
-            disabled={validScoresCount === 0}
-          >
-            {t.daily.saveButton}
-          </button>
+        <div className="auto-save-status">
+          {isSaving && (
+            <div className="saving-message">
+              <span className="spinner">💾</span>
+              {language === 'cs' ? 'Ukládání...' : 'Saving...'}
+            </div>
+          )}
+          {savedMessage && !isSaving && (
+            <div className="saved-message">✓ {language === 'cs' ? 'Automaticky uloženo' : 'Auto-saved'}</div>
+          )}
+        </div>
 
+        <div className="footer-buttons">
           {canUseAI && isComplete && (
             <button
               className="ai-summary-button"
@@ -592,10 +619,6 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
             </button>
           )}
         </div>
-
-        {savedMessage && (
-          <div className="saved-message">✓ {t.common.success}</div>
-        )}
 
         {!isComplete && validScoresCount > 0 && (
           <div className="incomplete-warning">
