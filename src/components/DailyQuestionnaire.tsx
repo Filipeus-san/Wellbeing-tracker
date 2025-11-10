@@ -53,11 +53,21 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
       const currentDate = new Date(date);
       const currentWeekDay = currentDate.getDay(); // 0 = neděle, 1 = pondělí, ..., 6 = sobota
 
-      // Filtrovat návyky: nearchivované + (bez weekDays NEBO obsahuje aktuální den)
+      // Vypočítat kolikátý týden v měsíci je (1-5)
+      const dayOfMonth = currentDate.getDate();
+      const currentWeekOfMonth = Math.ceil(dayOfMonth / 7) as 1 | 2 | 3 | 4 | 5;
+
+      // Filtrovat návyky: nearchivované + (bez weekDays NEBO obsahuje aktuální den) + (bez weeksOfMonth NEBO obsahuje aktuální týden)
       const filteredHabits = allHabits.filter(h => {
         if (h.archived) return false;
-        if (!h.weekDays || h.weekDays.length === 0) return true; // Zobrazit každý den
-        return h.weekDays.includes(currentWeekDay as any);
+
+        // Filtrování podle dne v týdnu
+        const matchesWeekDay = !h.weekDays || h.weekDays.length === 0 || h.weekDays.includes(currentWeekDay as any);
+
+        // Filtrování podle týdne v měsíci
+        const matchesWeekOfMonth = !h.weeksOfMonth || h.weeksOfMonth.length === 0 || h.weeksOfMonth.includes(currentWeekOfMonth);
+
+        return matchesWeekDay && matchesWeekOfMonth;
       });
 
       setHabits(filteredHabits);

@@ -196,6 +196,7 @@ export interface MicroAction {
 }
 
 export type WeekDay = 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0 = neděle, 1 = pondělí, ..., 6 = sobota
+export type WeekOfMonth = 1 | 2 | 3 | 4 | 5; // 1 = první týden, 2 = druhý týden, atd.
 
 export interface Habit {
   id: string;
@@ -205,6 +206,7 @@ export interface Habit {
   createdAt: string;
   archived?: boolean;
   weekDays?: WeekDay[]; // Dny v týdnu, kdy se návyk zobrazuje (pokud není nastaveno, zobrazuje se každý den)
+  weeksOfMonth?: WeekOfMonth[]; // Týdny v měsíci, kdy se návyk zobrazuje (pokud není nastaveno, zobrazuje se každý týden)
 }
 
 export type AIProvider = 'claude' | 'codex' | 'copilot';

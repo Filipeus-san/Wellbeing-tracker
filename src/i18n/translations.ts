@@ -112,6 +112,14 @@ export interface Translations {
     saturday: string;
     sunday: string;
     everyDay: string;
+    weeksOfMonth: string;
+    selectWeeks: string;
+    week1: string;
+    week2: string;
+    week3: string;
+    week4: string;
+    week5: string;
+    everyWeek: string;
   };
 
   // Settings
@@ -377,6 +385,14 @@ export const translations: Record<Language, Translations> = {
       saturday: 'So',
       sunday: 'Ne',
       everyDay: 'Každý den',
+      weeksOfMonth: 'Týdny v měsíci',
+      selectWeeks: 'Vyberte týdny v měsíci',
+      week1: '1.',
+      week2: '2.',
+      week3: '3.',
+      week4: '4.',
+      week5: '5.',
+      everyWeek: 'Každý týden',
     },
     settings: {
       title: 'Nastavení',
@@ -618,6 +634,14 @@ export const translations: Record<Language, Translations> = {
       saturday: 'Sat',
       sunday: 'Sun',
       everyDay: 'Every day',
+      weeksOfMonth: 'Weeks of Month',
+      selectWeeks: 'Select weeks of the month',
+      week1: '1st',
+      week2: '2nd',
+      week3: '3rd',
+      week4: '4th',
+      week5: '5th',
+      everyWeek: 'Every week',
     },
     settings: {
       title: 'Settings',

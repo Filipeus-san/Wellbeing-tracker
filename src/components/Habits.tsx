@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Habit, WeekDay } from '../types';
+import type { Habit, WeekDay, WeekOfMonth } from '../types';
 import { getHabits, saveHabit } from '../utils/storage';
 import { useLanguage } from '../i18n/LanguageContext';
 import './Habits.css';
@@ -14,11 +14,13 @@ export const Habits = () => {
   const [newHabitDescription, setNewHabitDescription] = useState('');
   const [newHabitIcon, setNewHabitIcon] = useState('✨');
   const [newHabitWeekDays, setNewHabitWeekDays] = useState<WeekDay[]>([]);
+  const [newHabitWeeksOfMonth, setNewHabitWeeksOfMonth] = useState<WeekOfMonth[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [editIcon, setEditIcon] = useState('');
   const [editWeekDays, setEditWeekDays] = useState<WeekDay[]>([]);
+  const [editWeeksOfMonth, setEditWeeksOfMonth] = useState<WeekOfMonth[]>([]);
 
   useEffect(() => {
     loadHabits();
@@ -39,6 +41,7 @@ export const Habits = () => {
       icon: newHabitIcon,
       createdAt: new Date().toISOString(),
       weekDays: newHabitWeekDays.length > 0 ? newHabitWeekDays : undefined,
+      weeksOfMonth: newHabitWeeksOfMonth.length > 0 ? newHabitWeeksOfMonth : undefined,
     };
 
     await saveHabit(habit);
@@ -49,6 +52,7 @@ export const Habits = () => {
     setNewHabitDescription('');
     setNewHabitIcon('✨');
     setNewHabitWeekDays([]);
+    setNewHabitWeeksOfMonth([]);
     setIsAdding(false);
   };
 
@@ -58,6 +62,7 @@ export const Habits = () => {
     setEditDescription(habit.description || '');
     setEditIcon(habit.icon || '✨');
     setEditWeekDays(habit.weekDays || []);
+    setEditWeeksOfMonth(habit.weeksOfMonth || []);
   };
 
   const handleSaveEdit = async (habitId: string) => {
@@ -70,6 +75,7 @@ export const Habits = () => {
       description: editDescription.trim() || undefined,
       icon: editIcon,
       weekDays: editWeekDays.length > 0 ? editWeekDays : undefined,
+      weeksOfMonth: editWeeksOfMonth.length > 0 ? editWeeksOfMonth : undefined,
     };
 
     await saveHabit(updatedHabit);
@@ -146,6 +152,51 @@ export const Habits = () => {
     );
   };
 
+  const toggleWeekOfMonth = (week: WeekOfMonth, weeks: WeekOfMonth[], setter: (weeks: WeekOfMonth[]) => void) => {
+    if (weeks.includes(week)) {
+      setter(weeks.filter(w => w !== week));
+    } else {
+      setter([...weeks, week].sort((a, b) => a - b));
+    }
+  };
+
+  const getWeekOfMonthLabel = (week: WeekOfMonth): string => {
+    const labels = [
+      t.habits.week1,
+      t.habits.week2,
+      t.habits.week3,
+      t.habits.week4,
+      t.habits.week5,
+    ];
+    return labels[week - 1];
+  };
+
+  const renderWeekOfMonthSelector = (weeks: WeekOfMonth[], setter: (weeks: WeekOfMonth[]) => void) => {
+    const weekOptions: WeekOfMonth[] = [1, 2, 3, 4, 5];
+
+    return (
+      <div className="form-group">
+        <label>{t.habits.weeksOfMonth}</label>
+        <p className="field-hint">{t.habits.selectWeeks}</p>
+        <div className="weekday-selector">
+          {weekOptions.map((week) => (
+            <button
+              key={week}
+              type="button"
+              className={`weekday-button ${weeks.includes(week) ? 'active' : ''}`}
+              onClick={() => toggleWeekOfMonth(week, weeks, setter)}
+            >
+              {getWeekOfMonthLabel(week)}
+            </button>
+          ))}
+        </div>
+        {weeks.length === 0 && (
+          <p className="weekday-hint">{t.habits.everyWeek}</p>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="habits">
       <div className="habits-header">
@@ -215,6 +266,7 @@ export const Habits = () => {
           </div>
 
           {renderWeekDaySelector(newHabitWeekDays, setNewHabitWeekDays)}
+          {renderWeekOfMonthSelector(newHabitWeeksOfMonth, setNewHabitWeeksOfMonth)}
 
           <div className="form-actions">
             <button className="cancel-button" onClick={() => setIsAdding(false)}>
@@ -289,6 +341,7 @@ export const Habits = () => {
                 </div>
 
                 {renderWeekDaySelector(editWeekDays, setEditWeekDays)}
+                {renderWeekOfMonthSelector(editWeeksOfMonth, setEditWeeksOfMonth)}
 
                 <div className="form-actions">
                   <button className="cancel-button" onClick={handleCancelEdit}>
