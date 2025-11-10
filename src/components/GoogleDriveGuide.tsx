@@ -341,8 +341,19 @@ export const GoogleDriveGuide = ({ onClose }: GoogleDriveGuideProps) => {
                     jsou uloženy pouze lokálně ve vaší aplikaci
                   </li>
                   <li>
-                    ✅ <strong>Omezený přístup</strong> - Aplikace má přístup pouze k souborům,
-                    které sama vytvoří (scope <code>drive.file</code>)
+                    ✅ <strong>Minimální přístup (Least Privilege)</strong> - Aplikace používá scope <code>drive.file</code>,
+                    což znamená přístup <strong>pouze</strong> k souborům, které sama vytvoří.
+                    Neuvidí vaše dokumenty, fotky ani jiné soubory na Google Drive.
+                  </li>
+                  <li>
+                    ✅ <strong>Desktop App OAuth</strong> - Používá se typ "Desktop app" s loopback
+                    redirect na <code>http://localhost</code>, což je doporučený a bezpečný způsob
+                    pro desktopové aplikace podle aktuálních Google standardů (2025).
+                  </li>
+                  <li>
+                    ✅ <strong>Moderní bezpečnostní protokoly</strong> - OAuth 2.0 flow s podporou
+                    pro PKCE (Proof Key for Code Exchange), která chrání před útoky při výměně
+                    autorizačního kódu za access token.
                   </li>
                   <li>
                     ✅ <strong>Šifrovaná komunikace</strong> - Veškerá komunikace s Google probíhá
@@ -350,7 +361,12 @@ export const GoogleDriveGuide = ({ onClose }: GoogleDriveGuideProps) => {
                   </li>
                   <li>
                     ✅ <strong>Kontrola nad daty</strong> - Můžete kdykoli odpojit Google Drive
-                    nebo smazat soubor přímo ve svém Google Drive
+                    nebo smazat soubor přímo ve svém Google Drive. Můžete také odvolat přístup
+                    aplikace v nastavení vašeho Google účtu.
+                  </li>
+                  <li>
+                    ✅ <strong>Refresh tokeny</strong> - Aplikace automaticky obnovuje access tokeny
+                    bez nutnosti opakovaného přihlášení
                   </li>
                   <li>
                     ✅ <strong>Token storage</strong> - Přístupový token je uložen v
@@ -696,8 +712,19 @@ export const GoogleDriveGuide = ({ onClose }: GoogleDriveGuideProps) => {
                     are stored only locally in your app
                   </li>
                   <li>
-                    ✅ <strong>Limited access</strong> - The app has access only to files
-                    it creates itself (scope <code>drive.file</code>)
+                    ✅ <strong>Minimum Access (Least Privilege)</strong> - The app uses <code>drive.file</code> scope,
+                    which means access <strong>only</strong> to files it creates itself.
+                    It won't see your documents, photos, or other files on Google Drive.
+                  </li>
+                  <li>
+                    ✅ <strong>Desktop App OAuth</strong> - Uses "Desktop app" type with loopback
+                    redirect to <code>http://localhost</code>, which is the recommended and secure method
+                    for desktop applications according to current Google standards (2025).
+                  </li>
+                  <li>
+                    ✅ <strong>Modern Security Protocols</strong> - OAuth 2.0 flow with support
+                    for PKCE (Proof Key for Code Exchange), which protects against attacks during
+                    authorization code exchange for access tokens.
                   </li>
                   <li>
                     ✅ <strong>Encrypted communication</strong> - All communication with Google
@@ -705,7 +732,12 @@ export const GoogleDriveGuide = ({ onClose }: GoogleDriveGuideProps) => {
                   </li>
                   <li>
                     ✅ <strong>Control over data</strong> - You can disconnect Google Drive
-                    or delete the file directly in your Google Drive at any time
+                    or delete the file directly in your Google Drive at any time. You can also
+                    revoke app access in your Google account settings.
+                  </li>
+                  <li>
+                    ✅ <strong>Refresh tokens</strong> - The app automatically renews access tokens
+                    without requiring re-authentication
                   </li>
                   <li>
                     ✅ <strong>Token storage</strong> - Access token is stored in
