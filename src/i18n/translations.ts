@@ -133,6 +133,11 @@ export interface Translations {
     title: string;
   };
 
+  // AI Guide
+  aiGuide: {
+    title: string;
+  };
+
   // Donate
   donate: {
     title: string;
@@ -447,6 +452,9 @@ export const translations: Record<Language, Translations> = {
     guide: {
       title: 'Návod na propojení s Google Diskem',
     },
+    aiGuide: {
+      title: 'Návod na integraci AI CLI',
+    },
     donate: {
       title: 'Podpořit vývoj',
       description: 'Wellbeing Tracker je a vždy bude zdarma. Pokud vám aplikace pomáhá, můžete podpořit další vývoj.',
@@ -735,6 +743,9 @@ export const translations: Record<Language, Translations> = {
     },
     guide: {
       title: 'Google Drive Setup Guide',
+    },
+    aiGuide: {
+      title: 'AI CLI Integration Guide',
     },
     donate: {
       title: 'Support Development',

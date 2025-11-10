@@ -4,6 +4,7 @@ import { testAiCLI } from '../utils/claudeApi';
 import type { AppSettings, Language } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
 import { GoogleDriveGuide } from './GoogleDriveGuide';
+import { AiCliGuide } from './AiCliGuide';
 import './Settings.css';
 
 interface SettingsProps {
@@ -31,6 +32,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
   const [gdriveSyncing, setGdriveSyncing] = useState(false);
   const [gdriveSyncMessage, setGdriveSyncMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [showGuide, setShowGuide] = useState(false);
+  const [showAiGuide, setShowAiGuide] = useState(false);
 
   // Načíst nastavení při načtení komponenty
   useEffect(() => {
@@ -276,6 +278,7 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
   return (
     <>
       {showGuide && <GoogleDriveGuide onClose={() => setShowGuide(false)} />}
+      {showAiGuide && <AiCliGuide onClose={() => setShowAiGuide(false)} />}
 
       <div className="settings">
         <h2>{t.settings.title}</h2>
@@ -314,6 +317,19 @@ export const Settings = ({ onUpdate }: SettingsProps) => {
         <p className="section-description">
           {t.settings.aiIntegrationDescription}
         </p>
+
+        <button
+          className="action-btn"
+          onClick={() => setShowAiGuide(true)}
+          style={{
+            marginBottom: '20px',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            border: 'none',
+          }}
+        >
+          📖 {language === 'cs' ? 'Zobrazit podrobný návod na nastavení AI' : 'Show detailed AI setup guide'}
+        </button>
 
         <div className="setting-item">
           <label>
