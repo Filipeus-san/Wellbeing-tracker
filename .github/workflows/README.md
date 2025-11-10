@@ -50,8 +50,10 @@ The workflow uploads the following files to the GitHub release:
 ### Requirements
 
 - **GitHub Token**: Automatically provided by GitHub Actions (`secrets.GITHUB_TOKEN`)
+- **Permissions**: Workflow has `contents: write` permission to upload release assets
 - **Node.js 20**: Set up automatically in the workflow
 - **npm dependencies**: Installed with `npm ci`
+- **electron-builder publish**: Disabled in `package.json` (`"publish": null`) to prevent double-publishing
 
 ### Troubleshooting
 

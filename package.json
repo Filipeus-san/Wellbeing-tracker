@@ -75,6 +75,7 @@
       "target": "AppImage",
       "category": "Utility",
       "icon": "build/icon.ico"
-    }
+    },
+    "publish": null
   }
 }
