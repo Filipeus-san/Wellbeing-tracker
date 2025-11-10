@@ -26,7 +26,6 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
   const [anger, setAnger] = useState<AngerLevel>(0);
   const [gratitude, setGratitude] = useState<GratitudeLevel>(0);
   const [notes, setNotes] = useState('');
-  const [savedMessage, setSavedMessage] = useState(false);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [summaryError, setSummaryError] = useState<string | null>(null);
@@ -36,7 +35,6 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const [habits, setHabits] = useState<Habit[]>([]);
   const [completedHabits, setCompletedHabits] = useState<string[]>([]);
-  const [isSaving, setIsSaving] = useState(false);
 
   // Načíst nastavení
   useEffect(() => {
@@ -170,8 +168,6 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
       return;
     }
 
-    setIsSaving(true);
-
     try {
       // Vygenerovat mikro-akce ihned
       const baseDailyScore: DailyScore = {
@@ -199,8 +195,6 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
 
       await saveDailyScore(dailyScore);
       setCurrentDailyScore(dailyScore);
-      setSavedMessage(true);
-      setTimeout(() => setSavedMessage(false), 2000);
 
       // Přegenerovat týdenní shrnutí
       await regenerateWeeklySummary(date);
@@ -210,8 +204,6 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
       }
     } catch (error) {
       console.error('Error auto-saving daily score:', error);
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -587,18 +579,6 @@ export const DailyQuestionnaire = ({ date, onComplete, onAiGeneratingChange }: D
       </div>
 
       <div className="questionnaire-footer">
-        <div className="auto-save-status">
-          {isSaving && (
-            <div className="saving-message">
-              <span className="spinner">💾</span>
-              {language === 'cs' ? 'Ukládání...' : 'Saving...'}
-            </div>
-          )}
-          {savedMessage && !isSaving && (
-            <div className="saved-message">✓ {language === 'cs' ? 'Automaticky uloženo' : 'Auto-saved'}</div>
-          )}
-        </div>
-
         <div className="footer-buttons">
           {canUseAI && isComplete && (
             <button
