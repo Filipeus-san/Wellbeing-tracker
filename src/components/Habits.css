@@ -190,11 +190,37 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  cursor: grab;
+  user-select: none;
 }
 
 .habit-card:hover {
   border-color: #667eea;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.habit-card.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+  transform: scale(0.98);
+}
+
+.habit-card.drag-over {
+  border-color: #667eea;
+  border-style: dashed;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+}
+
+.drag-handle {
+  font-size: 20px;
+  color: #9ca3af;
+  cursor: grab;
+  user-select: none;
+  line-height: 1;
+}
+
+.habit-card:active .drag-handle {
+  cursor: grabbing;
 }
 
 .habit-content {

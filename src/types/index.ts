@@ -207,6 +207,7 @@ export interface Habit {
   archived?: boolean;
   weekDays?: WeekDay[]; // Dny v týdnu, kdy se návyk zobrazuje (pokud není nastaveno, zobrazuje se každý den)
   weeksOfMonth?: WeekOfMonth[]; // Týdny v měsíci, kdy se návyk zobrazuje (pokud není nastaveno, zobrazuje se každý týden)
+  order?: number; // Pořadí pro řazení (pokud není nastaveno, řadí se podle createdAt)
 }
 
 export type AIProvider = 'claude' | 'codex' | 'copilot';

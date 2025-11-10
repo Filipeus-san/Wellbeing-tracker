@@ -21,6 +21,8 @@ export const Habits = () => {
   const [editIcon, setEditIcon] = useState('');
   const [editWeekDays, setEditWeekDays] = useState<WeekDay[]>([]);
   const [editWeeksOfMonth, setEditWeeksOfMonth] = useState<WeekOfMonth[]>([]);
+  const [draggedHabitId, setDraggedHabitId] = useState<string | null>(null);
+  const [dragOverHabitId, setDragOverHabitId] = useState<string | null>(null);
 
   useEffect(() => {
     loadHabits();
@@ -28,7 +30,16 @@ export const Habits = () => {
 
   const loadHabits = async () => {
     const loadedHabits = await getHabits();
-    setHabits(loadedHabits.filter(h => !h.archived));
+    // Řadit podle order (pokud je nastaveno) nebo podle createdAt
+    const sortedHabits = loadedHabits
+      .filter(h => !h.archived)
+      .sort((a, b) => {
+        const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+        const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
+        if (orderA !== orderB) return orderA - orderB;
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      });
+    setHabits(sortedHabits);
   };
 
   const handleAddHabit = async () => {
@@ -197,6 +208,64 @@ export const Habits = () => {
     );
   };
 
+  // Drag and drop handlers
+  const handleDragStart = (habitId: string) => {
+    setDraggedHabitId(habitId);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedHabitId(null);
+    setDragOverHabitId(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent, habitId: string) => {
+    e.preventDefault();
+    if (draggedHabitId && draggedHabitId !== habitId) {
+      setDragOverHabitId(habitId);
+    }
+  };
+
+  const handleDragLeave = () => {
+    setDragOverHabitId(null);
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetHabitId: string) => {
+    e.preventDefault();
+
+    if (!draggedHabitId || draggedHabitId === targetHabitId) {
+      setDraggedHabitId(null);
+      setDragOverHabitId(null);
+      return;
+    }
+
+    // Najít indexy
+    const draggedIndex = habits.findIndex(h => h.id === draggedHabitId);
+    const targetIndex = habits.findIndex(h => h.id === targetHabitId);
+
+    if (draggedIndex === -1 || targetIndex === -1) return;
+
+    // Přeuspořádat pole
+    const newHabits = [...habits];
+    const [draggedHabit] = newHabits.splice(draggedIndex, 1);
+    newHabits.splice(targetIndex, 0, draggedHabit);
+
+    // Aktualizovat order pro všechny návyky
+    const updatedHabits = newHabits.map((habit, index) => ({
+      ...habit,
+      order: index,
+    }));
+
+    // Uložit všechny změny
+    for (const habit of updatedHabits) {
+      await saveHabit(habit);
+    }
+
+    // Obnovit seznam
+    await loadHabits();
+    setDraggedHabitId(null);
+    setDragOverHabitId(null);
+  };
+
   return (
     <div className="habits">
       <div className="habits-header">
@@ -293,7 +362,16 @@ export const Habits = () => {
         )}
 
         {habits.map((habit) => (
-          <div key={habit.id} className="habit-card">
+          <div
+            key={habit.id}
+            className={`habit-card ${draggedHabitId === habit.id ? 'dragging' : ''} ${dragOverHabitId === habit.id ? 'drag-over' : ''}`}
+            draggable={editingId !== habit.id}
+            onDragStart={() => handleDragStart(habit.id)}
+            onDragEnd={handleDragEnd}
+            onDragOver={(e) => handleDragOver(e, habit.id)}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, habit.id)}
+          >
             {editingId === habit.id ? (
               // Edit mode
               <div className="habit-edit-form">
@@ -356,6 +434,7 @@ export const Habits = () => {
               // View mode
               <>
                 <div className="habit-content">
+                  <span className="drag-handle">⋮⋮</span>
                   <span className="habit-icon">{habit.icon || '✨'}</span>
                   <div className="habit-info">
                     <h3 className="habit-name">{habit.name}</h3>
