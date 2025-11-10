@@ -37,6 +37,10 @@ A modern **desktop application** for tracking mental wellbeing built on **Electr
 - Delete all data
 - Configure Claude API key
 - Test API key
+- **☁️ Google Drive synchronization** (optional)
+  - Automatic backup to cloud
+  - Data synchronization across devices
+  - Secure OAuth2 authentication
 
 ## 🎯 Psychological Models
 
@@ -111,7 +115,11 @@ For detailed build instructions, see [BUILD.md](./BUILD.md).
   - Linux: `~/.config/wellbeing-tracker/data/`
   - macOS: `~/Library/Application Support/wellbeing-tracker/data/`
   - Windows: `%APPDATA%\wellbeing-tracker\data/`
-- ✅ No third-party servers (except optional Claude CLI)
+- ✅ No third-party servers (except optional Claude CLI and Google Drive sync)
+- ✅ **Optional Google Drive sync** uses your own OAuth2 credentials (BYOC)
+  - Your credentials stay only with you
+  - Minimum access scope - app only sees files it creates
+  - Modern OAuth2 security (PKCE, loopback redirect)
 - ✅ Secure IPC communication via Electron contextBridge
 - ✅ Export/import for data backup
 - ✅ Ability to delete all data
@@ -150,6 +158,64 @@ Claude CLI is used for:
 
 **Note**: All Claude calls are made locally from the Electron main process. No data is sent via web API.
 
+## ☁️ Google Drive Synchronization
+
+The application supports **optional** cloud backup via Google Drive using your own OAuth2 credentials (BYOC - Bring Your Own Credentials).
+
+### Why BYOC (Bring Your Own Credentials)?
+
+- ✅ **Maximum Privacy** - Your credentials and data stay only with you
+- ✅ **Free** - No monthly subscription fees
+- ✅ **Full Control** - You manage access and can revoke it anytime
+- ✅ **Secure** - Uses Google's OAuth2 with modern security protocols (PKCE)
+
+### Features
+
+1. **Automatic Synchronization**
+   - Enable auto-sync to backup data on every change
+   - Data is automatically uploaded after adding daily records, habits, etc.
+
+2. **Manual Backup**
+   - Upload current data to Google Drive on demand
+   - Download data from Google Drive to restore on a new device
+
+3. **Security**
+   - Uses OAuth2 with Desktop app flow
+   - Minimum access scope (`drive.file`) - app only sees files it creates
+   - Loopback redirect (`http://localhost`) following Google 2025 standards
+   - Support for PKCE (Proof Key for Code Exchange)
+   - Encrypted HTTPS communication
+   - Tokens stored locally in `~/.config/wellbeing-tracker/google-credentials/`
+
+### Setup Process (10-15 minutes)
+
+The application includes a **detailed in-app guide** that walks you through:
+
+1. **Creating Google Cloud Project** (free)
+2. **Enabling Google Drive API**
+3. **Configuring OAuth Consent Screen**
+   - Setting up External user type
+   - Adding required scopes (`drive.file`)
+   - Adding yourself as a test user
+4. **Creating OAuth2 Desktop Credentials**
+5. **Connecting to the app via OAuth2 flow**
+
+**Access the guide**: Settings → Google Drive Sync → "Show detailed setup guide" button
+
+### Data Storage
+
+- Backup file: `wellbeing-tracker-data.json`
+- Location: Google Drive root folder (created by the app)
+- Content: All your daily records, habits, and settings
+- Format: JSON (human-readable, can be inspected)
+
+### Important Notes
+
+- ⚠️ **Test Users Required**: You must add yourself as a test user in OAuth consent screen
+- 🔒 **"Unverified app" warning is normal** - it's your own project, safe to continue
+- 🔄 **Refresh tokens** - App automatically renews access without re-authentication
+- 🗑️ **Easy to disconnect** - Revoke access anytime in Google account settings
+
 ## 📦 Technologies
 
 ### Desktop
@@ -167,6 +233,8 @@ Claude CLI is used for:
 - **Electron IPC** - Inter-process communication
 - **Node.js fs/promises** - File system operations
 - **Claude CLI** - AI assistant (optional)
+- **Google Drive API** - Cloud backup (optional, via OAuth2)
+- **googleapis** - Google API client library
 
 ## 📄 License
 
