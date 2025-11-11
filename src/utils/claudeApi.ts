@@ -1,6 +1,6 @@
 import type { WeeklySummary, DailyScore } from '../types';
 import { questions } from '../data/questions';
-import { getSettings, getHabits } from './storage';
+import { getSettings, getHabits, getDailyScore } from './storage';
 import { MOODS, getAnxietyLabel, getDepressionLabel, getJoyLabel, getAngerLabel, getGratitudeLabel } from '../types';
 
 /**
@@ -67,7 +67,7 @@ export const generateDailySummary = async (dailyScore: DailyScore): Promise<stri
   const userLanguage = settings.language || 'cs';
   const habits = await getHabits();
   const activeHabits = habits.filter(h => !h.archived);
-  const prompt = buildDailySummaryPrompt(dailyScore, userLanguage, activeHabits);
+  const prompt = await buildDailySummaryPrompt(dailyScore, userLanguage, activeHabits);
 
   // Vypsat prompt do konzole před odesláním
   console.log('==================== 📝 DENNÍ AI SOUHRN PROMPT ====================');
@@ -230,7 +230,58 @@ Create a summary that:
 /**
  * Sestaví prompt pro denní shrnutí
  */
-const buildDailySummaryPrompt = (dailyScore: DailyScore, language: string = 'cs', habits: any[] = []): string => {
+const buildDailySummaryPrompt = async (dailyScore: DailyScore, language: string = 'cs', habits: any[] = []): Promise<string> => {
+  // Získat historii 2 dny dozadu (včera + předevčírem)
+  const currentDate = new Date(dailyScore.date);
+
+  const yesterday = new Date(currentDate);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayDateStr = yesterday.toISOString().split('T')[0];
+
+  const dayBeforeYesterday = new Date(currentDate);
+  dayBeforeYesterday.setDate(dayBeforeYesterday.getDate() - 2);
+  const dayBeforeYesterdayDateStr = dayBeforeYesterday.toISOString().split('T')[0];
+
+  const yesterdayScore = await getDailyScore(yesterdayDateStr);
+  const dayBeforeYesterdayScore = await getDailyScore(dayBeforeYesterdayDateStr);
+
+  // Sestavit historii AI souhrnu pokud existuje
+  let historySection = '';
+
+  if (yesterdayScore?.aiSummary || dayBeforeYesterdayScore?.aiSummary) {
+    historySection = language === 'en'
+      ? '\n=== PREVIOUS AI SUMMARIES ===\n'
+      : '\n=== PŘEDCHOZÍ AI SOUHRNY ===\n';
+
+    if (dayBeforeYesterdayScore?.aiSummary) {
+      const dayBeforeLabel = language === 'en' ? 'Day before yesterday' : 'Předevčírem';
+      historySection += `\n${dayBeforeLabel} (${dayBeforeYesterdayDateStr}):\n"${dayBeforeYesterdayScore.aiSummary}"\n`;
+
+      if (dayBeforeYesterdayScore.microActions && dayBeforeYesterdayScore.microActions.length > 0) {
+        const actionsLabel = language === 'en' ? 'Recommended actions' : 'Doporučené akce';
+        historySection += `${actionsLabel}:\n`;
+        dayBeforeYesterdayScore.microActions.forEach(action => {
+          historySection += `- ${action.title}: ${action.description}\n`;
+        });
+      }
+    }
+
+    if (yesterdayScore?.aiSummary) {
+      const yesterdayLabel = language === 'en' ? 'Yesterday' : 'Včera';
+      historySection += `\n${yesterdayLabel} (${yesterdayDateStr}):\n"${yesterdayScore.aiSummary}"\n`;
+
+      if (yesterdayScore.microActions && yesterdayScore.microActions.length > 0) {
+        const actionsLabel = language === 'en' ? 'Recommended actions' : 'Doporučené akce';
+        historySection += `${actionsLabel}:\n`;
+        yesterdayScore.microActions.forEach(action => {
+          historySection += `- ${action.title}: ${action.description}\n`;
+        });
+      }
+    }
+
+    historySection += '\n';
+  }
+
   const scoreDetails = Object.entries(dailyScore.scores)
     .map(([questionId, score]) => {
       const question = questions.find((q) => q.id === questionId);
@@ -303,6 +354,8 @@ const buildDailySummaryPrompt = (dailyScore: DailyScore, language: string = 'cs'
   return `${languageInstruction}
 
 You are a wellbeing coach. Based on the user's daily data, create a short, motivating comment (max 200 words).
+${historySection}
+=== TODAY'S DATA ===
 
 DAILY SCORES (1-5):
 ${scoreDetails}
@@ -311,17 +364,18 @@ MENTAL STATE:
 ${mentalHealthDetails}
 ${habitsDetails}
 NOTES:
-${dailyScore.notes || 'No notes'}
+${dailyScore.notes || (language === 'en' ? 'No notes' : 'Žádné poznámky')}
 
-${microActionsDetails ? `RECOMMENDED MICRO-ACTIONS FOR TOMORROW:\n${microActionsDetails}\n` : ''}
+${microActionsDetails ? (language === 'en' ? `RECOMMENDED MICRO-ACTIONS FOR TOMORROW:\n${microActionsDetails}\n` : `DOPORUČENÉ MIKRO-AKCE NA ZÍTRA:\n${microActionsDetails}\n`) : ''}
 Create a concise comment that:
-1. Acknowledges what went well (specific areas with high scores)
-2. Gently points out areas for improvement (low scores)
-3. Pays special attention to mental state and emotions (mood, anxiety, depression, joy, anger, gratitude) - if you see high values of anxiety/depression/anger, address it kindly; if you see high values of joy/gratitude, acknowledge it
-4. If daily habits are tracked, acknowledge completed habits positively and gently encourage missed ones
-5. Highlights 2-3 most important micro-actions as concrete steps for tomorrow
-6. Has an empathetic, encouraging, and motivational tone
-7. Is concise but inspiring`;
+1. ${historySection ? (language === 'en' ? '**REFERENCE HISTORY**: If previous summaries exist, acknowledge if the user followed your advice, improved areas you discussed, or if issues persist. Build continuity.' : '**NAVÁZAT NA HISTORII**: Pokud existují předchozí souhrny, uznej pokud uživatel následoval tvoje rady, zlepšil oblasti které jsi diskutoval, nebo pokud problémy přetrvávají. Vytvoř kontinuitu.') : ''}
+2. Acknowledges what went well (specific areas with high scores)
+3. Gently points out areas for improvement (low scores)
+4. Pays special attention to mental state and emotions (mood, anxiety, depression, joy, anger, gratitude) - if you see high values of anxiety/depression/anger, address it kindly; if you see high values of joy/gratitude, acknowledge it
+5. If daily habits are tracked, acknowledge completed habits positively and gently encourage missed ones
+6. Highlights 2-3 most important micro-actions as concrete steps for tomorrow
+7. Has an empathetic, encouraging, and motivational tone
+8. Is concise but inspiring`;
 };
 
 /**
