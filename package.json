@@ -2,12 +2,12 @@
   "name": "wellbeing-tracker",
   "private": true,
   "version": "1.0.1",
-  "description": "Wellbeing Tracker - Desktop aplikace pro sledování duševní pohody",
+  "description": "Wellbeing Tracker – Desktop application for monitoring mental wellbeing",
   "author": {
     "name": "Wellbeing Tracker Team",
     "email": "wellbeing@example.com"
   },
-  "homepage": "https://github.com/wellbeing-tracker/app",
+  "homepage": "https://github.com/Filipeus-san/Wellbeing-tracker",
   "type": "module",
   "main": "electron/main.js",
   "scripts": {
