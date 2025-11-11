@@ -20,6 +20,11 @@ export const generateClaudeSummary = async (
   const userLanguage = settings.language || 'cs';
   const prompt = await buildWeeklySummaryPrompt(weeklySummary, dailyScores, userLanguage);
 
+  // Vypsat prompt do konzole před odesláním
+  console.log('==================== 📊 TÝDENNÍ AI SOUHRN PROMPT ====================');
+  console.log(prompt);
+  console.log('======================================================================');
+
   try {
     if (!window.electronAPI) {
       throw new Error('Electron API is not available');
@@ -63,6 +68,11 @@ export const generateDailySummary = async (dailyScore: DailyScore): Promise<stri
   const habits = await getHabits();
   const activeHabits = habits.filter(h => !h.archived);
   const prompt = buildDailySummaryPrompt(dailyScore, userLanguage, activeHabits);
+
+  // Vypsat prompt do konzole před odesláním
+  console.log('==================== 📝 DENNÍ AI SOUHRN PROMPT ====================');
+  console.log(prompt);
+  console.log('===================================================================');
 
   try {
     if (!window.electronAPI) {
