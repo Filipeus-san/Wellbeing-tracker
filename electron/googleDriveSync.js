@@ -11,6 +11,7 @@ import { app } from 'electron';
 
 const CREDENTIALS_DIR = join(app.getPath('userData'), 'google-credentials');
 const TOKEN_PATH = join(CREDENTIALS_DIR, 'token.json');
+const CONFIG_PATH = join(CREDENTIALS_DIR, 'config.json');
 const DRIVE_FILE_NAME = 'wellbeing-data.json';
 
 // Scopes pro Google Drive API
@@ -23,6 +24,64 @@ class GoogleDriveSync {
     this.fileId = null; // ID souboru na Google Drive
     this.isAuthenticated = false;
     this.syncEnabled = false;
+    this.clientId = null;
+    this.clientSecret = null;
+
+    // Načíst konfiguraci při startu
+    this.loadConfig();
+  }
+
+  /**
+   * Načtení konfigurace (clientId, clientSecret, syncEnabled)
+   */
+  async loadConfig() {
+    try {
+      if (!existsSync(CONFIG_PATH)) {
+        return false;
+      }
+
+      const configData = await readFile(CONFIG_PATH, 'utf-8');
+      const config = JSON.parse(configData);
+
+      this.clientId = config.clientId || null;
+      this.clientSecret = config.clientSecret || null;
+      this.syncEnabled = config.syncEnabled || false;
+
+      console.log('✅ Google Drive config loaded from file');
+
+      // Pokud máme credentials, inicializovat OAuth automaticky
+      if (this.clientId && this.clientSecret) {
+        await this.initializeOAuth(this.clientId, this.clientSecret);
+      }
+
+      return true;
+    } catch (error) {
+      console.error('❌ Error loading config:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Uložení konfigurace
+   */
+  async saveConfig() {
+    try {
+      if (!existsSync(CREDENTIALS_DIR)) {
+        await mkdir(CREDENTIALS_DIR, { recursive: true });
+      }
+
+      const config = {
+        clientId: this.clientId,
+        clientSecret: this.clientSecret,
+        syncEnabled: this.syncEnabled,
+      };
+
+      await writeFile(CONFIG_PATH, JSON.stringify(config, null, 2), 'utf-8');
+      console.log('✅ Google Drive config saved to file');
+    } catch (error) {
+      console.error('❌ Error saving config:', error);
+      throw error;
+    }
   }
 
   /**
@@ -30,6 +89,11 @@ class GoogleDriveSync {
    */
   async initializeOAuth(clientId, clientSecret) {
     try {
+      // Uložit credentials
+      this.clientId = clientId;
+      this.clientSecret = clientSecret;
+      await this.saveConfig();
+
       this.oauth2Client = new google.auth.OAuth2(
         clientId,
         clientSecret,
@@ -133,13 +197,20 @@ class GoogleDriveSync {
   }
 
   /**
-   * Odhlášení - smazání tokenu
+   * Odhlášení - smazání tokenu a konfigurace
    */
   async disconnect() {
     try {
+      const fs = await import('fs/promises');
+
+      // Smazat token
       if (existsSync(TOKEN_PATH)) {
-        const fs = await import('fs/promises');
         await fs.unlink(TOKEN_PATH);
+      }
+
+      // Smazat konfiguraci
+      if (existsSync(CONFIG_PATH)) {
+        await fs.unlink(CONFIG_PATH);
       }
 
       this.oauth2Client = null;
@@ -147,8 +218,10 @@ class GoogleDriveSync {
       this.fileId = null;
       this.isAuthenticated = false;
       this.syncEnabled = false;
+      this.clientId = null;
+      this.clientSecret = null;
 
-      console.log('✅ Disconnected from Google Drive');
+      console.log('✅ Disconnected from Google Drive and cleared config');
       return true;
     } catch (error) {
       console.error('❌ Error disconnecting:', error);
@@ -294,8 +367,9 @@ class GoogleDriveSync {
   /**
    * Povolení/zakázání automatické synchronizace
    */
-  setSyncEnabled(enabled) {
+  async setSyncEnabled(enabled) {
     this.syncEnabled = enabled;
+    await this.saveConfig();
     console.log(`🔄 Sync ${enabled ? 'enabled' : 'disabled'}`);
   }
 
@@ -304,6 +378,17 @@ class GoogleDriveSync {
    */
   isSyncEnabled() {
     return this.syncEnabled && this.isConnected();
+  }
+
+  /**
+   * Získání uložených credentials (pro zobrazení v UI)
+   */
+  getStoredCredentials() {
+    return {
+      hasCredentials: !!(this.clientId && this.clientSecret),
+      clientId: this.clientId ? `${this.clientId.substring(0, 20)}...` : null, // Zobrazit jen první 20 znaků
+      syncEnabled: this.syncEnabled,
+    };
   }
 }
 

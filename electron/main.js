@@ -771,6 +771,17 @@ ipcMain.handle('gdrive-get-metadata', async () => {
   }
 });
 
+// Získat uložené credentials
+ipcMain.handle('gdrive-get-stored-credentials', async () => {
+  try {
+    const credentials = googleDriveSync.getStoredCredentials();
+    return { success: true, ...credentials };
+  } catch (error) {
+    console.error('❌ Error getting stored credentials:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 // ==================== UPDATE CHECKER ====================
 
 // Kontrola aktualizací

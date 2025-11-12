@@ -52,6 +52,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   gdriveUpload: () => ipcRenderer.invoke('gdrive-upload'),
   gdriveDownload: () => ipcRenderer.invoke('gdrive-download'),
   gdriveGetMetadata: () => ipcRenderer.invoke('gdrive-get-metadata'),
+  gdriveGetStoredCredentials: () => ipcRenderer.invoke('gdrive-get-stored-credentials'),
 });
 
 // Expose electron API for update notifications
